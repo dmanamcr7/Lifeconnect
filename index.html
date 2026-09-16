@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#F5F4F1">
-<meta name="app-build" content="20260916-101637">
+<meta name="app-build" content="20260916-115050">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -121,6 +121,8 @@ label.f{display:block;font-size:12px;font-weight:600;color:var(--slate);margin-b
 #money th.r{text-align:right}
 #money td{padding:3px 6px;border-top:1px solid var(--line-soft)}
 #money td input, #money td select{padding:6px 8px;font-size:13px;border-color:transparent;background:transparent}
+#money td input[type=text]{min-width:170px}
+#money td input[type=number]{min-width:92px}
 #money td input:hover, #money td select:hover{border-color:var(--line);background:#FCFCFB}
 #money td input:focus, #money td select:focus{border-color:var(--teal);background:#fff}
 #money td input[type=number]{text-align:right}
@@ -699,7 +701,7 @@ body{padding:0}
     </div>
     <div class="card">
       <h2>Progress</h2>
-      <div class="hint">Started at is what was already in the pot when you began. Every contribution you tick in This cycle adds to it automatically. Click Saved now on the table below to correct it against your real balance.</div>
+      <div class="hint">Already saved is what was in the pot when you set the goal up. Every contribution you tick in This cycle adds to it automatically. Click Saved now on the table below to correct it against your real balance.</div>
       <div id="goallist"></div>
     </div>
     <div class="card">
@@ -2633,7 +2635,7 @@ function renderSavings(R){
   };
 
   editTable("t-savings", "savings",
-    [["name","Goal","text"],["target","Target","number"],["saved","Started at","number"],["amount","Per cycle","number"],
+    [["name","Goal","text"],["target","Target","number"],["saved","Already saved","number"],["amount","Per cycle","number"],
      ["freq","Cycle","freq"],["next","Next date","date"],["_now","Saved now","calc",savedCell],["active","On","check"]]);
 }
 
