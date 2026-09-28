@@ -814,7 +814,7 @@ const ROOT = document.getElementById("gym");
 
 const SEED = {"entries":[],"timeEntries":[],"bank":[{"n":"Iso-lateral Decline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Incline Bench Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push-ups","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Incline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push Up","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Assisted Pull-up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Basic Back Extension","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Barbell Row","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Iso-lateral pull","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Pull Up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Deadlift","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Dumbbell Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Lateral Raise","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Face Pull","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength ground base squat/lunge both legs","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer strength ground base squat/lunge single leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Leg extension Single Leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Adduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Abduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Leg Extension","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Calf Raise","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Bar)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Dumbbell)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Tricep Pulldown","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Skull Crusher","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Dips","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Cable Crunch","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Leg Raises","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Russian Twist","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Hanging Knee Raise","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Kettlebell Swing","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Farmer Carry","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Clean and Press","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Run 1km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 3km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 5km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 10km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Bike","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Rowing Machine","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Side Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Hollow Hold","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Wall Sit","m":"Legs","c":"Time-Based","pt":"Hold Time"}]};
 const KEY = "gym:v1";
-const APP_VERSION = "8.0";   // bumped whenever the app changes
+const APP_VERSION = "8.1";   // bumped whenever the app changes
 const DATA_VERSION = 5;      // bumped only when the shape of stored data changes
 const DEFAULTS = {rest:90, goalSets:10, goalReps:10, step:2.5, perEx:{},
   cardioRuns:3, paceStep:10, holdStep:10};
@@ -1436,6 +1436,8 @@ function detailHTML(s){
       + sRow("Sets", g.sets, "exsets").replace(/data-act="exsets"/g,'data-act="exsets" data-v="'+esc(s.name)+'"')
       + sRow("Reps per set", g.reps, "exreps").replace(/data-act="exreps"/g,'data-act="exreps" data-v="'+esc(s.name)+'"')
       + sRow("Increment", nice(g.step)+" kg", "exstep").replace(/data-act="exstep"/g,'data-act="exstep" data-v="'+esc(s.name)+'"')
+      + sRow("Rest", restLabel(restFor(s.name))+(D.settings.perEx&&D.settings.perEx[s.name]&&D.settings.perEx[s.name].rest!=null?" · custom":" · "+restClass(s.name)), "exrest").replace(/data-act="exrest"/g,'data-act="exrest" data-v="'+esc(s.name)+'"')
+      +(D.settings.perEx&&D.settings.perEx[s.name]&&D.settings.perEx[s.name].rest!=null?'<button class="usebtn" data-act="exrestclear" data-v="'+esc(s.name)+'" style="margin-left:0;margin-right:0;width:100%">Use the '+restClass(s.name)+' rest instead</button>':"")
       +'<div class="note" style="margin-top:8px">'+g.sets+' clean sets of '+g.reps+' in one session clears a weight here.</div>'
       +(g.custom?'<button class="usebtn" data-act="exclear" data-v="'+esc(s.name)+'" style="margin-left:0;margin-right:0;width:100%">Use the default goal instead</button>':"");
   }
@@ -1542,8 +1544,12 @@ function viewData(){
       +g.goalSets+' × '+g.goalReps+' = '+(g.goalSets*g.goalReps)+' reps</div>'
       +'<div class="sn">Complete this many clean sets at a weight, in one session, to clear it.</div></div></div>'
     + sRow("Weight increment", nice(g.step)+" kg", "setstep", "How much to add when a weight is cleared.")
-    + sRow("Rest timer", Number(g.rest)?mmss(Number(g.rest)):"Off", "setrest", "Starts automatically after each set.")
-    +(overrides.length?'<div class="note" style="margin:12px 0 0">'+overrides.length+' exercise'+(overrides.length>1?"s have":" has")+' a custom goal. Change or clear it from that exercise under Progress.</div>':"")
+    +'<div class="eyebrow" style="margin:22px 0 4px">Rest timer</div>'
+    +'<div class="note" style="margin-bottom:6px">Starts automatically after each set. Compound lifts need the longest rest; any exercise can set its own under Detail.</div>'
+    + sRow("Compound", restLabel(D.settings.restBy.compound), "restby", "Squat, deadlift, presses, rows, pull-ups, big machines.").split('data-act="restby"').join('data-act="restby" data-k="compound"')
+    + sRow("Isolation", restLabel(D.settings.restBy.isolation), "restby", "Curls, raises, extensions, pulldowns, calves.").split('data-act="restby"').join('data-act="restby" data-k="isolation"')
+    + sRow("Core", restLabel(D.settings.restBy.core), "restby", "Planks, crunches, leg raises.").split('data-act="restby"').join('data-act="restby" data-k="core"')
+    +(overrides.length?'<div class="note" style="margin:12px 0 0">'+overrides.length+' exercise'+(overrides.length>1?"s have":" has")+' a custom goal or rest. Change or clear it from that exercise under Detail.</div>':"")
 
     +'<div class="eyebrow" style="margin:26px 0 9px">Running &amp; holds</div>'
     + sRow("Efforts at target", g.cardioRuns, "setruns", "Hit the target this many times before it tightens.")
@@ -1731,7 +1737,7 @@ function viewToday(){
   for(const s of active){
     const a=s.a, hd=head(a), i=esc(s.name), entry=te.find(e=>e.e===s.name);
     h+='<div class="card" data-done="'+((a.bw?a.fresh:a.complete)?1:0)+'">'
-      +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+lastTimeInline(s.name,a)+'</div></div>'
+      +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+' · rest '+restLabel(restFor(s.name))+lastTimeInline(s.name,a)+'</div></div>'
       +'<div class="r"><span class="n">'+hd.n+'</span><span class="u">'+hd.u.replace(/^(working|cleared) · /,'')+'</span></div></div>'
       + bankLine(a)
       + setTableHTML(s, entry, a)
@@ -1875,6 +1881,41 @@ ROOT.addEventListener("click",ev=>{
   else if(act==="sumback"){ S.summary=false; render(); }
   else if(act==="sumdone"){ S.summary=false; S.tab="history"; S.expanded=tI; render(); window.scrollTo({top:0}); }
   else if(act==="tab" && S.summary){ S.summary=false; render(); }
+});
+
+
+/* ---- v8.1 rest by exercise type ---- */
+const REST_STEPS=[0,30,45,60,75,90,105,120,150,180,240,300];
+const REST_DEF={compound:150, isolation:75, core:60};
+D.settings.restBy = Object.assign({}, REST_DEF, D.settings.restBy||{});
+function restClass(name){
+  const b=D.bank.find(x=>x.n===name)||{}; const m=(b.m||"").toLowerCase(), n=name.toLowerCase();
+  if(m==="core"||/plank|crunch|leg raise|knee raise|twist|hollow|sit-up|situp/.test(n)) return "core";
+  if(/curl|raise|extension|pulldown|pushdown|face pull|fly|flye|calf|skull|kickback|adduction|abduction|shrug/.test(n)) return "isolation";
+  return "compound";
+}
+function restFor(name){
+  const o=D.settings.perEx&&D.settings.perEx[name];
+  if(o && o.rest!=null) return Number(o.rest);
+  return Number(D.settings.restBy[restClass(name)]);
+}
+function restLabel(s){ return s?mmss(s):"Off"; }
+function stepRest(cur,dir){ let i=REST_STEPS.indexOf(Number(cur)||0); if(i<0) i=5; return REST_STEPS[Math.min(REST_STEPS.length-1,Math.max(0,i+dir))]; }
+/* the set just logged decides the rest length */
+ROOT.addEventListener("click",ev=>{ const t=ev.target.closest("[data-act]"); if(t&&(t.dataset.act==="add"||t.dataset.act==="cadd")) S.lastEx=t.dataset.v; },true);
+function startRest(){
+  const secs=S.lastEx?restFor(S.lastEx):Number(D.settings.rest)||0;
+  if(!secs) return;
+  restTot=secs; restEnd=Date.now()+secs*1000; restDone=0;
+  if(restTick) clearInterval(restTick);
+  restTick=setInterval(paintRest,300); paintRest();
+}
+ROOT.addEventListener("click",ev=>{
+  const t=ev.target.closest("[data-act]"); if(!t) return;
+  const act=t.dataset.act, d=Number(t.dataset.d), v=t.dataset.v;
+  if(act==="restby"){ const k=t.dataset.k; D.settings.restBy[k]=stepRest(D.settings.restBy[k],d); save(); render(); }
+  else if(act==="exrest"){ D.settings.perEx=D.settings.perEx||{}; const o=D.settings.perEx[v]=D.settings.perEx[v]||{}; o.rest=stepRest(restFor(v),d); save(); render(); }
+  else if(act==="exrestclear"){ if(D.settings.perEx&&D.settings.perEx[v]){ delete D.settings.perEx[v].rest; if(!Object.keys(D.settings.perEx[v]).length) delete D.settings.perEx[v]; } save(); render(); }
 });
 
 /* ---------- actions ---------- */
