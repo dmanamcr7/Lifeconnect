@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-build" content="20261003-062206">
+<meta name="app-build" content="20261004-233542">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:dark;
   --ink:#EEF2F6; --slate:#A3AFBD; --mute:#6B7A8E;
   --paper:#0E1621; --card:#16212E; --line:#263444; --line-soft:#1F2C3A;
   --teal:#2FB8A0; --teal-bg:#153D37;
@@ -92,13 +93,13 @@ body{
 #money .t-savings{background:var(--teal-bg);color:var(--teal)}
 #money .t-over{background:var(--amber-bg);color:var(--amber)}
 #money .chk{flex:0 0 auto;width:20px;height:20px;accent-color:var(--teal);cursor:pointer}
-#money .paidin{width:80px;flex:0 0 80px;padding:5px 7px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px;text-align:right;background:#FCFCFB}
+#money .paidin{width:80px;flex:0 0 80px;padding:5px 7px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px;text-align:right;background:var(--paper)}
 #money .paidin:disabled{background:var(--paper);color:var(--mute)}
 #money /* ---------- forms ---------- */
 label.f{display:block;font-size:12px;font-weight:600;color:var(--slate);margin-bottom:4px}
 #money input, #money select, #money button{font-family:inherit}
 #money input[type=text], #money input[type=number], #money input[type=date], #money select{
-  width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:14px;background:#FCFCFB;color:var(--ink)
+  width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:14px;background:var(--paper);color:var(--ink)
 }
 #money .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 #money .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
@@ -123,7 +124,7 @@ label.f{display:block;font-size:12px;font-weight:600;color:var(--slate);margin-b
 #money td input, #money td select{padding:6px 8px;font-size:13px;border-color:transparent;background:transparent}
 #money td input[type=text]{min-width:170px}
 #money td input[type=number]{min-width:92px}
-#money td input:hover, #money td select:hover{border-color:var(--line);background:#FCFCFB}
+#money td input:hover, #money td select:hover{border-color:var(--line);background:var(--paper)}
 #money td input:focus, #money td select:focus{border-color:var(--teal);background:var(--card)}
 #money td input[type=number]{text-align:right}
 #money td.del{width:30px}
@@ -307,6 +308,23 @@ label.f{display:block;font-size:12px;font-weight:600;color:var(--slate);margin-b
 #shop .tagwk{display:inline-block;background:var(--amber-bg);color:var(--amber);border-radius:999px;padding:0 8px;font-size:12px;font-weight:600}
 #shop .filt{display:flex;gap:8px;margin:-4px 0 14px}
 @media (prefers-reduced-motion:reduce){}
+/* native controls, app-wide */
+input, select, textarea{background:var(--paper);color:var(--ink);caret-color:var(--teal)}
+input::placeholder, textarea::placeholder{color:var(--mute)}
+select option{background:var(--card);color:var(--ink)}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.8)}
+
+/* iPhone: strip native white form chrome everywhere so fields follow the dark theme */
+#money input, #money select, #money textarea, #connected input, #connected select, #shop input, #shop select, #shop textarea, #gym input, #gym select, #gym textarea{
+  -webkit-appearance:none;appearance:none;color-scheme:dark;background-color:var(--paper);color:var(--ink)
+}
+#money select, #shop select, #connected select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23A3AFBD' stroke-width='1.6' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+#money td input, #money td select{background-color:var(--paper);border-color:var(--line)}
+#money td input:focus, #money td select:focus{background-color:var(--card)}
+#money input[type=date]::-webkit-date-and-time-value{text-align:left;color:var(--ink)}
+#money input::placeholder, #shop input::placeholder, #connected input::placeholder, #gym input::placeholder{color:var(--mute)}
+input:-webkit-autofill, input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 1000px var(--paper) inset}
+
 /* ================= SHELL ================= */
 body{padding:0}
 .shell-top{max-width:820px;margin:0 auto;padding:18px 14px 0;display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap}
