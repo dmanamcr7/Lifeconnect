@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-build" content="20261006-123429">
+<meta name="app-build" content="20261007-083418">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -325,6 +325,154 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.8)}
 #money input::placeholder, #shop input::placeholder, #connected input::placeholder, #gym input::placeholder{color:var(--mute)}
 input:-webkit-autofill, input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 1000px var(--paper) inset}
 
+/* ================= HABITS scoped to #habits ================= */
+#habits{max-width:640px;margin:0 auto;padding:14px 14px 80px}
+#habits button{font-family:inherit;cursor:pointer}
+#habits .sw{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:14px}
+#habits .sw button{flex:1;border:0;background:none;border-radius:7px;padding:9px;font:inherit;font-size:14px;color:var(--slate)}
+#habits .sw button[aria-selected="true"]{background:var(--ink);color:var(--paper);font-weight:600}
+#habits .head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+#habits h2{font-size:22px;margin:0;letter-spacing:-.02em}
+#habits .sub{font-size:13px;color:var(--slate);margin-top:3px}
+#habits .nav-d{display:flex;align-items:center;gap:10px}
+#habits .nav-d>button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--slate);font-size:20px;line-height:1}
+#habits .nav-d>button[disabled]{opacity:.3;cursor:default}
+#habits .ringwrap{position:relative;width:56px;height:56px;flex:0 0 auto}
+#habits .ringwrap span{position:absolute;inset:0;display:grid;place-items:center;font-size:12.5px;font-weight:600}
+#habits .ring circle{fill:none;stroke-width:5;transform:rotate(-90deg);transform-origin:50% 50%}
+#habits .ring .bg{stroke:var(--line)}
+#habits .ring .fg{stroke:var(--teal);stroke-linecap:round;transition:stroke-dashoffset .3s}
+#habits h3{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin:16px 2px 6px}
+#habits .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#habits .hab{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 14px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+#habits .hab:last-child{border-bottom:0}
+#habits .hab .main{flex:1;min-width:0;text-align:left;border:0;background:none;color:var(--ink);padding:0;font:inherit}
+#habits .hab .nm{font-size:15.5px;font-weight:500;display:flex;align-items:center;gap:8px}
+#habits .hab .mt{font-size:12.5px;color:var(--mute);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#habits .hab.done .nm{color:var(--slate);text-decoration:line-through}
+#habits .hab.skip .nm{color:var(--mute)}
+#habits .streak{font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-bg);border-radius:6px;padding:2px 6px}
+#habits .tick{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:none;position:relative;flex:0 0 auto}
+#habits .tick[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+#habits .tick[aria-pressed="true"]::after{content:"";position:absolute;left:9px;top:5px;width:7px;height:12px;border:solid #04201B;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+#habits .auto{font-size:12px;color:var(--mute);border:1px dashed var(--line);border-radius:999px;padding:5px 10px}
+#habits .auto.on{background:var(--teal);color:#04201B;border-style:solid;border-color:var(--teal);font-weight:700;width:30px;height:30px;padding:0;display:grid;place-items:center;border-radius:50%}
+#habits .qty{display:flex;align-items:center;gap:4px}
+#habits .qty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--slate);font-size:17px}
+#habits .qty span{min-width:48px;text-align:center;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+#habits .qty small{font-size:11px;color:var(--mute);font-weight:400}
+#habits .hs{flex-basis:100%;border-top:1px dashed var(--line);margin-top:8px;padding-top:10px}
+#habits .hs-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:var(--slate)}
+#habits .hs-row label{width:44px;flex:0 0 auto}
+#habits .hs-row input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}
+#habits .hs-row input[type=number]{flex:0 0 90px}
+#habits .hs-act{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+#habits .hint{font-size:12.5px;color:var(--mute);flex:1}
+#habits .ghost{border:1px solid var(--line);background:none;color:var(--slate);border-radius:8px;padding:7px 12px;font:inherit;font-size:13px}
+#habits .ghost.danger{color:var(--clay);border-color:var(--clay-bg)}
+#habits .btn{border:0;background:var(--teal);color:#04201B;border-radius:9px;padding:9px 14px;font:inherit;font-size:14px;font-weight:600}
+#habits .lnk{border:0;background:none;color:var(--teal);font:inherit;font-size:13px}
+#habits .empty{color:var(--slate);font-size:14.5px;line-height:1.55;padding:20px 4px}
+#habits .empty b{color:var(--ink)}
+#habits .mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 14px;border:0;border-bottom:1px solid var(--line-soft);background:none;color:var(--ink);font:inherit}
+#habits .mrow:last-child{border-bottom:0}
+#habits .mrow .nm{font-size:15px;font-weight:500}
+#habits .mrow .mt{font-size:12.5px;color:var(--mute);margin-top:2px}
+#habits .mrow .chev{color:var(--mute);font-size:18px}
+#habits .form{padding:14px;margin-bottom:14px}
+#habits .f{margin-bottom:12px}
+#habits .f label{display:block;font-size:12.5px;color:var(--slate);margin-bottom:5px}
+#habits .f input,#habits .f select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);font:inherit;font-size:15px}
+#habits .f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#habits .seg{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:3px}
+#habits .seg button{flex:1;border:0;background:none;border-radius:6px;padding:8px 4px;font:inherit;font-size:12.5px;color:var(--slate)}
+#habits .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);font-weight:600}
+#habits .days{display:flex;gap:4px;margin-top:8px}
+#habits .days button{flex:1;padding:8px 0;border:1px solid var(--line);border-radius:7px;background:none;color:var(--slate);font:inherit;font-size:12.5px}
+#habits .days button[aria-pressed="true"]{background:var(--teal);color:#04201B;border-color:var(--teal);font-weight:600}
+#habits .f-act{display:flex;gap:8px;align-items:center;margin-top:4px}
+#habits .stat{padding:14px;margin-bottom:10px}
+#habits .sh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+#habits .sh .nm{font-size:15.5px;font-weight:600}
+#habits .sh .mt{font-size:12.5px;color:var(--mute);margin-top:2px}
+#habits .kp{display:flex;gap:14px;flex:0 0 auto}
+#habits .kp div{text-align:center;font-size:11px;color:var(--mute)}
+#habits .kp b{display:block;font-size:17px;color:var(--ink);letter-spacing:-.02em}
+#habits .kp small{font-size:10.5px;color:var(--slate);font-weight:400;margin-left:1px}
+#habits .heat{display:flex;gap:3px}
+#habits .heat .col{display:flex;flex-direction:column;gap:3px;flex:1}
+#habits .c{display:block;height:12px;border-radius:3px;background:var(--line-soft)}
+#habits .c.on{background:var(--teal)}
+#habits .c.part{background:var(--teal);opacity:.4}
+#habits .c.sk{background:var(--line)}
+#habits .c.nd{background:transparent;border:1px dashed var(--line-soft)}
+#habits .c.off{background:transparent}
+#habits .legend{display:flex;gap:12px;margin-top:8px;font-size:11.5px;color:var(--mute)}
+#habits .legend span{display:flex;align-items:center;gap:5px}
+#habits .legend .c{width:10px;height:10px}
+
+/* ================= CAR scoped to #car ================= */
+#car{max-width:640px;margin:0 auto;padding:14px 14px 80px}
+#car button{font-family:inherit;cursor:pointer}
+#car .sw{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:14px}
+#car .sw button{flex:1;border:0;background:none;border-radius:7px;padding:9px;font:inherit;font-size:14px;color:var(--slate)}
+#car .sw button[aria-selected="true"]{background:var(--ink);color:var(--paper);font-weight:600}
+#car .carbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+#car .chip{border:1px solid var(--line);background:var(--card);color:var(--slate);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px}
+#car .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+#car .head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+#car h2{font-size:22px;margin:0;letter-spacing:-.02em}
+#car .sub{font-size:13px;color:var(--slate);margin-top:3px}
+#car h3{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin:16px 2px 6px}
+#car .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+#car .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+#car .kpi .k{font-size:11.5px;color:var(--slate)}
+#car .kpi .v{font-size:19px;font-weight:600;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+#car .kpi .v small{font-size:11px;color:var(--slate);font-weight:400;margin-left:2px}
+#car .addrow{display:flex;gap:8px;margin-bottom:12px}
+#car .btn{flex:1;border:0;background:var(--teal);color:#04201B;border-radius:10px;padding:11px 14px;font:inherit;font-size:14.5px;font-weight:600}
+#car .btn.alt{background:var(--amber);color:#2A1A02}
+#car .head .btn{flex:0 0 auto;padding:9px 14px}
+#car .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
+#car .mh{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;padding:10px 14px 4px}
+#car .row{border-bottom:1px solid var(--line-soft)}
+#car .row:last-child{border-bottom:0}
+#car .row .main{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:11px 14px;font:inherit}
+#car .row .ic{font-size:18px;flex:0 0 26px;text-align:center}
+#car .row .tx{min-width:0;flex:1}
+#car .row .nm{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#car .row .mt{font-size:12.5px;color:var(--mute);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#car .tag{font-size:10.5px;font-weight:600;color:var(--slate);background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+#car .tag.fuel{color:var(--amber);background:var(--amber-bg);border-color:transparent}
+#car .rowact{display:flex;gap:8px;justify-content:flex-end;padding:0 14px 10px}
+#car .ghost{border:1px solid var(--line);background:none;color:var(--slate);border-radius:8px;padding:7px 12px;font:inherit;font-size:13px}
+#car .ghost.danger{color:var(--clay);border-color:var(--clay-bg)}
+#car .form{padding:14px}
+#car .fh{font-size:15px;font-weight:600;margin-bottom:10px}
+#car .f{margin-bottom:10px;min-width:0}
+#car .f label{display:block;font-size:12px;color:var(--slate);margin-bottom:4px}
+#car .f input{width:100%;padding:10px 10px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);font:inherit;font-size:15px}
+#car .f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#car .f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#car .seg{display:flex;flex-wrap:wrap;gap:4px}
+#car .seg button{border:1px solid var(--line);background:none;border-radius:7px;padding:7px 10px;font:inherit;font-size:13px;color:var(--slate)}
+#car .seg button[aria-pressed="true"]{background:var(--teal);color:#04201B;border-color:var(--teal);font-weight:600}
+#car .chk{display:flex;align-items:center;gap:8px;font-size:14px;margin:6px 0}
+#car .chk input{width:18px;height:18px;accent-color:var(--teal)}
+#car .f-act{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
+#car .f-act .btn{flex:0 0 auto}
+#car .hint{font-size:12.5px;color:var(--mute);line-height:1.5;margin:10px 0 0}
+#car .empty{color:var(--slate);font-size:14.5px;line-height:1.55;padding:20px 4px}
+#car .empty b{color:var(--ink)}
+#car .srow{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line-soft);font-size:13.5px;color:var(--slate);font-variant-numeric:tabular-nums}
+#car .srow:last-child{border-bottom:0}
+#car .srow b{color:var(--ink);text-align:right}
+#car .mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 14px;border:0;border-bottom:1px solid var(--line-soft);background:none;color:var(--ink);font:inherit}
+#car .mrow:last-child{border-bottom:0}
+#car .mrow .nm{font-size:15px;font-weight:500;display:flex;gap:8px;align-items:center}
+#car .mrow .mt{font-size:12.5px;color:var(--mute);margin-top:2px}
+#car .mrow .chev{color:var(--mute);font-size:18px}
+
 /* ================= SHELL ================= */
 .shell-top .helpbtn{width:30px;height:30px;border-radius:50%;border:0;background:var(--teal);color:#04201B;font:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-left:8px;flex:0 0 auto;box-shadow:0 0 0 3px var(--teal-bg)}
 #intro .intro-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60}
@@ -353,8 +501,9 @@ body{padding:0}
 .shell-top .brand{font-size:22px;font-weight:600;letter-spacing:-.02em}
 .shell-top .asat{font-size:13px;color:var(--mute)}
 .appnav{position:sticky;top:0;z-index:20;background:rgba(14,22,33,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.appnav .in{max-width:820px;margin:0 auto;display:flex;padding:8px 14px 0;gap:4px}
-.appnav button{background:none;border:0;border-bottom:2px solid transparent;font:inherit;font-size:15px;color:var(--slate);padding:10px 12px;cursor:pointer}
+.appnav .in{max-width:820px;margin:0 auto;display:flex;padding:8px 10px 0;gap:0;overflow-x:auto;scrollbar-width:none}
+.appnav .in::-webkit-scrollbar{display:none}
+.appnav button{background:none;border:0;border-bottom:2px solid transparent;font:inherit;font-size:14px;color:var(--slate);padding:10px 9px;cursor:pointer;white-space:nowrap}
 .appnav button[aria-selected="true"]{color:var(--ink);font-weight:600;border-bottom-color:var(--teal)}
 .appnav button:focus-visible{outline:2px solid var(--teal);outline-offset:-2px;border-radius:6px}
 .mod{display:none}
@@ -647,6 +796,8 @@ body{padding:0}
       <button type="button" class="intro-card" data-intro="gym"><b>Gym</b><span>Log sets, clear a weight with 10 clean sets of 10, rest timer, recovery by muscle, progress and history.</span><i>Open Gym →</i></button>
       <button type="button" class="intro-card" data-intro="money"><b>Money</b><span>What's left to spend this pay cycle after bills, with debts, savings and spending tracked by cycle.</span><i>Open Money →</i></button>
       <button type="button" class="intro-card" data-intro="shop"><b>Groceries</b><span>What's at home, what's needed, prices by store, and a weekly meal plan. Share it with your household from the ⚙ icon.</span><i>Open Groceries →</i></button>
+      <button type="button" class="intro-card" data-intro="habits"><b>Habits</b><span>Daily and weekly habits by time of day, with streaks and a heatmap. Training and shopping habits tick themselves.</span><i>Open Habits →</i></button>
+      <button type="button" class="intro-card" data-intro="car"><b>Car</b><span>Trip and odometer log (business or private, for the logbook) and a fuel log by type — 91, 95, 98, diesel — with economy and cost per km.</span><i>Open Car →</i></button>
       <button type="button" class="intro-card" data-intro="connected"><b>Connected</b><span>What each gym session costs, planned vs actual days, and a plain-English read on how training and spending line up.</span><i>Open Connected →</i></button>
     </div>
     <p class="intro-foot">Everything is saved on this device. Use the sync button in the header to carry Gym and Money to another phone; Groceries has its own household sharing. This page is always under the <b>?</b> at the top.</p>
@@ -660,9 +811,14 @@ body{padding:0}
   <button type="button" data-mod="gym" aria-selected="false">Gym</button>
   <button type="button" data-mod="money" aria-selected="false">Money</button>
   <button type="button" data-mod="shop" aria-selected="false">Groceries</button>
+  <button type="button" data-mod="habits" aria-selected="false">Habits</button>
+  <button type="button" data-mod="car" aria-selected="false">Car</button>
 </div></nav>
 
 <main id="connected" class="mod"></main>
+
+<div id="habits" class="mod"></div>
+<div id="car" class="mod"></div>
 
 <div id="gym" class="mod">
 
@@ -4052,6 +4208,520 @@ connect();
 return { render };
 })();
 
+/* ================= HABITS MODULE ================= */
+const Habits = (() => {
+"use strict";
+const ROOT = document.getElementById("habits");
+const KEY = "habits:v1";
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const pad = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const fromISO = s => { const p=s.split("-"); return new Date(+p[0],+p[1]-1,+p[2]); };
+const today = () => iso(new Date());
+const addDays = (s,n) => { const d=fromISO(s); d.setDate(d.getDate()+n); return iso(d); };
+const DOW = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const DAYN = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const TIMES = [["morning","Morning"],["afternoon","Afternoon"],["evening","Evening"],["any","Any time"]];
+const AUTO = { gym:"Logged a gym session", shop:"Finished a grocery shop" };
+
+let D;
+function load(){
+  try{ D = JSON.parse(localStorage.getItem(KEY)); }catch(e){ D = null; }
+  if(!D || D.v !== 1) D = { v:1, habits:[], log:{} };
+  D.habits = D.habits || []; D.log = D.log || {};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){} }
+
+/* ---------- model ---------- */
+function isDue(h, d){
+  if(h.created && d < h.created) return false;
+  if(h.archived && d >= h.archived) return false;
+  const r = h.repeat || { kind:"daily" };
+  if(r.kind === "days") return (r.days||[]).includes(fromISO(d).getDay());
+  return true;                               // daily and per-week habits show every day
+}
+function entry(h, d){ return (D.log[h.id]||{})[d] || null; }
+function setEntry(h, d, patch){
+  D.log[h.id] = D.log[h.id] || {};
+  const e = Object.assign({}, D.log[h.id][d]||{}, patch);
+  if(e.v == null && !e.skip && !e.note) delete D.log[h.id][d]; else D.log[h.id][d] = e;
+  save();
+}
+/* auto-completed habits read the other modules, never the log */
+function autoValue(h, d){
+  try{
+    if(h.auto === "gym") return (typeof Gym !== "undefined" && Gym.api.wentDates().includes(d)) ? 1 : 0;
+    if(h.auto === "shop"){ const g = JSON.parse(localStorage.getItem("grocery:v1")||"{}"); return (g.shops||[]).some(s => iso(new Date(s.ts)) === d) ? 1 : 0; }
+  }catch(e){}
+  return 0;
+}
+function value(h, d){ if(h.auto) return autoValue(h,d); const e = entry(h,d); return e && e.v != null ? +e.v : 0; }
+function target(h){ return h.type === "qty" ? (+h.target || 1) : 1; }
+function done(h, d){ return value(h,d) >= target(h); }
+function skipped(h, d){ const e = entry(h,d); return !!(e && e.skip); }
+function weekStart(d){ const t=fromISO(d); const dow=(t.getDay()+6)%7; t.setDate(t.getDate()-dow); return iso(t); }
+function weekDone(h, d){ const ws=weekStart(d); let n=0; for(let i=0;i<7;i++){ const x=addDays(ws,i); if(x>today()) break; if(done(h,x)) n++; } return n; }
+function perWeekOK(h, d){ const r=h.repeat||{}; return r.kind==="perweek" && weekDone(h,d) >= (+r.n||1); }
+
+function streak(h){
+  const r = h.repeat || {kind:"daily"};
+  let n = 0;
+  if(r.kind === "perweek"){
+    let w = weekStart(today());
+    if(weekDone(h,w) < (+r.n||1)) w = addDays(w,-7);          // this week can still be in progress
+    while(weekDone(h,w) >= (+r.n||1) && (!h.created || addDays(w,6) >= h.created) && n < 520){ n++; w = addDays(w,-7); }
+    return { n, unit:"wk" };
+  }
+  let d = today();
+  if(isDue(h,d) && !done(h,d) && !skipped(h,d)) d = addDays(d,-1);   // today isn't over yet
+  for(let i=0;i<3650;i++){
+    if(h.created && d < h.created) break;
+    if(isDue(h,d)){ if(done(h,d)) n++; else if(!skipped(h,d)) break; }
+    d = addDays(d,-1);
+  }
+  return { n, unit:"d" };
+}
+function bestStreak(h){
+  const r = h.repeat || {kind:"daily"}; if(r.kind==="perweek") return streak(h).n;
+  let best=0, cur=0, d = h.created || addDays(today(),-365);
+  const end = today();
+  while(d <= end){ if(isDue(h,d)){ if(done(h,d)){ cur++; best=Math.max(best,cur); } else if(!skipped(h,d)) cur=0; } d = addDays(d,1); }
+  return best;
+}
+function rate30(h){
+  let due=0, ok=0;
+  for(let i=29;i>=0;i--){ const d=addDays(today(),-i); if(!isDue(h,d) || skipped(h,d)) continue; if(h.created && d<h.created) continue; due++; if(done(h,d)) ok++; }
+  return due ? Math.round(100*ok/due) : null;
+}
+function active(){ return D.habits.filter(h => !h.archived); }
+function dueToday(){ return active().filter(h => isDue(h, today())); }
+
+/* ---------- state ---------- */
+let S = { view:"today", day:today(), edit:null, open:null, stat:null };
+
+/* ---------- views ---------- */
+function switcher(){
+  return '<div class="sw" role="tablist">'
+    + [["today","Today"],["manage","Habits"],["stats","Stats"]].map(([k,l]) => '<button type="button" role="tab" data-act="view" data-v="'+k+'" aria-selected="'+(S.view===k)+'">'+l+'</button>').join("") + '</div>';
+}
+
+function ring(pct, size){
+  const r=(size-6)/2, c=2*Math.PI*r;
+  return '<svg class="ring" width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="bg"/>'
+    + '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="fg" style="stroke-dasharray:'+c+';stroke-dashoffset:'+(c*(1-pct))+'"/></svg>';
+}
+
+function todayView(){
+  const d = S.day, isToday = d === today();
+  const list = active().filter(h => isDue(h,d));
+  const due = list.filter(h => !skipped(h,d)), ok = due.filter(h => done(h,d)).length;
+  const pct = due.length ? ok/due.length : 0;
+  const dt = fromISO(d);
+  let h = '<div class="head"><div class="nav-d"><button type="button" data-act="day" data-d="-1" aria-label="Previous day">‹</button>'
+    + '<div><h2>'+(isToday?'Today':d===addDays(today(),-1)?'Yesterday':DAYN[dt.getDay()])+'</h2><div class="sub">'+dt.getDate()+' '+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][dt.getMonth()]+(due.length?' · '+ok+' of '+due.length+' done':' · nothing due')+'</div></div>'
+    + '<button type="button" data-act="day" data-d="1" aria-label="Next day"'+(isToday?' disabled':'')+'>›</button></div>'
+    + '<div class="ringwrap">'+ring(pct,56)+'<span>'+Math.round(pct*100)+'%</span></div></div>';
+  if(!active().length){
+    h += '<div class="empty">No habits yet. Add your first one under <b>Habits</b> — a yes/no habit like "stretch", or a quantity like "2 litres of water".</div>';
+    return h;
+  }
+  TIMES.forEach(([k,label]) => {
+    const rows = list.filter(x => (x.time||"any") === k);
+    if(!rows.length) return;
+    h += '<h3>'+label+'</h3><div class="card">' + rows.map(x => row(x,d)).join("") + '</div>';
+  });
+  if(!list.length) h += '<div class="empty">Nothing due on this day.</div>';
+  return h;
+}
+function row(h, d){
+  const v = value(h,d), t = target(h), ok = v >= t, sk = skipped(h,d), st = streak(h);
+  const r = h.repeat||{}, wk = r.kind==="perweek" ? weekDone(h,d)+'/'+(r.n||1)+' this week' : '';
+  let ctl;
+  if(h.auto) ctl = '<span class="auto'+(ok?' on':'')+'">'+(ok?'✓':'auto')+'</span>';
+  else if(h.type === "qty") ctl = '<div class="qty"><button type="button" data-act="dec" data-id="'+h.id+'" aria-label="Less">−</button><span>'+v+'<small>/'+t+'</small></span><button type="button" data-act="inc" data-id="'+h.id+'" aria-label="More">+</button></div>';
+  else ctl = '<button type="button" class="tick" data-act="toggle" data-id="'+h.id+'" aria-pressed="'+ok+'" aria-label="'+(ok?'Undo':'Done')+'"></button>';
+  const e = entry(h,d);
+  return '<div class="hab'+(ok?' done':'')+(sk?' skip':'')+'">'
+    + '<button type="button" class="main" data-act="open" data-id="'+h.id+'">'
+    + '<div class="nm">'+esc(h.name)+(st.n?'<span class="streak">'+st.n+st.unit+'</span>':'')+'</div>'
+    + '<div class="mt">'+(sk?'skipped'+(e&&e.note?' · '+esc(e.note):''):(h.type==="qty"?(h.unit?esc(h.unit)+' · ':''):'')+(wk||(h.auto?AUTO[h.auto]:repeatLabel(h)))+(e&&e.note&&!sk?' · '+esc(e.note):''))+'</div>'
+    + '</button>' + ctl
+    + (S.open===h.id ? sheet(h,d) : '') + '</div>';
+}
+function sheet(h, d){
+  const e = entry(h,d) || {};
+  return '<div class="hs">'
+    + (h.type==="qty" && !h.auto ? '<div class="hs-row"><label>Value</label><input type="number" inputmode="decimal" data-val="'+h.id+'" value="'+(e.v!=null?e.v:'')+'" placeholder="0"><span>'+esc(h.unit||'')+' of '+target(h)+'</span></div>' : '')
+    + '<div class="hs-row"><label>Note</label><input type="text" data-note="'+h.id+'" value="'+esc(e.note||'')+'" placeholder="Anything worth remembering"></div>'
+    + '<div class="hs-act">'
+    + (h.auto ? '<span class="hint">Completes by itself from '+AUTO[h.auto].toLowerCase()+'.</span>' : '<button type="button" class="ghost" data-act="skip" data-id="'+h.id+'">'+(e.skip?'Unskip':'Skip today')+'</button>')
+    + '<button type="button" class="ghost" data-act="close">Close</button></div></div>';
+}
+function repeatLabel(h){
+  const r = h.repeat||{kind:"daily"};
+  if(r.kind==="days"){ const ds=(r.days||[]).slice().sort(); return ds.length===7?'Every day':ds.map(x=>DOW[x]).join(" "); }
+  if(r.kind==="perweek") return (r.n||1)+'× a week';
+  return 'Every day';
+}
+
+/* ---------- manage ---------- */
+function manageView(){
+  let h = '<div class="head"><div><h2>Habits</h2><div class="sub">'+active().length+' active</div></div><button type="button" class="btn" data-act="new">+ New habit</button></div>';
+  if(S.edit) h += form(S.edit);
+  const byTime = TIMES.map(([k,l]) => [l, active().filter(x => (x.time||"any")===k)]).filter(x => x[1].length);
+  byTime.forEach(([l,rows]) => {
+    h += '<h3>'+l+'</h3><div class="card">' + rows.map(x =>
+      '<button type="button" class="mrow" data-act="edit" data-id="'+x.id+'"><div><div class="nm">'+esc(x.name)+'</div><div class="mt">'+(x.type==="qty"?target(x)+' '+esc(x.unit||'')+' · ':'')+(x.auto?AUTO[x.auto]:repeatLabel(x))+'</div></div><span class="chev">›</span></button>').join("") + '</div>';
+  });
+  const arch = D.habits.filter(x => x.archived);
+  if(arch.length) h += '<h3>Archived</h3><div class="card">' + arch.map(x => '<div class="mrow"><div><div class="nm" style="color:var(--mute)">'+esc(x.name)+'</div></div><button type="button" class="lnk" data-act="unarchive" data-id="'+x.id+'">Restore</button></div>').join("") + '</div>';
+  return h;
+}
+function form(f){
+  const r = f.repeat||{kind:"daily",days:[1,2,3,4,5],n:3};
+  return '<div class="card form">'
+    + '<div class="f"><label>Name</label><input type="text" id="hf-name" value="'+esc(f.name||'')+'" placeholder="e.g. Drink water, Stretch, Read"></div>'
+    + '<div class="f2"><div class="f"><label>Type</label><select id="hf-type"><option value="check"'+(f.type!=="qty"?' selected':'')+'>Yes / no</option><option value="qty"'+(f.type==="qty"?' selected':'')+'>Quantity</option></select></div>'
+    + '<div class="f"><label>Time of day</label><select id="hf-time">'+TIMES.map(([k,l])=>'<option value="'+k+'"'+((f.time||"any")===k?' selected':'')+'>'+l+'</option>').join("")+'</select></div></div>'
+    + '<div class="f2" id="hf-qty"'+(f.type==="qty"?'':' hidden')+'><div class="f"><label>Target</label><input type="number" inputmode="decimal" id="hf-target" value="'+(f.target||'')+'" placeholder="2"></div><div class="f"><label>Unit</label><input type="text" id="hf-unit" value="'+esc(f.unit||'')+'" placeholder="litres, pages, min"></div></div>'
+    + '<div class="f"><label>Repeat</label><div class="seg"><button type="button" data-rep="daily" aria-pressed="'+(r.kind==="daily")+'">Every day</button><button type="button" data-rep="days" aria-pressed="'+(r.kind==="days")+'">Certain days</button><button type="button" data-rep="perweek" aria-pressed="'+(r.kind==="perweek")+'">Times a week</button></div>'
+    + '<div class="days" id="hf-days"'+(r.kind==="days"?'':' hidden')+'>'+[1,2,3,4,5,6,0].map(dn=>'<button type="button" data-day="'+dn+'" aria-pressed="'+((r.days||[]).includes(dn))+'">'+DOW[dn]+'</button>').join("")+'</div>'
+    + '<div class="f" id="hf-n"'+(r.kind==="perweek"?'':' hidden')+'><input type="number" inputmode="numeric" id="hf-nval" min="1" max="7" value="'+(r.n||3)+'" style="width:80px"> <span class="hint">times a week</span></div></div>'
+    + '<div class="f"><label>Completes automatically from</label><select id="hf-auto"><option value="">Nothing — I tick it</option><option value="gym"'+(f.auto==="gym"?' selected':'')+'>'+AUTO.gym+'</option><option value="shop"'+(f.auto==="shop"?' selected':'')+'>'+AUTO.shop+'</option></select></div>'
+    + '<div class="f-act">'+(f.id?'<button type="button" class="ghost danger" data-act="archive" data-id="'+f.id+'">Archive</button>':'')+'<span style="flex:1"></span><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="save">Save</button></div>'
+    + '</div>';
+}
+function readForm(){
+  const f = S.edit; const q = s => ROOT.querySelector(s);
+  f.name = (q("#hf-name").value||"").trim(); f.type = q("#hf-type").value; f.time = q("#hf-time").value;
+  f.target = f.type==="qty" ? (+q("#hf-target").value||1) : 1; f.unit = f.type==="qty" ? (q("#hf-unit").value||"").trim() : "";
+  const kind = ROOT.querySelector('[data-rep][aria-pressed="true"]').dataset.rep;
+  f.repeat = { kind, days:[...ROOT.querySelectorAll('[data-day][aria-pressed="true"]')].map(b=>+b.dataset.day), n:Math.max(1,Math.min(7,+q("#hf-nval").value||3)) };
+  f.auto = q("#hf-auto").value || null; if(f.auto) f.type = "check";
+  return f;
+}
+
+/* ---------- stats ---------- */
+function statsView(){
+  const hs = active();
+  let h = '<div class="head"><div><h2>Stats</h2><div class="sub">last 30 days</div></div></div>';
+  if(!hs.length) return h + '<div class="empty">Add a habit first.</div>';
+  const t = today();
+  hs.forEach(x => {
+    const st = streak(x), r = rate30(x), best = bestStreak(x);
+    h += '<div class="card stat"><div class="sh"><div><div class="nm">'+esc(x.name)+'</div><div class="mt">'+(x.auto?AUTO[x.auto]:repeatLabel(x))+'</div></div>'
+      + '<div class="kp"><div><b>'+st.n+'<small>'+st.unit+'</small></b>streak</div><div><b>'+best+'<small>'+(st.unit==="wk"?"wk":"d")+'</small></b>best</div><div><b>'+(r==null?'—':r+'<small>%</small>')+'</b>30d</div></div></div>'
+      + heat(x) + '</div>';
+  });
+  return h;
+}
+function heat(x){
+  // 12 weeks, columns = weeks, rows = Mon..Sun
+  const end = weekStart(today()); let h = '<div class="heat">';
+  for(let w = 11; w >= 0; w--){
+    const ws = addDays(end, -7*w); h += '<div class="col">';
+    for(let i = 0; i < 7; i++){
+      const d = addDays(ws,i); let cls = "c";
+      if(d > today() || (x.created && d < x.created)) cls += " off";
+      else if(done(x,d)) cls += " on";
+      else if(skipped(x,d)) cls += " sk";
+      else if(!isDue(x,d)) cls += " nd";
+      else if(x.type==="qty" && value(x,d) > 0) cls += " part";
+      h += '<i class="'+cls+'" title="'+d+'"></i>';
+    }
+    h += '</div>';
+  }
+  return h + '</div><div class="legend"><span><i class="c on"></i>done</span><span><i class="c part"></i>partly</span><span><i class="c sk"></i>skipped</span><span><i class="c"></i>missed</span></div>';
+}
+
+/* ---------- render ---------- */
+function render(){
+  ROOT.innerHTML = switcher() + (S.view==="today"?todayView():S.view==="manage"?manageView():statsView());
+  if(S.focus){ const n=ROOT.querySelector(S.focus); if(n) n.focus(); S.focus=null; }
+}
+
+/* ---------- actions ---------- */
+ROOT.addEventListener("click", e => {
+  const b = e.target.closest("[data-act],[data-rep],[data-day]"); if(!b) return;
+  if(b.dataset.rep){ ROOT.querySelectorAll("[data-rep]").forEach(x=>x.setAttribute("aria-pressed", String(x===b))); ROOT.querySelector("#hf-days").hidden = b.dataset.rep!=="days"; ROOT.querySelector("#hf-n").hidden = b.dataset.rep!=="perweek"; return; }
+  if(b.dataset.day !== undefined){ b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed")!=="true")); return; }
+  const a = b.dataset.act, id = b.dataset.id, d = S.day, h = id ? D.habits.find(x=>x.id===id) : null;
+  if(a==="view"){ S.view=b.dataset.v; S.open=null; S.edit=null; render(); }
+  else if(a==="day"){ const nd = addDays(S.day,+b.dataset.d); if(nd<=today()){ S.day=nd; S.open=null; render(); } }
+  else if(a==="toggle" && h){ setEntry(h,d,{ v: done(h,d)?null:1, skip:false }); render(); }
+  else if(a==="inc" && h){ setEntry(h,d,{ v: Math.min(999, value(h,d)+(h.step||1)), skip:false }); render(); }
+  else if(a==="dec" && h){ const v=Math.max(0, value(h,d)-(h.step||1)); setEntry(h,d,{ v: v||null }); render(); }
+  else if(a==="open"){ S.open = S.open===id ? null : id; render(); }
+  else if(a==="close"){ S.open=null; render(); }
+  else if(a==="skip" && h){ setEntry(h,d,{ skip: !skipped(h,d), v:null }); S.open=null; render(); }
+  else if(a==="new"){ S.edit={ type:"check", time:"any", repeat:{kind:"daily",days:[1,2,3,4,5],n:3} }; S.focus="#hf-name"; render(); }
+  else if(a==="edit" && h){ S.edit=JSON.parse(JSON.stringify(h)); render(); }
+  else if(a==="cancel"){ S.edit=null; render(); }
+  else if(a==="save"){ const f=readForm(); if(!f.name){ ROOT.querySelector("#hf-name").focus(); return; }
+    if(f.id){ const i=D.habits.findIndex(x=>x.id===f.id); D.habits[i]=f; } else { f.id=uid(); f.created=today(); D.habits.push(f); }
+    save(); S.edit=null; render(); }
+  else if(a==="archive" && h){ h.archived=today(); save(); S.edit=null; render(); }
+  else if(a==="unarchive" && h){ delete h.archived; save(); render(); }
+});
+ROOT.addEventListener("change", e => {
+  const t = e.target;
+  if(t.id==="hf-type"){ ROOT.querySelector("#hf-qty").hidden = t.value!=="qty"; }
+  if(t.id==="hf-auto"){ if(t.value){ ROOT.querySelector("#hf-type").value="check"; ROOT.querySelector("#hf-qty").hidden=true; } }
+  if(t.dataset.val){ const h=D.habits.find(x=>x.id===t.dataset.val); if(h){ const v=parseFloat(t.value); setEntry(h,S.day,{ v:isNaN(v)||v<=0?null:v, skip:false }); render(); } }
+  if(t.dataset.note){ const h=D.habits.find(x=>x.id===t.dataset.note); if(h){ setEntry(h,S.day,{ note:t.value.trim() }); render(); } }
+});
+ROOT.addEventListener("keydown", e => { if(e.key==="Enter" && (e.target.id==="hf-name"||e.target.id==="hf-target"||e.target.id==="hf-unit")){ ROOT.querySelector('[data-act="save"]').click(); } });
+
+load();
+return { render:()=>{ load(); S.day=today(); render(); }, api:{ dueToday:()=>dueToday().length, doneToday:()=>dueToday().filter(h=>done(h,today())).length } };
+})();
+
+
+/* ================= CAR MODULE ================= */
+const Car = (() => {
+"use strict";
+const ROOT = document.getElementById("car");
+const KEY = "car:v1";
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const pad = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const fromISO = s => { const p=s.split("-"); return new Date(+p[0],+p[1]-1,+p[2]); };
+const today = () => iso(new Date());
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtD = s => { const d=fromISO(s); return d.getDate()+" "+MON[d.getMonth()]; };
+const money = n => (typeof Money!=="undefined" ? Money.api.money(n) : "A$"+(+n).toFixed(2));
+const FUELS = ["91","94","95","98","Diesel","E10","LPG","Electric"];
+const num = v => { const n=parseFloat(String(v).replace(/,/g,"")); return isNaN(n)?null:n; };
+
+let D;
+function load(){
+  try{ D = JSON.parse(localStorage.getItem(KEY)); }catch(e){ D = null; }
+  if(!D || D.v !== 1) D = { v:1, cars:[], trips:[], fills:[], cur:null };
+  D.cars=D.cars||[]; D.trips=D.trips||[]; D.fills=D.fills||[];
+  if(!D.cars.find(c=>c.id===D.cur)) D.cur = D.cars.length ? D.cars[0].id : null;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){} }
+function car(){ return D.cars.find(c=>c.id===D.cur) || null; }
+function trips(){ return D.trips.filter(t=>t.car===D.cur).sort((a,b)=>b.d.localeCompare(a.d)||(b.end||0)-(a.end||0)); }
+function fills(){ return D.fills.filter(f=>f.car===D.cur).sort((a,b)=>b.d.localeCompare(a.d)||(b.odo||0)-(a.odo||0)); }
+function lastOdo(){
+  const c=car(); if(!c) return null;
+  const xs=[...D.trips.filter(t=>t.car===c.id).map(t=>t.end), ...D.fills.filter(f=>f.car===c.id).map(f=>f.odo), c.odo].filter(x=>x!=null);
+  return xs.length ? Math.max(...xs) : null;
+}
+
+/* ---------- maths ---------- */
+function economy(){
+  // L/100 km between consecutive full fills, newest first
+  const fs=fills().filter(f=>f.full && f.odo!=null).sort((a,b)=>a.odo-b.odo);
+  const out=[];
+  for(let i=1;i<fs.length;i++){ const km=fs[i].odo-fs[i-1].odo; if(km>20 && fs[i].l>0) out.push({ d:fs[i].d, km, l:fs[i].l, lper:100*fs[i].l/km, cost:fs[i].cost }); }
+  return out.reverse();
+}
+function monthKey(d){ return d.slice(0,7); }
+function statsFor(mk){
+  const ts=trips().filter(t=>monthKey(t.d)===mk), fs=fills().filter(f=>monthKey(f.d)===mk);
+  const km=ts.reduce((s,t)=>s+(t.km||0),0), biz=ts.filter(t=>t.biz).reduce((s,t)=>s+(t.km||0),0);
+  const cost=fs.reduce((s,f)=>s+(f.cost||0),0), l=fs.reduce((s,f)=>s+(f.l||0),0);
+  return { km, biz, cost, l, trips:ts.length, fills:fs.length };
+}
+
+/* ---------- state ---------- */
+let S = { view:"log", add:null, open:null };
+
+/* ---------- views ---------- */
+function switcher(){
+  return '<div class="sw" role="tablist">'
+    + [["log","Log"],["stats","Stats"],["cars","Cars"]].map(([k,l]) => '<button type="button" role="tab" data-act="view" data-v="'+k+'" aria-selected="'+(S.view===k)+'">'+l+'</button>').join("") + '</div>';
+}
+function carBar(){
+  if(!D.cars.length) return '';
+  return '<div class="carbar">'+D.cars.map(c=>'<button type="button" class="chip" data-act="pickcar" data-id="'+c.id+'" aria-pressed="'+(c.id===D.cur)+'">'+esc(c.name)+'</button>').join("")+'</div>';
+}
+function logView(){
+  const c=car();
+  if(!c) return '<div class="empty">Add your car first under <b>Cars</b> — name, fuel type and the odometer reading today.</div>';
+  const odo=lastOdo();
+  const mk=today().slice(0,7), st=statsFor(mk);
+  let h = carBar()
+    + '<div class="head"><div><h2>'+esc(c.name)+'</h2><div class="sub">'+(odo!=null?odo.toLocaleString()+' km on the clock · ':'')+esc(c.fuel||'')+'</div></div></div>'
+    + '<div class="kpis"><div class="kpi"><div class="k">'+MON[+mk.slice(5)-1]+' driven</div><div class="v">'+Math.round(st.km).toLocaleString()+'<small>km</small></div></div>'
+    + '<div class="kpi"><div class="k">Business</div><div class="v">'+(st.km?Math.round(100*st.biz/st.km):0)+'<small>%</small></div></div>'
+    + '<div class="kpi"><div class="k">Fuel</div><div class="v">'+money(st.cost)+'</div></div></div>'
+    + '<div class="addrow"><button type="button" class="btn" data-act="addtrip">+ Trip</button><button type="button" class="btn alt" data-act="addfill">+ Fuel</button></div>';
+  if(S.add==="trip") h+=tripForm(); if(S.add==="fill") h+=fillForm();
+  // combined timeline
+  const rows=[...trips().map(t=>({k:"trip",d:t.d,o:t})), ...fills().map(f=>({k:"fill",d:f.d,o:f}))].sort((a,b)=>b.d.localeCompare(a.d)).slice(0,60);
+  if(!rows.length) return h+'<div class="empty">Nothing logged yet. Log a trip with the odometer at the start and end, or a fuel fill with litres and cost.</div>';
+  let lastM=""; h+='<div class="card">';
+  rows.forEach(r=>{
+    const m=r.d.slice(0,7); if(m!==lastM){ if(lastM) h+='</div><div class="card">'; lastM=m; h+='<div class="mh">'+MON[+m.slice(5)-1]+' '+m.slice(0,4)+'</div>'; }
+    h+= r.k==="trip" ? tripRow(r.o) : fillRow(r.o);
+  });
+  return h+'</div>';
+}
+function tripRow(t){
+  const open=S.open===t.id;
+  return '<div class="row trip"><button type="button" class="main" data-act="open" data-id="'+t.id+'"><span class="ic">🚗</span><div class="tx"><div class="nm">'+(t.km||0).toLocaleString()+' km'+(t.biz?'<span class="tag">business</span>':'')+'</div>'
+    +'<div class="mt">'+fmtD(t.d)+(t.start!=null&&t.end!=null?' · '+t.start.toLocaleString()+' → '+t.end.toLocaleString():'')+(t.purpose?' · '+esc(t.purpose):'')+'</div></div></button>'
+    +(open?'<div class="rowact"><button type="button" class="ghost" data-act="edittrip" data-id="'+t.id+'">Edit</button><button type="button" class="ghost danger" data-act="deltrip" data-id="'+t.id+'">Delete</button></div>':'')+'</div>';
+}
+function fillRow(f){
+  const open=S.open===f.id, ppl=f.l?f.cost/f.l:null;
+  return '<div class="row fill"><button type="button" class="main" data-act="open" data-id="'+f.id+'"><span class="ic">⛽</span><div class="tx"><div class="nm">'+money(f.cost)+'<span class="tag fuel">'+esc(f.fuel||'')+'</span>'+(f.full?'':'<span class="tag">partial</span>')+'</div>'
+    +'<div class="mt">'+fmtD(f.d)+' · '+(f.l||0)+' L'+(ppl?' · '+ppl.toFixed(3)+'/L':'')+(f.odo!=null?' · '+f.odo.toLocaleString()+' km':'')+'</div></div></button>'
+    +(open?'<div class="rowact"><button type="button" class="ghost" data-act="editfill" data-id="'+f.id+'">Edit</button><button type="button" class="ghost danger" data-act="delfill" data-id="'+f.id+'">Delete</button></div>':'')+'</div>';
+}
+function tripForm(){
+  const f=S.form||{}, odo=lastOdo();
+  return '<div class="card form"><div class="fh">'+(f.id?'Edit trip':'Log a trip')+'</div>'
+    +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="tf-d" value="'+(f.d||today())+'"></div><div class="f"><label>Purpose</label><input type="text" id="tf-p" value="'+esc(f.purpose||'')+'" placeholder="Work site, groceries…"></div></div>'
+    +'<div class="f3"><div class="f"><label>Odometer start</label><input type="number" inputmode="numeric" id="tf-s" value="'+(f.start!=null?f.start:(odo!=null?odo:''))+'"></div>'
+    +'<div class="f"><label>Odometer end</label><input type="number" inputmode="numeric" id="tf-e" value="'+(f.end!=null?f.end:'')+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div>'
+    +'<div class="f"><label>or km driven</label><input type="number" inputmode="decimal" id="tf-k" value="'+(f.km!=null&&f.start==null?f.km:'')+'" placeholder="0"></div></div>'
+    +'<label class="chk"><input type="checkbox" id="tf-b"'+(f.biz?' checked':'')+'> Business trip (for the logbook)</label>'
+    +'<div class="f-act"><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="savetrip">Save trip</button></div>'
+    +'<p class="hint">Fill start and end and the km works itself out; or just type the km. The end reading becomes the car\'s new odometer.</p></div>';
+}
+function fillForm(){
+  const f=S.form||{}, c=car(), odo=lastOdo(), last=fills()[0];
+  return '<div class="card form"><div class="fh">'+(f.id?'Edit fill':'Log fuel')+'</div>'
+    +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="ff-d" value="'+(f.d||today())+'"></div><div class="f"><label>Odometer</label><input type="number" inputmode="numeric" id="ff-o" value="'+(f.odo!=null?f.odo:'')+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div></div>'
+    +'<div class="f3"><div class="f"><label>Litres</label><input type="number" inputmode="decimal" step="0.01" id="ff-l" value="'+(f.l!=null?f.l:'')+'" placeholder="0.00"></div>'
+    +'<div class="f"><label>Cost A$</label><input type="number" inputmode="decimal" step="0.01" id="ff-c" value="'+(f.cost!=null?f.cost:'')+'" placeholder="0.00"></div>'
+    +'<div class="f"><label>Price /L</label><input type="number" inputmode="decimal" step="0.001" id="ff-p" value="'+(f.l&&f.cost?(f.cost/f.l).toFixed(3):(last&&last.l?(last.cost/last.l).toFixed(3):''))+'" placeholder="1.899"></div></div>'
+    +'<div class="f"><label>Fuel</label><div class="seg">'+FUELS.map(x=>'<button type="button" data-fuel="'+x+'" aria-pressed="'+((f.fuel||(c&&c.fuel)||"")===x)+'">'+x+'</button>').join("")+'</div></div>'
+    +'<label class="chk"><input type="checkbox" id="ff-full"'+(f.full!==false?' checked':'')+'> Filled the tank (needed for L/100 km)</label>'
+    +'<label class="chk"><input type="checkbox" id="ff-money"'+(f.id?'':' checked')+'> Record in Money as a spend</label>'
+    +'<div class="f-act"><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="savefill">Save fill</button></div>'
+    +'<p class="hint">Type any two of litres, cost and price per litre — the third fills in.</p></div>';
+}
+
+function statsView(){
+  const c=car(); if(!c) return '<div class="empty">Add a car first.</div>';
+  const eco=economy(), avg=eco.length?eco.reduce((s,e)=>s+e.lper,0)/eco.length:null;
+  const last3=eco.slice(0,3);
+  const months=[...new Set([...trips().map(t=>monthKey(t.d)),...fills().map(f=>monthKey(f.d))])].sort().reverse().slice(0,6);
+  const ecoKm=eco.reduce((s,e)=>s+e.km,0), ecoCost=eco.reduce((s,e)=>s+(e.cost||0),0);
+  let h=carBar()+'<div class="head"><div><h2>Stats</h2><div class="sub">'+esc(c.name)+'</div></div></div>'
+    +'<div class="kpis"><div class="kpi"><div class="k">Economy</div><div class="v">'+(avg?avg.toFixed(1):'—')+'<small>L/100</small></div></div>'
+    +'<div class="kpi"><div class="k">Cost per km</div><div class="v">'+(ecoKm&&ecoCost?(100*ecoCost/ecoKm).toFixed(1):'—')+'<small>c</small></div></div>'
+    +'<div class="kpi"><div class="k">Fills</div><div class="v">'+fills().length+'</div></div></div>';
+  if(eco.length){
+    h+='<h3>Between full tanks</h3><div class="card">'+eco.slice(0,8).map(e=>'<div class="srow"><span>'+fmtD(e.d)+'</span><span>'+e.km.toLocaleString()+' km</span><span>'+e.l.toFixed(1)+' L</span><b>'+e.lper.toFixed(1)+' L/100</b></div>').join("")+'</div>';
+  } else h+='<p class="hint">Economy needs two full-tank fills with odometer readings. Keep ticking "filled the tank".</p>';
+  if(months.length){
+    h+='<h3>By month</h3><div class="card">'+months.map(m=>{ const s=statsFor(m); return '<div class="srow"><span>'+MON[+m.slice(5)-1]+' '+m.slice(2,4)+'</span><span>'+Math.round(s.km).toLocaleString()+' km</span><span>'+(s.km?Math.round(100*s.biz/s.km):0)+'% biz</span><b>'+money(s.cost)+'</b></div>'; }).join("")+'</div>';
+  }
+  const byFuel={}; fills().forEach(f=>{ const k=f.fuel||"?"; byFuel[k]=byFuel[k]||{l:0,c:0,n:0}; byFuel[k].l+=f.l||0; byFuel[k].c+=f.cost||0; byFuel[k].n++; });
+  const fk=Object.keys(byFuel); if(fk.length>1) h+='<h3>By fuel type</h3><div class="card">'+fk.map(k=>'<div class="srow"><span>'+esc(k)+'</span><span>'+byFuel[k].n+' fills</span><span>'+byFuel[k].l.toFixed(0)+' L</span><b>'+(byFuel[k].l?(byFuel[k].c/byFuel[k].l).toFixed(3)+'/L':'—')+'</b></div>').join("")+'</div>';
+  h+='<button type="button" class="ghost" style="margin-top:14px" data-act="export">Export logbook CSV</button>';
+  return h;
+}
+
+function carsView(){
+  let h='<div class="head"><div><h2>Cars</h2><div class="sub">'+D.cars.length+' car'+(D.cars.length===1?'':'s')+'</div></div><button type="button" class="btn" data-act="addcar">+ Add car</button></div>';
+  if(S.add==="car"){ const f=S.form||{};
+    h+='<div class="card form"><div class="fh">'+(f.id?'Edit car':'New car')+'</div>'
+      +'<div class="f"><label>Name</label><input type="text" id="cf-n" value="'+esc(f.name||'')+'" placeholder="e.g. Hilux, Mazda 3"></div>'
+      +'<div class="f2"><div class="f"><label>Rego (optional)</label><input type="text" id="cf-r" value="'+esc(f.rego||'')+'"></div><div class="f"><label>Odometer now</label><input type="number" inputmode="numeric" id="cf-o" value="'+(f.odo!=null?f.odo:'')+'"></div></div>'
+      +'<div class="f"><label>Usual fuel</label><div class="seg">'+FUELS.map(x=>'<button type="button" data-fuel="'+x+'" aria-pressed="'+((f.fuel||"91")===x)+'">'+x+'</button>').join("")+'</div></div>'
+      +'<div class="f-act">'+(f.id?'<button type="button" class="ghost danger" data-act="delcar" data-id="'+f.id+'">Delete car</button>':'')+'<span style="flex:1"></span><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="savecar">Save</button></div></div>';
+  }
+  if(D.cars.length) h+='<div class="card">'+D.cars.map(c=>'<button type="button" class="mrow" data-act="editcar" data-id="'+c.id+'"><div><div class="nm">'+esc(c.name)+(c.id===D.cur?'<span class="tag">current</span>':'')+'</div><div class="mt">'+esc(c.fuel||'')+(c.rego?' · '+esc(c.rego):'')+(lastOdoOf(c)!=null?' · '+lastOdoOf(c).toLocaleString()+' km':'')+'</div></div><span class="chev">›</span></button>').join("")+'</div>';
+  return h;
+}
+function lastOdoOf(c){ const xs=[...D.trips.filter(t=>t.car===c.id).map(t=>t.end),...D.fills.filter(f=>f.car===c.id).map(f=>f.odo),c.odo].filter(x=>x!=null); return xs.length?Math.max(...xs):null; }
+
+function render(){
+  ROOT.innerHTML = switcher() + (S.view==="log"?logView():S.view==="stats"?statsView():carsView());
+  if(S.focus){ const n=ROOT.querySelector(S.focus); if(n) n.focus(); S.focus=null; }
+}
+
+/* ---------- save handlers ---------- */
+function q(s){ return ROOT.querySelector(s); }
+function fuelSel(){ const b=ROOT.querySelector('[data-fuel][aria-pressed="true"]'); return b?b.dataset.fuel:null; }
+function saveTrip(){
+  const d=q("#tf-d").value||today(), s=num(q("#tf-s").value), e=num(q("#tf-e").value); let km=num(q("#tf-k").value);
+  if(s!=null && e!=null && e>s) km=e-s;
+  if(!km || km<=0){ q(km==null&&s!=null?"#tf-e":"#tf-k").focus(); return; }
+  const t={ id:(S.form&&S.form.id)||uid(), car:D.cur, d, km:Math.round(km*10)/10, start:(s!=null&&e!=null)?s:null, end:(s!=null&&e!=null)?e:null, purpose:(q("#tf-p").value||"").trim(), biz:q("#tf-b").checked };
+  const i=D.trips.findIndex(x=>x.id===t.id); if(i>=0) D.trips[i]=t; else D.trips.push(t);
+  save(); S.add=null; S.form=null;
+}
+function saveFill(){
+  const d=q("#ff-d").value||today(), odo=num(q("#ff-o").value); let l=num(q("#ff-l").value), cost=num(q("#ff-c").value), p=num(q("#ff-p").value);
+  if(l!=null && cost==null && p) cost=l*p; if(cost!=null && l==null && p) l=cost/p;
+  if(!cost || cost<=0){ q("#ff-c").focus(); return; }
+  const f={ id:(S.form&&S.form.id)||uid(), car:D.cur, d, odo, l:l!=null?Math.round(l*100)/100:null, cost:Math.round(cost*100)/100, fuel:fuelSel()||(car()&&car().fuel)||"", full:q("#ff-full").checked };
+  const i=D.fills.findIndex(x=>x.id===f.id); if(i>=0) D.fills[i]=f; else D.fills.push(f);
+  save();
+  if(q("#ff-money") && q("#ff-money").checked && i<0){
+    try{ const cats=Money.api.cats(); const cat=cats.find(c=>/fuel|petrol/i.test(c))||cats.find(c=>/transport|car/i.test(c))||cats[0]||"Transport";
+      Money.api.addSpend({ date:d, name:(car()?car().name:"Car")+" · fuel · "+(f.l||0)+" L "+f.fuel, cat, amount:f.cost }); }catch(e){}
+  }
+  S.add=null; S.form=null;
+}
+function saveCar(){
+  const name=(q("#cf-n").value||"").trim(); if(!name){ q("#cf-n").focus(); return; }
+  const c={ id:(S.form&&S.form.id)||uid(), name, rego:(q("#cf-r").value||"").trim(), odo:num(q("#cf-o").value), fuel:fuelSel()||"91" };
+  const i=D.cars.findIndex(x=>x.id===c.id); if(i>=0) D.cars[i]=c; else D.cars.push(c);
+  D.cur=c.id; save(); S.add=null; S.form=null;
+}
+function exportCSV(){
+  const c=car(); const rows=[["Date","Car","Odometer start","Odometer end","Km","Business","Purpose"]];
+  trips().slice().reverse().forEach(t=>rows.push([t.d,c.name,t.start??"",t.end??"",t.km,t.biz?"Y":"N",t.purpose||""]));
+  rows.push([]); rows.push(["Date","Car","Odometer","Litres","Cost","Fuel","Full tank"]);
+  fills().slice().reverse().forEach(f=>rows.push([f.d,c.name,f.odo??"",f.l??"",f.cost,f.fuel,f.full?"Y":"N"]));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="logbook-"+c.name.replace(/\W+/g,"-")+"-"+today()+".csv"; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- actions ---------- */
+ROOT.addEventListener("click", e => {
+  const b=e.target.closest("[data-act],[data-fuel]"); if(!b) return;
+  if(b.dataset.fuel){ ROOT.querySelectorAll("[data-fuel]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); return; }
+  const a=b.dataset.act, id=b.dataset.id;
+  if(a==="view"){ S.view=b.dataset.v; S.add=null; S.open=null; render(); }
+  else if(a==="pickcar"){ D.cur=id; save(); S.add=null; render(); }
+  else if(a==="addtrip"){ S.add="trip"; S.form=null; S.focus="#tf-e"; render(); }
+  else if(a==="addfill"){ S.add="fill"; S.form=null; S.focus="#ff-l"; render(); }
+  else if(a==="addcar"){ S.add="car"; S.form=null; S.focus="#cf-n"; render(); }
+  else if(a==="cancel"){ S.add=null; S.form=null; render(); }
+  else if(a==="open"){ S.open=S.open===id?null:id; render(); }
+  else if(a==="edittrip"){ S.form=JSON.parse(JSON.stringify(D.trips.find(x=>x.id===id))); S.add="trip"; S.open=null; render(); window.scrollTo({top:0}); }
+  else if(a==="editfill"){ S.form=JSON.parse(JSON.stringify(D.fills.find(x=>x.id===id))); S.add="fill"; S.open=null; render(); window.scrollTo({top:0}); }
+  else if(a==="deltrip"){ D.trips=D.trips.filter(x=>x.id!==id); save(); S.open=null; render(); }
+  else if(a==="delfill"){ D.fills=D.fills.filter(x=>x.id!==id); save(); S.open=null; render(); }
+  else if(a==="editcar"){ S.form=JSON.parse(JSON.stringify(D.cars.find(x=>x.id===id))); S.add="car"; render(); }
+  else if(a==="delcar"){ if(confirm("Delete this car and all its trips and fills?")){ D.cars=D.cars.filter(x=>x.id!==id); D.trips=D.trips.filter(x=>x.car!==id); D.fills=D.fills.filter(x=>x.car!==id); D.cur=D.cars.length?D.cars[0].id:null; save(); S.add=null; S.form=null; render(); } }
+  else if(a==="savetrip"){ saveTrip(); render(); }
+  else if(a==="savefill"){ saveFill(); render(); }
+  else if(a==="savecar"){ saveCar(); render(); }
+  else if(a==="export"){ exportCSV(); }
+});
+ROOT.addEventListener("input", e => {
+  const t=e.target;
+  // trip: start + end → km
+  if(t.id==="tf-s"||t.id==="tf-e"){ const s=num(q("#tf-s").value), en=num(q("#tf-e").value); if(s!=null&&en!=null&&en>s) q("#tf-k").value=Math.round((en-s)*10)/10; }
+  // fill: any two of litres / cost / price
+  if(t.id==="ff-l"||t.id==="ff-c"||t.id==="ff-p"){
+    const l=num(q("#ff-l").value), c=num(q("#ff-c").value), p=num(q("#ff-p").value);
+    if(t.id!=="ff-p" && l && c) q("#ff-p").value=(c/l).toFixed(3);
+    else if(t.id==="ff-p" && p && l && !c) q("#ff-c").value=(l*p).toFixed(2);
+    else if(t.id==="ff-l" && l && p && !c) q("#ff-c").value=(l*p).toFixed(2);
+    else if(t.id==="ff-c" && c && p && !l) q("#ff-l").value=(c/p).toFixed(2);
+  }
+});
+ROOT.addEventListener("keydown", e => { if(e.key==="Enter" && e.target.tagName==="INPUT"){ const s=ROOT.querySelector('[data-act^="save"]'); if(s) s.click(); } });
+
+load();
+return { render:()=>{ load(); render(); }, api:{ kmThisMonth:()=>statsFor(today().slice(0,7)).km } };
+})();
+
+
 /* ================= CONNECTED (read-only view over both) ================= */
 const Connected = (() => {
 "use strict";
@@ -4267,12 +4937,14 @@ return { render, facts, insights };
 /* ================= SHELL ================= */
 (() => {
 const NAV = document.querySelector(".appnav");
-const mods = { gym:document.getElementById("gym"), money:document.getElementById("money"), shop:document.getElementById("shop"), connected:document.getElementById("connected") };
+const mods = { gym:document.getElementById("gym"), money:document.getElementById("money"), shop:document.getElementById("shop"), habits:document.getElementById("habits"), car:document.getElementById("car"), connected:document.getElementById("connected") };
 function show(name){
   Object.entries(mods).forEach(([k,el]) => { if(k===name) el.setAttribute("data-on",""); else el.removeAttribute("data-on"); });
   NAV.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.mod===name)));
   if(name === "connected") Connected.render();
   if(name === "shop") Groceries.render();
+  if(name === "habits") Habits.render();
+  if(name === "car") Car.render();
   try{ localStorage.setItem("connectedLife.tab", name); }catch(e){}
   window.scrollTo({ top:0 });
 }
@@ -4287,9 +4959,9 @@ document.getElementById("helpbtn").addEventListener("click", introOpen);
 function isFreshInstall(){
   try{
     const g=JSON.parse(localStorage.getItem("gym:v1")||"{}"), m=JSON.parse(localStorage.getItem("financeHub.v1")||"{}"), s=JSON.parse(localStorage.getItem("grocery:v1")||"{}");
-    const n=a=>Array.isArray(a)?a.length:0;
+    const n=a=>Array.isArray(a)?a.length:0; const hb=JSON.parse(localStorage.getItem("habits:v1")||"{}"); const cr=JSON.parse(localStorage.getItem("car:v1")||"{}");
     const sum=a=>(a||[]).reduce((t,x)=>t+(+x.amount||0),0);
-    return n(g.entries)+n(g.timeEntries)+n(m.spends)+n(s.shops)===0 && sum(m.income)+sum(m.bills)===0;
+    return n(g.entries)+n(g.timeEntries)+n(m.spends)+n(s.shops)+n(hb.habits)+n(cr.trips)+n(cr.fills)===0 && sum(m.income)+sum(m.bills)===0;
   }catch(e){ return false; }
 }
 let first = "connected";
@@ -4316,7 +4988,7 @@ document.getElementById("shell-asat").textContent = t.getDate()+" "+MONTHS[t.get
    ================================================ */
 (() => {
 "use strict";
-const KEYS = ["gym:v1","financeHub.v1"];
+const KEYS = ["gym:v1","financeHub.v1","habits:v1","car:v1"];
 const CFGKEY = "connectedLife.sync";
 const safe = k => k.replace(/[.#$\[\]\/]/g,"_");
 const uid = () => Math.random().toString(36).slice(2,10)+Date.now().toString(36);
@@ -4352,11 +5024,13 @@ function isEmpty(data, k){
   try{ const j = JSON.parse(data); if(!j || typeof j !== "object") return true;
     const n = a => Array.isArray(a) ? a.length : 0;
     if(k === "gym:v1") return n(j.entries) + n(j.timeEntries) === 0;
+    if(k === "habits:v1") return n(j.habits) === 0;
+    if(k === "car:v1") return n(j.cars) === 0;
     if(k === "shopping:v1") return n(j.list) + n(j.stock) + n(j.trips) === 0;
     return false; // Money always carries its setup rows, so it's never treated as empty
   }catch(e){ return true; }
 }
-function label(k){ return {"gym:v1":"Gym","financeHub.v1":"Money","shopping:v1":"Shop"}[k]||k; }
+function label(k){ return {"gym:v1":"Gym","financeHub.v1":"Money","habits:v1":"Habits","car:v1":"Car"}[k]||k; }
 
 function loadScript(src){ return new Promise((res,rej) => { const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=()=>rej(new Error("Couldn't load "+src)); document.head.appendChild(s); }); }
 async function connect(){
