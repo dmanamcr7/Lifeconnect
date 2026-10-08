@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-build" content="20261007-083418">
+<meta name="app-build" content="20261008-122501">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,6 +474,17 @@ input:-webkit-autofill, input:-webkit-autofill:focus{-webkit-text-fill-color:var
 #car .mrow .chev{color:var(--mute);font-size:18px}
 
 /* ================= SHELL ================= */
+.shell-top .gearbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--slate);font:inherit;font-size:16px;cursor:pointer;margin-left:6px;flex:0 0 auto}
+#appsettings .modlist{display:flex;flex-direction:column;gap:8px;margin:16px 0 6px}
+#appsettings .modrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+#appsettings .modrow .t{flex:1;min-width:0}
+#appsettings .modrow b{font-size:15px;display:block}
+#appsettings .modrow span{font-size:12.5px;color:var(--slate)}
+#appsettings .sw2{width:46px;height:28px;border-radius:14px;background:var(--line);border:0;position:relative;cursor:pointer;flex:0 0 auto;transition:background .15s}
+#appsettings .sw2::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--paper);transition:left .15s}
+#appsettings .sw2[aria-checked="true"]{background:var(--teal)}
+#appsettings .sw2[aria-checked="true"]::after{left:21px}
+
 .shell-top .helpbtn{width:30px;height:30px;border-radius:50%;border:0;background:var(--teal);color:#04201B;font:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-left:8px;flex:0 0 auto;box-shadow:0 0 0 3px var(--teal-bg)}
 #intro .intro-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60}
 #intro .intro{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:92vh;overflow:auto;z-index:61;background:var(--paper);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
@@ -782,6 +793,16 @@ body{padding:0}
   <div class="asat">as at <span id="shell-asat" class="num"></span></div>
   <button type="button" class="syncbtn" id="syncbtn" aria-label="Device sync settings"><i></i><span>This device only</span></button>
   <button type="button" class="helpbtn" id="helpbtn" aria-label="How this app works">?</button>
+  <button type="button" class="gearbtn" id="gearbtn" aria-label="Settings">&#9881;</button>
+</div>
+<div id="appsettings" hidden>
+  <div class="intro-bg" data-set="close"></div>
+  <div class="intro settings">
+    <div class="intro-h"><div><h2>Settings</h2><p>Turn off anything you don't use. Its data stays; it just leaves the tab bar.</p></div><button type="button" class="x" data-set="close" aria-label="Close">×</button></div>
+    <div class="modlist" id="modlist"></div>
+    <p class="intro-foot">Connected reads Gym and Money, so it has less to say if either is off. Device sync lives behind the dot in the header; the welcome page is under <b>?</b>.</p>
+    <button type="button" class="intro-go" data-set="close">Done</button>
+  </div>
 </div>
 <div id="intro" hidden>
   <div class="intro-bg"></div>
@@ -4493,6 +4514,8 @@ const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","
 const fmtD = s => { const d=fromISO(s); return d.getDate()+" "+MON[d.getMonth()]; };
 const money = n => (typeof Money!=="undefined" ? Money.api.money(n) : "A$"+(+n).toFixed(2));
 const FUELS = ["91","94","95","98","Diesel","E10","LPG","Electric"];
+const isEV = f => /electric/i.test(f||"");
+const unitFor = f => isEV(f) ? "kWh" : "L";
 const num = v => { const n=parseFloat(String(v).replace(/,/g,"")); return isNaN(n)?null:n; };
 
 let D;
@@ -4517,7 +4540,7 @@ function economy(){
   // L/100 km between consecutive full fills, newest first
   const fs=fills().filter(f=>f.full && f.odo!=null).sort((a,b)=>a.odo-b.odo);
   const out=[];
-  for(let i=1;i<fs.length;i++){ const km=fs[i].odo-fs[i-1].odo; if(km>20 && fs[i].l>0) out.push({ d:fs[i].d, km, l:fs[i].l, lper:100*fs[i].l/km, cost:fs[i].cost }); }
+  for(let i=1;i<fs.length;i++){ const km=fs[i].odo-fs[i-1].odo; if(km>20 && fs[i].l>0) out.push({ d:fs[i].d, km, l:fs[i].l, lper:100*fs[i].l/km, cost:fs[i].cost, u:unitFor(fs[i].fuel) }); }
   return out.reverse();
 }
 function monthKey(d){ return d.slice(0,7); }
@@ -4571,7 +4594,7 @@ function tripRow(t){
 function fillRow(f){
   const open=S.open===f.id, ppl=f.l?f.cost/f.l:null;
   return '<div class="row fill"><button type="button" class="main" data-act="open" data-id="'+f.id+'"><span class="ic">⛽</span><div class="tx"><div class="nm">'+money(f.cost)+'<span class="tag fuel">'+esc(f.fuel||'')+'</span>'+(f.full?'':'<span class="tag">partial</span>')+'</div>'
-    +'<div class="mt">'+fmtD(f.d)+' · '+(f.l||0)+' L'+(ppl?' · '+ppl.toFixed(3)+'/L':'')+(f.odo!=null?' · '+f.odo.toLocaleString()+' km':'')+'</div></div></button>'
+    +'<div class="mt">'+fmtD(f.d)+' · '+(f.l||0)+' '+unitFor(f.fuel)+(ppl?' · '+ppl.toFixed(3)+'/'+unitFor(f.fuel):'')+(f.odo!=null?' · '+f.odo.toLocaleString()+' km':'')+'</div></div></button>'
     +(open?'<div class="rowact"><button type="button" class="ghost" data-act="editfill" data-id="'+f.id+'">Edit</button><button type="button" class="ghost danger" data-act="delfill" data-id="'+f.id+'">Delete</button></div>':'')+'</div>';
 }
 function tripForm(){
@@ -4586,37 +4609,37 @@ function tripForm(){
     +'<p class="hint">Fill start and end and the km works itself out; or just type the km. The end reading becomes the car\'s new odometer.</p></div>';
 }
 function fillForm(){
-  const f=S.form||{}, c=car(), odo=lastOdo(), last=fills()[0];
+  const f=S.form||{}, c=car(), odo=lastOdo(), last=fills()[0]; const u=unitFor(f.fuel||(c&&c.fuel)||"");
   return '<div class="card form"><div class="fh">'+(f.id?'Edit fill':'Log fuel')+'</div>'
     +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="ff-d" value="'+(f.d||today())+'"></div><div class="f"><label>Odometer</label><input type="number" inputmode="numeric" id="ff-o" value="'+(f.odo!=null?f.odo:'')+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div></div>'
-    +'<div class="f3"><div class="f"><label>Litres</label><input type="number" inputmode="decimal" step="0.01" id="ff-l" value="'+(f.l!=null?f.l:'')+'" placeholder="0.00"></div>'
+    +'<div class="f3"><div class="f"><label id="ff-ul">'+(u==="kWh"?"kWh":"Litres")+'</label><input type="number" inputmode="decimal" step="0.01" id="ff-l" value="'+(f.l!=null?f.l:'')+'" placeholder="0.00"></div>'
     +'<div class="f"><label>Cost A$</label><input type="number" inputmode="decimal" step="0.01" id="ff-c" value="'+(f.cost!=null?f.cost:'')+'" placeholder="0.00"></div>'
-    +'<div class="f"><label>Price /L</label><input type="number" inputmode="decimal" step="0.001" id="ff-p" value="'+(f.l&&f.cost?(f.cost/f.l).toFixed(3):(last&&last.l?(last.cost/last.l).toFixed(3):''))+'" placeholder="1.899"></div></div>'
+    +'<div class="f"><label id="ff-pl">Price /'+u+'</label><input type="number" inputmode="decimal" step="0.001" id="ff-p" value="'+(f.l&&f.cost?(f.cost/f.l).toFixed(3):(last&&last.l?(last.cost/last.l).toFixed(3):''))+'" placeholder="1.899"></div></div>'
     +'<div class="f"><label>Fuel</label><div class="seg">'+FUELS.map(x=>'<button type="button" data-fuel="'+x+'" aria-pressed="'+((f.fuel||(c&&c.fuel)||"")===x)+'">'+x+'</button>').join("")+'</div></div>'
-    +'<label class="chk"><input type="checkbox" id="ff-full"'+(f.full!==false?' checked':'')+'> Filled the tank (needed for L/100 km)</label>'
+    +'<label class="chk"><input type="checkbox" id="ff-full"'+(f.full!==false?' checked':'')+'> <span id="ff-fl">'+(u==="kWh"?"Charged to full (needed for kWh/100 km)":"Filled the tank (needed for L/100 km)")+'</span></label>'
     +'<label class="chk"><input type="checkbox" id="ff-money"'+(f.id?'':' checked')+'> Record in Money as a spend</label>'
     +'<div class="f-act"><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="savefill">Save fill</button></div>'
-    +'<p class="hint">Type any two of litres, cost and price per litre — the third fills in.</p></div>';
+    +'<p class="hint">Type any two of '+(u==="kWh"?"kWh":"litres")+', cost and price — the third fills in.</p></div>';
 }
 
 function statsView(){
   const c=car(); if(!c) return '<div class="empty">Add a car first.</div>';
-  const eco=economy(), avg=eco.length?eco.reduce((s,e)=>s+e.lper,0)/eco.length:null;
+  const ecoAll=economy(), cu=unitFor(c.fuel), eco=ecoAll.filter(e=>e.u===cu), avg=eco.length?eco.reduce((s,e)=>s+e.lper,0)/eco.length:null;
   const last3=eco.slice(0,3);
   const months=[...new Set([...trips().map(t=>monthKey(t.d)),...fills().map(f=>monthKey(f.d))])].sort().reverse().slice(0,6);
   const ecoKm=eco.reduce((s,e)=>s+e.km,0), ecoCost=eco.reduce((s,e)=>s+(e.cost||0),0);
   let h=carBar()+'<div class="head"><div><h2>Stats</h2><div class="sub">'+esc(c.name)+'</div></div></div>'
-    +'<div class="kpis"><div class="kpi"><div class="k">Economy</div><div class="v">'+(avg?avg.toFixed(1):'—')+'<small>L/100</small></div></div>'
+    +'<div class="kpis"><div class="kpi"><div class="k">Economy</div><div class="v">'+(avg?avg.toFixed(1):'—')+'<small>'+cu+'/100</small></div></div>'
     +'<div class="kpi"><div class="k">Cost per km</div><div class="v">'+(ecoKm&&ecoCost?(100*ecoCost/ecoKm).toFixed(1):'—')+'<small>c</small></div></div>'
     +'<div class="kpi"><div class="k">Fills</div><div class="v">'+fills().length+'</div></div></div>';
   if(eco.length){
-    h+='<h3>Between full tanks</h3><div class="card">'+eco.slice(0,8).map(e=>'<div class="srow"><span>'+fmtD(e.d)+'</span><span>'+e.km.toLocaleString()+' km</span><span>'+e.l.toFixed(1)+' L</span><b>'+e.lper.toFixed(1)+' L/100</b></div>').join("")+'</div>';
-  } else h+='<p class="hint">Economy needs two full-tank fills with odometer readings. Keep ticking "filled the tank".</p>';
+    h+='<h3>Between full tanks</h3><div class="card">'+eco.slice(0,8).map(e=>'<div class="srow"><span>'+fmtD(e.d)+'</span><span>'+e.km.toLocaleString()+' km</span><span>'+e.l.toFixed(1)+' '+e.u+'</span><b>'+e.lper.toFixed(1)+' '+e.u+'/100</b></div>').join("")+'</div>';
+  } else h+='<p class="hint">Economy needs two '+(cu==="kWh"?"full charges":"full-tank fills")+' with odometer readings. Keep ticking "'+(cu==="kWh"?"charged to full":"filled the tank")+'".</p>';
   if(months.length){
     h+='<h3>By month</h3><div class="card">'+months.map(m=>{ const s=statsFor(m); return '<div class="srow"><span>'+MON[+m.slice(5)-1]+' '+m.slice(2,4)+'</span><span>'+Math.round(s.km).toLocaleString()+' km</span><span>'+(s.km?Math.round(100*s.biz/s.km):0)+'% biz</span><b>'+money(s.cost)+'</b></div>'; }).join("")+'</div>';
   }
   const byFuel={}; fills().forEach(f=>{ const k=f.fuel||"?"; byFuel[k]=byFuel[k]||{l:0,c:0,n:0}; byFuel[k].l+=f.l||0; byFuel[k].c+=f.cost||0; byFuel[k].n++; });
-  const fk=Object.keys(byFuel); if(fk.length>1) h+='<h3>By fuel type</h3><div class="card">'+fk.map(k=>'<div class="srow"><span>'+esc(k)+'</span><span>'+byFuel[k].n+' fills</span><span>'+byFuel[k].l.toFixed(0)+' L</span><b>'+(byFuel[k].l?(byFuel[k].c/byFuel[k].l).toFixed(3)+'/L':'—')+'</b></div>').join("")+'</div>';
+  const fk=Object.keys(byFuel); if(fk.length>1) h+='<h3>By fuel type</h3><div class="card">'+fk.map(k=>'<div class="srow"><span>'+esc(k)+'</span><span>'+byFuel[k].n+' fills</span><span>'+byFuel[k].l.toFixed(0)+' '+unitFor(k)+'</span><b>'+(byFuel[k].l?(byFuel[k].c/byFuel[k].l).toFixed(3)+'/'+unitFor(k):'—')+'</b></div>').join("")+'</div>';
   h+='<button type="button" class="ghost" style="margin-top:14px" data-act="export">Export logbook CSV</button>';
   return h;
 }
@@ -4660,7 +4683,7 @@ function saveFill(){
   save();
   if(q("#ff-money") && q("#ff-money").checked && i<0){
     try{ const cats=Money.api.cats(); const cat=cats.find(c=>/fuel|petrol/i.test(c))||cats.find(c=>/transport|car/i.test(c))||cats[0]||"Transport";
-      Money.api.addSpend({ date:d, name:(car()?car().name:"Car")+" · fuel · "+(f.l||0)+" L "+f.fuel, cat, amount:f.cost }); }catch(e){}
+      Money.api.addSpend({ date:d, name:(car()?car().name:"Car")+" · "+(isEV(f.fuel)?"charge":"fuel")+" · "+(f.l||0)+" "+unitFor(f.fuel)+" "+f.fuel, cat, amount:f.cost }); }catch(e){}
   }
   S.add=null; S.form=null;
 }
@@ -4673,7 +4696,7 @@ function saveCar(){
 function exportCSV(){
   const c=car(); const rows=[["Date","Car","Odometer start","Odometer end","Km","Business","Purpose"]];
   trips().slice().reverse().forEach(t=>rows.push([t.d,c.name,t.start??"",t.end??"",t.km,t.biz?"Y":"N",t.purpose||""]));
-  rows.push([]); rows.push(["Date","Car","Odometer","Litres","Cost","Fuel","Full tank"]);
+  rows.push([]); rows.push(["Date","Car","Odometer","Litres or kWh","Cost","Fuel","Full tank / charge"]);
   fills().slice().reverse().forEach(f=>rows.push([f.d,c.name,f.odo??"",f.l??"",f.cost,f.fuel,f.full?"Y":"N"]));
   const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
   const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="logbook-"+c.name.replace(/\W+/g,"-")+"-"+today()+".csv"; document.body.appendChild(a); a.click(); a.remove();
@@ -4682,7 +4705,10 @@ function exportCSV(){
 /* ---------- actions ---------- */
 ROOT.addEventListener("click", e => {
   const b=e.target.closest("[data-act],[data-fuel]"); if(!b) return;
-  if(b.dataset.fuel){ ROOT.querySelectorAll("[data-fuel]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); return; }
+  if(b.dataset.fuel){ ROOT.querySelectorAll("[data-fuel]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    const u=unitFor(b.dataset.fuel), ul=q("#ff-ul"), pl=q("#ff-pl"), fl=q("#ff-fl");
+    if(ul) ul.textContent=u==="kWh"?"kWh":"Litres"; if(pl) pl.textContent="Price /"+u; if(fl) fl.textContent=u==="kWh"?"Charged to full (needed for kWh/100 km)":"Filled the tank (needed for L/100 km)";
+    return; }
   const a=b.dataset.act, id=b.dataset.id;
   if(a==="view"){ S.view=b.dataset.v; S.add=null; S.open=null; render(); }
   else if(a==="pickcar"){ D.cur=id; save(); S.add=null; render(); }
@@ -4964,9 +4990,38 @@ function isFreshInstall(){
     return n(g.entries)+n(g.timeEntries)+n(m.spends)+n(s.shops)+n(hb.habits)+n(cr.trips)+n(cr.fills)===0 && sum(m.income)+sum(m.bills)===0;
   }catch(e){ return false; }
 }
+/* which modules are on: stored per device */
+const MODINFO = { connected:["Connected","What training and spending say about each other"], gym:["Gym","Sets, weights, rest and recovery"], money:["Money","Pay cycle, bills, debts, savings"], shop:["Groceries","At home, shopping list, meals"], habits:["Habits","Daily and weekly habits"], car:["Car","Trip logbook and fuel"] };
+let ENABLED = {};
+try{ ENABLED = JSON.parse(localStorage.getItem("connectedLife.modules")||"{}"); }catch(e){}
+Object.keys(MODINFO).forEach(k => { if(ENABLED[k] === undefined) ENABLED[k] = true; });
+function isOn(k){ return ENABLED[k] !== false; }
+function applyModules(){
+  NAV.querySelectorAll("[data-mod]").forEach(b => { b.hidden = !isOn(b.dataset.mod); });
+  document.querySelectorAll("#intro [data-intro]").forEach(c => { if(c.classList.contains("intro-card")) c.hidden = !isOn(c.dataset.intro); });
+}
+const SET=document.getElementById("appsettings");
+function settingsOpen(){
+  document.getElementById("modlist").innerHTML = Object.entries(MODINFO).map(([k,[n,d]]) =>
+    '<div class="modrow"><div class="t"><b>'+n+'</b><span>'+d+'</span></div><button type="button" class="sw2" role="switch" aria-checked="'+isOn(k)+'" data-mod-toggle="'+k+'" aria-label="'+n+'"></button></div>').join("");
+  SET.hidden=false; document.body.style.overflow="hidden";
+}
+function settingsClose(){ SET.hidden=true; document.body.style.overflow=""; }
+SET.addEventListener("click", e => {
+  const t=e.target.closest("[data-mod-toggle]");
+  if(t){ const k=t.dataset.modToggle; const on=!isOn(k);
+    if(!on && Object.keys(MODINFO).filter(x=>x!==k).every(x=>!isOn(x))) return;      // keep at least one
+    ENABLED[k]=on; try{ localStorage.setItem("connectedLife.modules", JSON.stringify(ENABLED)); }catch(err){}
+    t.setAttribute("aria-checked", String(on)); applyModules();
+    const cur=NAV.querySelector('[aria-selected="true"]'); if(cur && !isOn(cur.dataset.mod)) show(Object.keys(MODINFO).find(isOn));
+    return; }
+  if(e.target.closest("[data-set]")) settingsClose();
+});
+document.getElementById("gearbtn").addEventListener("click", settingsOpen);
 let first = "connected";
 try{ first = localStorage.getItem("connectedLife.tab") || first; }catch(e){}
-if(!mods[first]) first = "connected";
+if(!mods[first] || !isOn(first)) first = Object.keys(MODINFO).find(isOn) || "connected";
+applyModules();
 show(first);
 try{ if(!localStorage.getItem("connectedLife.introSeen") && isFreshInstall()) introOpen(); }catch(e){}
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
