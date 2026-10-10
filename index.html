@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-build" content="20261008-122501">
+<meta name="app-build" content="20261010-053519">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -473,6 +473,19 @@ input:-webkit-autofill, input:-webkit-autofill:focus{-webkit-text-fill-color:var
 #car .mrow .mt{font-size:12.5px;color:var(--mute);margin-top:2px}
 #car .mrow .chev{color:var(--mute);font-size:18px}
 
+#shop .sugwrap{position:relative}
+#shop .sug{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:4px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#shop .sug button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 12px;border:0;border-bottom:1px solid var(--line-soft);background:none;color:var(--ink);font:inherit;font-size:15px;min-height:0}
+#shop .sug button:last-child{border-bottom:0}
+#shop .sug button small{font-size:12px;color:var(--mute)}
+#shop .sug button[data-s="new"]{color:var(--teal)}
+#shop .ing li small{font-weight:400}
+#shop .swipe .have{position:absolute;top:0;left:0;bottom:0;width:96px;background:var(--teal);color:#04201B;font-weight:700;font-size:14px;display:grid;place-items:center;border-radius:0;border:0}
+#shop .swipe.openr .row{transform:translateX(96px)}
+#shop .slot .rs{flex:1;display:flex;flex-direction:column;min-width:0}
+#shop .slot .rs .t.more{color:var(--mute);font-size:13px;padding-top:4px}
+#shop .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#shop .sheet label span{display:block;font-size:12.5px;color:var(--slate);margin-bottom:4px}
 /* ================= SHELL ================= */
 .shell-top .gearbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--slate);font:inherit;font-size:16px;cursor:pointer;margin-left:6px;flex:0 0 auto}
 #appsettings .modlist{display:flex;flex-direction:column;gap:8px;margin:16px 0 6px}
@@ -3832,7 +3845,7 @@ function priceMeta(i){
   return '<span class="price money'+(kp.exact?'':' other')+'">'+money(kp.price)+(kp.exact?'':' at '+kp.store)+'</span>';
 }
 function listRow(i,got){
-  return '<div class="swipe" data-swipe="'+i.id+'"><button class="del" data-act="swipedel" data-id="'+i.id+'" tabindex="-1">Delete</button>'
+  return '<div class="swipe has-have" data-swipe="'+i.id+'"><button class="del" data-act="swipedel" data-id="'+i.id+'" tabindex="-1">Delete</button><button class="have" data-act="haveit" data-id="'+i.id+'" tabindex="-1">Have it</button>'
     +'<div class="row'+(i.crit?' crit':'')+(got?' got':'')+'" data-id="'+i.id+'">'
     +'<div class="rail"></div>'
     +'<div class="body"><div class="nm">'+esc(i.name)+'</div><div class="meta">'+priceMeta(i)+'</div></div>'
@@ -3940,6 +3953,7 @@ function weekKey(){ return "week"; }
 function weekLabel(off){ const m=mondayOf(new Date()); m.setDate(m.getDate()+7*(off||0)); const e=new Date(m); e.setDate(e.getDate()+6);
   const f=d=>d.toLocaleDateString("en-AU",{day:"numeric",month:"short"}); return f(m)+" – "+f(e); }
 const plan=(off)=>D.plans[weekKey(off)]||{};
+const slotIds=(P,slot)=>{ const v=P[slot]; return Array.isArray(v)?v:(v?[v]:[]); };
 const recipeById=id=>D.recipes.find(r=>r.id===id);
 function ensureItem(name){
   name=name.trim(); if(!name) return null;
@@ -3947,17 +3961,41 @@ function ensureItem(name){
   if(!it){ it={id:uid(),name,area:"Kitchen",qty:0,crit:false,usual:1,prices:{},cat:autoCat(name),added:Date.now()}; D.items.push(it); }
   return it;
 }
+/* ingredient ↔ At home matching: "onions" matches "Brown onions" and "White onions" */
+const stem=w=>{ w=w.toLowerCase().replace(/[^a-z0-9]/g,""); if(w.length<4) return w;
+  if(/ies$/.test(w)) return w.slice(0,-3)+"y"; if(/oes$/.test(w)) return w.slice(0,-2); if(/(ss)$/.test(w)) return w;
+  if(/(s|x|ch|sh)es$/.test(w)) return w.slice(0,-2); return w.replace(/s$/,""); };
+const words=s=>String(s||"").split(/[\s,/&()-]+/).map(stem).filter(w=>w&&!["of","the","and","fresh","large","small","medium"].includes(w));
+function matchItems(ing){
+  const k=keyOf(ing); const exact=D.items.filter(i=>keyOf(i.name)===k); if(exact.length) return exact;
+  const iw=words(ing); if(!iw.length) return [];
+  return D.items.filter(i=>{ const nw=words(i.name); return iw.every(w=>nw.includes(w)); });
+}
+function ingStatus(ing){
+  const m=matchItems(ing); if(!m.length) return {items:[],qty:0,have:false,out:false,names:[]};
+  const qty=m.reduce((t,i)=>t+(+i.qty||0),0);
+  return {items:m,qty,have:qty>0,out:m.every(i=>isOut(i)),names:m.map(i=>i.name)};
+}
+function suggest(q){
+  const k=keyOf(q); if(!k) return [];
+  const qw=words(q);
+  return D.items.filter(i=>{ const n=keyOf(i.name); if(n.includes(k)) return true; const nw=words(i.name); return qw.length&&qw.every(w=>nw.some(x=>x.startsWith(w))); })
+    .sort((a,b)=>keyOf(a.name).indexOf(k)-keyOf(b.name).indexOf(k)||a.name.localeCompare(b.name)).slice(0,6);
+}
 function saveRecipe(id,name,ings){
   name=name.trim(); if(!name) return null;
   ings=[...new Set(ings.map(x=>x.trim()).filter(Boolean))];
-  ings.forEach(ensureItem);
+  ings.forEach(n=>{ if(!matchItems(n).length) ensureItem(n); });
   let r=id?recipeById(id):null;
   if(!r){ r={id:uid(),name,ings:[]}; D.recipes.push(r); }
   r.name=name; r.ings=ings; save(); return r;
 }
-function setSlot(slot,recipeId){ const k=weekKey(S.weekOff); D.plans[k]=D.plans[k]||{}; if(recipeId) D.plans[k][slot]=recipeId; else delete D.plans[k][slot]; pruneWeeks(); save(); }
+function setSlot(slot,recipeId,replaceId){ const k=weekKey(S.weekOff); D.plans[k]=D.plans[k]||{}; let ids=slotIds(D.plans[k],slot);
+  if(replaceId) ids=ids.map(x=>x===replaceId?recipeId:x); else if(recipeId && !ids.includes(recipeId)) ids.push(recipeId);
+  ids=[...new Set(ids.filter(Boolean))]; if(ids.length) D.plans[k][slot]=ids; else delete D.plans[k][slot]; pruneWeeks(); save(); }
+function unslot(slot,recipeId){ const k=weekKey(S.weekOff); if(!D.plans[k]) return; const ids=slotIds(D.plans[k],slot).filter(x=>x!==recipeId); if(ids.length) D.plans[k][slot]=ids; else delete D.plans[k][slot]; save(); }
 function pruneWeeks(){ const keys=Object.keys(D.plans).sort(); while(keys.length>8){ delete D.plans[keys.shift()]; } }
-function weekItems(off){ const set=new Set(); Object.values(plan(off)).forEach(id=>{ const r=recipeById(id); if(r) r.ings.forEach(n=>set.add(keyOf(n))); }); return set; }
+function weekItems(off){ const set=new Set(); Object.values(plan(off)).flatMap(v=>Array.isArray(v)?v:[v]).forEach(id=>{ const r=recipeById(id); if(r) r.ings.forEach(n=>{ const m=matchItems(n); if(m.length) m.forEach(i=>set.add(keyOf(i.name))); else set.add(keyOf(n)); }); }); return set; }
 function copyLastWeek(){ const prev=D.plans[weekKey(S.weekOff-1)]; if(!prev||!Object.keys(prev).length){ toast("Nothing planned last week"); return; } D.plans[weekKey(S.weekOff)]=Object.assign({},prev); save(); toast("Copied last week"); }
 
 function renderMeals(){
@@ -3967,15 +4005,20 @@ function renderMeals(){
   DAYS.forEach((d,di)=>{
     h+='<div class="day"><h2>'+DAYFULL[di]+'</h2><div class="card">';
     MEALS.forEach(([mk,ml])=>{
-      const slot=d.toLowerCase()+"-"+mk, r=recipeById(P[slot]); const open=S.slotOpen===slot;
-      h+='<div class="slot"><span class="k">'+ml+'</span>';
-      if(r){
-        h+='<button class="t" data-act="slot" data-slot="'+slot+'" aria-expanded="'+open+'"><span>'+esc(r.name)+'</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button></div>';
-        if(open){
-          h+='<div class="ing"><ul>'+(r.ings.length?r.ings.map(n=>{ const it=D.items.find(i=>keyOf(i.name)===keyOf(n)); const out=it&&isOut(it);
-              return '<li><span>'+esc(n)+'</span>'+(out?'<span class="o">on the list</span>':'<span class="h">'+(it?it.qty+' at home':'')+'</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
-            +'<div class="acts"><button class="lnk" data-act="pick" data-slot="'+slot+'">Change</button><button class="lnk" data-act="editrec" data-id="'+r.id+'" data-slot="'+slot+'">Edit</button><button class="lnk danger" data-act="unslot" data-slot="'+slot+'">Remove</button></div></div>';
-        }
+      const slot=d.toLowerCase()+"-"+mk, rs=slotIds(P,slot).map(recipeById).filter(Boolean);
+      h+='<div class="slot'+(rs.length>1?' multi':'')+'"><span class="k">'+ml+'</span>';
+      if(rs.length){
+        h+='<div class="rs">';
+        rs.forEach(r=>{
+          const key=slot+"|"+r.id, open=S.slotOpen===key;
+          h+='<button class="t" data-act="slot" data-slot="'+key+'" aria-expanded="'+open+'"><span>'+esc(r.name)+'</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>';
+          if(open){
+            h+='<div class="ing"><ul>'+(r.ings.length?r.ings.map(n=>{ const st=ingStatus(n); const multi=st.items.length>1;
+                return '<li><span>'+esc(n)+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
+              +'<div class="acts"><button class="lnk" data-act="pick" data-slot="'+slot+'" data-replace="'+r.id+'">Swap</button><button class="lnk" data-act="editrec" data-id="'+r.id+'" data-slot="'+slot+'">Edit</button><button class="lnk danger" data-act="unslot" data-slot="'+slot+'" data-id="'+r.id+'">Remove</button></div></div>';
+          }
+        });
+        h+='<button class="t none more" data-act="pick" data-slot="'+slot+'">+ Add another</button></div></div>';
       } else {
         h+='<button class="t none" data-act="pick" data-slot="'+slot+'">+ Add</button></div>';
       }
@@ -3990,7 +4033,7 @@ function renderMeals(){
 }
 
 /* pick a recipe for a slot */
-function openPicker(slot){
+function openPicker(slot,replaceId){
   const sh=$("#sheet"); sh.className="sheet-bg";
   const [d,m]=slot.split("-"); const ml=MEALS.find(x=>x[0]===m)[1];
   sh.innerHTML='<div class="sheet" role="dialog" aria-label="Choose a meal"><h2>'+ml+' on '+DAYFULL[DAYS.findIndex(x=>x.toLowerCase()===d)]+'</h2>'
@@ -4009,9 +4052,25 @@ function openPicker(slot){
   }
   inp.oninput=draw; draw(); setTimeout(()=>inp.focus(),50);
   list.onclick=e=>{ const b=e.target.closest("button"); if(!b) return;
-    if(b.dataset.rid){ setSlot(slot,b.dataset.rid); S.slotOpen=slot; close(); render(); }
-    else if(b.dataset.new){ const r=saveRecipe(null,inp.value,[]); setSlot(slot,r.id); close(); openRecipe(r.id,slot); } };
+    if(b.dataset.rid){ setSlot(slot,b.dataset.rid,replaceId); S.slotOpen=slot+"|"+b.dataset.rid; close(); render(); }
+    else if(b.dataset.new){ const r=saveRecipe(null,inp.value,[]); setSlot(slot,r.id,replaceId); close(); openRecipe(r.id,slot); } };
   inp.onkeydown=e=>{ if(e.key==="Enter"){ const first=list.querySelector("button:not([disabled])"); if(first) first.click(); } };
+}
+
+/* swipe right on the list: it's already in the house — set how many and what it cost */
+function openHaveIt(id){
+  const i=itemById(id); if(!i) return;
+  const sh=$("#sheet"); sh.className="sheet-bg"; const kp=knownPrice(i,D.store);
+  sh.innerHTML='<div class="sheet" role="dialog" aria-label="Already at home"><h2>'+esc(i.name)+'</h2><p style="margin:0 0 10px">Already in the house — set how many you have and it comes off the list.</p>'
+    +'<div class="grid2"><label><span>Have now</span><input type="number" inputmode="numeric" id="hv-q" min="1" value="'+Math.max(1,Number(i.usual)||1)+'"></label>'
+    +'<label><span>Price'+(D.store?' at '+esc(D.store):'')+'</span><input type="number" inputmode="decimal" step="0.01" id="hv-p" value="'+(kp.price!=null?kp.price:'')+'" placeholder="0.00"></label></div>'
+    +'<label><span>Where it lives</span><select id="hv-a">'+AREAS.map(a=>'<option'+(a===i.area?' selected':'')+'>'+a+'</option>').join("")+'</select></label>'
+    +'<div class="btns"><button id="hv-cancel">Cancel</button><button class="pri" id="hv-save">Put it at home</button></div></div>';
+  const close=()=>{ sh.className="hidden"; sh.innerHTML=""; };
+  sh.onclick=e=>{ if(e.target===sh) close(); };
+  $("#hv-cancel").onclick=close;
+  $("#hv-save").onclick=()=>{ const q=Math.max(1,parseInt($("#hv-q").value)||1); const p=$("#hv-p").value; i.area=$("#hv-a").value; setQty(id,q); if(D.store) setPrice(id,D.store,p===""?"":Number(p)); close(); save(); render(); toast(i.name+" is at home ("+q+")"); };
+  setTimeout(()=>$("#hv-q").focus(),50);
 }
 
 /* create / edit a recipe's name and ingredients */
@@ -4020,7 +4079,7 @@ function openRecipe(id,slot){
   const sh=$("#sheet"); sh.className="sheet-bg";
   sh.innerHTML='<div class="sheet" role="dialog" aria-label="Recipe"><h2>'+(id?'Edit recipe':'New recipe')+'</h2>'
     +'<label for="rn">Meal name</label><input type="text" id="rn" value="'+esc(r.name)+'">'
-    +'<label for="ri">Ingredients — type one, press Enter</label><input type="text" id="ri" list="ridl" placeholder="e.g. Chicken breast" autocomplete="off" enterkeyhint="done"><datalist id="ridl">'+D.items.map(i=>'<option value="'+esc(i.name)+'">').join("")+'</datalist>'
+    +'<label for="ri">Ingredients — type one, press Enter</label><div class="sugwrap"><input type="text" id="ri" placeholder="e.g. Chicken breast" autocomplete="off" autocorrect="off" autocapitalize="none" enterkeyhint="done"><div class="sug" id="rsug" hidden></div></div>'+'</datalist>'
     +'<div class="chips" id="rchips"></div>'
     +'<p style="margin-top:10px">Ingredients become At home items. Anything not in the house yet is added at 0, so it goes on the list.</p>'
     +'<div class="btns"><button id="rcancel">Cancel</button>'+(id?'<button id="rdel">Delete recipe</button>':'')+'<button class="pri" id="rsave">Save</button></div></div>';
@@ -4028,16 +4087,26 @@ function openRecipe(id,slot){
   sh.onclick=e=>{ if(e.target===sh) close(); };
   const chips=$("#rchips"), ri=$("#ri");
   function draw(){ chips.innerHTML=ings.map((n,i)=>'<span>'+esc(n)+'<button data-x="'+i+'" aria-label="Remove '+esc(n)+'">×</button></span>').join("")||'<span style="border:0;background:none;color:var(--ink-3)">Nothing yet</span>'; }
-  function addIng(){ const v=ri.value.trim(); if(!v) return; if(!ings.some(x=>keyOf(x)===keyOf(v))) ings.push(v); ri.value=""; draw(); }
-  ri.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); addIng(); } };
-  ri.onchange=()=>{ if(ri.value&&D.items.some(i=>i.name===ri.value)) addIng(); };
-  ri.onblur=()=>{ if(ri.value.trim()) addIng(); };
+  const sug=$("#rsug"); let sugRows=[];
+  function addIng(v){ v=(v!=null?v:ri.value).trim(); if(!v) return; if(!ings.some(x=>keyOf(x)===keyOf(v))) ings.push(v); ri.value=""; drawSug(); draw(); }
+  function drawSug(){
+    const q=ri.value.trim(); sugRows=q?suggest(q).filter(i=>!ings.some(x=>keyOf(x)===keyOf(i.name))):[];
+    if(!sugRows.length){ sug.hidden=true; sug.innerHTML=""; return; }
+    sug.hidden=false;
+    sug.innerHTML=sugRows.map((i,k)=>'<button type="button" data-s="'+k+'"><span>'+esc(i.name)+'</span><small>'+(i.qty>0?i.qty+' at home':'out')+'</small></button>').join("")
+      +(sugRows.some(i=>keyOf(i.name)===keyOf(q))?'':'<button type="button" data-s="new"><span>Add "'+esc(q)+'" as written</span><small>'+(matchItems(q).length?'matches '+matchItems(q).length+' at home':'new item')+'</small></button>');
+  }
+  ri.oninput=drawSug;
+  ri.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); addIng(sugRows.length===1&&!sug.hidden&&keyOf(ri.value)!==keyOf(sugRows[0].name)&&!matchItems(ri.value).length?sugRows[0].name:null); } if(e.key==="Escape"){ sug.hidden=true; } };
+  sug.onmousedown=e=>e.preventDefault();          // keep the input focused while tapping a suggestion
+  sug.onclick=e=>{ const b=e.target.closest("[data-s]"); if(!b) return; addIng(b.dataset.s==="new"?ri.value:sugRows[+b.dataset.s].name); ri.focus(); };
+  ri.onblur=()=>{ setTimeout(()=>{ sug.hidden=true; if(ri.value.trim()) addIng(); },150); };
   chips.onclick=e=>{ const b=e.target.closest("button[data-x]"); if(b){ ings.splice(+b.dataset.x,1); draw(); } };
   draw();
   $("#rcancel").onclick=close;
   if($("#rdel")) $("#rdel").onclick=()=>{ if(!confirm("Delete this recipe? Meals using it this week will be cleared.")) return;
-    D.recipes=D.recipes.filter(x=>x.id!==id); Object.values(D.plans).forEach(p=>{ Object.keys(p).forEach(k=>{ if(p[k]===id) delete p[k]; }); }); close(); save(); };
-  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot; close(); render(); };
+    D.recipes=D.recipes.filter(x=>x.id!==id); Object.values(D.plans).forEach(p=>{ Object.keys(p).forEach(k=>{ const ids=slotIds(p,k).filter(x=>x!==id); if(ids.length) p[k]=ids; else delete p[k]; }); }); close(); save(); };
+  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
   setTimeout(()=>(id?ri:$("#rn")).focus(),50);
 }
 
@@ -4061,8 +4130,8 @@ ROOT.addEventListener("click",e=>{
   else if(act==="open"){ S.open=S.open===id?null:id; render(); }
   else if(act==="ptab"){ S.priceTab[id]=t.dataset.store; render(); $('[data-price="'+id+'"]')?.focus(); }
   else if(act==="slot"){ S.slotOpen=S.slotOpen===t.dataset.slot?null:t.dataset.slot; render(); }
-  else if(act==="pick") openPicker(t.dataset.slot);
-  else if(act==="unslot"){ setSlot(t.dataset.slot,null); S.slotOpen=null; }
+  else if(act==="pick") openPicker(t.dataset.slot,t.dataset.replace||null);
+  else if(act==="unslot"){ unslot(t.dataset.slot,id); S.slotOpen=null; }
   else if(act==="editrec") openRecipe(id,t.dataset.slot);
   else if(act==="newrec") openRecipe(null,null);
   else if(act==="wk"){ S.weekOff+=Number(t.dataset.n); S.slotOpen=null; render(); }
@@ -4073,6 +4142,7 @@ ROOT.addEventListener("click",e=>{
   else if(act==="clearshops"){ if(confirm("Delete all recent shops?")){ D.shops=[]; save(); } }
   else if(act==="remove"){ if(confirm("Remove this item from the house?")){ S.open=null; removeItem(id); } }
   else if(act==="swipedel"){ S.open=null; removeItem(id,true); }
+  else if(act==="haveit"){ openHaveIt(id); }
 });
 ROOT.addEventListener("change",e=>{
   const el=e.target;
@@ -4087,9 +4157,9 @@ ROOT.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="addname"
 /* swipe left on an At home row to reveal Delete */
 (function(){
   let el=null,x0=0,y0=0,dx=0,axis=null;
-  const closeAll=except=>ROOT.querySelectorAll(".swipe.open").forEach(w=>{ if(w!==except) w.classList.remove("open"); });
+  const closeAll=except=>ROOT.querySelectorAll(".swipe.open,.swipe.openr").forEach(w=>{ if(w!==except) w.classList.remove("open","openr"); });
   ROOT.addEventListener("touchstart",e=>{
-    const w=e.target.closest(".swipe"); if(!w||e.target.closest(".del")){ el=null; return; }
+    const w=e.target.closest(".swipe"); if(!w||e.target.closest(".del")||e.target.closest(".have")){ el=null; return; }
     el=w; x0=e.touches[0].clientX; y0=e.touches[0].clientY; dx=0; axis=null; closeAll(w);
   },{passive:true});
   ROOT.addEventListener("touchmove",e=>{
@@ -4097,16 +4167,17 @@ ROOT.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="addname"
     const t=e.touches[0], mx=t.clientX-x0, my=t.clientY-y0;
     if(!axis){ if(Math.abs(mx)<6&&Math.abs(my)<6) return; axis=Math.abs(mx)>Math.abs(my)?"x":"y"; }
     if(axis!=="x") return;
-    const open=el.classList.contains("open"); dx=Math.max(-110,Math.min(open?96:0,mx+(open?-96:0)));
+    const open=el.classList.contains("open"), openr=el.classList.contains("openr"), canR=el.classList.contains("has-have");
+    const base=open?-96:(openr?96:0); dx=Math.max(-110,Math.min(canR?110:0,mx+base)); if(!canR) dx=Math.min(dx,open?96:0);
     el.classList.add("dragging"); el.querySelector(".row").style.transform="translateX("+dx+"px)";
   },{passive:true});
   ROOT.addEventListener("touchend",()=>{
     if(!el) return;
     const row=el.querySelector(".row"); el.classList.remove("dragging"); row.style.transform="";
-    if(axis==="x") el.classList.toggle("open", dx<-48);
+    if(axis==="x"){ el.classList.toggle("open", dx<-48); el.classList.toggle("openr", dx>48); }
     el=null;
   });
-  ROOT.addEventListener("click",e=>{ if(!e.target.closest(".swipe.open")) closeAll(); });
+  ROOT.addEventListener("click",e=>{ if(!e.target.closest(".swipe.open,.swipe.openr")) closeAll(); });
 })();
 function doAdd(){ const n=$("#addname"); const v=n.value; const qty=Math.max(0,parseInt($("#addqty").value)||0); addItem(v,$("#addarea").value,qty,S.addCrit); S.addCrit=false; setTimeout(()=>{ const nn=$("#addname"); if(nn){ nn.value=""; nn.focus(); } },0); }
 
