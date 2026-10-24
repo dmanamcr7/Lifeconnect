@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-build" content="20261011-115800">
+<meta name="app-version" content="1.1.0">
+<meta name="app-build" content="20261024-055610">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -699,6 +700,26 @@ body{padding:0}
 #gym .addex{display:block;width:100%;padding:15px;border:1px dashed var(--line);border-radius:14px;text-align:center;color:var(--slate);font-size:15px;margin-bottom:12px}
 #gym .addex.solid{background:var(--acc);color:var(--acc-ink);border:0;font-weight:600}
 
+#gym .foldbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);color:var(--mute);font-size:13px;flex:0 0 auto;margin-left:4px;align-self:flex-start}
+#gym .card.fold .foldrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 15px}
+#gym .card.fold .l{flex:1;min-width:0}
+#gym .card.fold .nm{font-size:15.5px;font-weight:600}
+#gym .card.fold .mg{font-size:12.5px;color:var(--mute);margin-top:2px}
+#gym .card.fold .mg b{color:var(--acc);font-weight:600}
+#gym .card.fold .chev{color:var(--mute);font-size:14px}
+#gym .card.fold[data-done="1"] .chev{color:var(--acc);font-weight:700}
+#gym .plans{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+#gym .plans .lbl{font-size:12.5px;color:var(--slate);margin-right:2px}
+#gym .plans button{border:1px solid var(--acc);background:var(--teal-bg);color:var(--acc);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:600}
+#gym .plans button small{font-weight:400;opacity:.8;margin-left:5px}
+#gym .plan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+#gym .plan .ph{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+#gym .plan .ph input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:15px;font-weight:600}
+#gym .plan .ph button{font-size:12.5px;color:var(--mute)}
+#gym .pex{display:flex;flex-wrap:wrap;gap:6px}
+#gym .pex span{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 11px;font-size:13px}
+#gym .pex span button{width:20px;height:20px;border-radius:50%;color:var(--mute);font-size:14px;line-height:1}
+#gym .pex .padd{border:1px dashed var(--line);border-radius:999px;padding:5px 11px;font-size:13px;color:var(--acc)}
 /* steppers (bodyweight, cardio, settings) */
 #gym .st{display:flex;align-items:center;gap:6px}
 #gym .st button{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;color:var(--slate);font-size:18px;background:var(--paper)}
@@ -832,6 +853,13 @@ body{padding:0}
 .sync-status{font-size:14px;margin-top:8px;padding:10px;border-radius:10px;background:#F4F5F2}.sync-status.ok{background:#E6F3EB;color:#1F7A48}.sync-status.bad{background:#FBE9E1;color:#B8360E}
 .sync-banner{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:999px;font-size:14px;display:flex;gap:14px;align-items:center;z-index:210;box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .sync-banner button{background:none;border:0;color:#9BE0B8;font:inherit;font-weight:700;cursor:pointer}
+
+#shop .getn{font-size:12px;font-weight:700;color:#04201B;background:var(--teal);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+#shop .ingchip{display:inline-flex;align-items:center;gap:4px}
+#shop .ingchip b{min-width:16px;text-align:center;font-size:13px}
+#shop .ingchip button[data-q]{width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:none;color:inherit;font-size:14px;line-height:1;padding:0;min-height:0}
+#shop #hsearch{flex:1;min-width:140px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:inherit;font:inherit;font-size:14px}
+#shop .filt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -848,6 +876,7 @@ body{padding:0}
   <div class="intro settings">
     <div class="intro-h"><div><h2>Settings</h2><p>Turn off anything you don't use. Its data stays; it just leaves the home screen.</p></div><button type="button" class="x" data-set="close" aria-label="Close">×</button></div>
     <div class="modlist" id="modlist"></div>
+    <p class="intro-foot" id="set-ver"></p>
     <p class="intro-foot">Connected reads Gym and Money, so it has less to say if either is off. Device sync lives behind the dot in the header; the welcome page is under <b>?</b>.</p>
     <button type="button" class="intro-go" data-set="close">Done</button>
   </div>
@@ -1219,7 +1248,7 @@ const ROOT = document.getElementById("gym");
 
 const SEED = {"entries":[],"timeEntries":[],"bank":[{"n":"Iso-lateral Decline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Incline Bench Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push-ups","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Incline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push Up","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Assisted Pull-up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Basic Back Extension","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Barbell Row","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Iso-lateral pull","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Pull Up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Deadlift","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Dumbbell Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Lateral Raise","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Face Pull","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength ground base squat/lunge both legs","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer strength ground base squat/lunge single leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Leg extension Single Leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Adduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Abduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Leg Extension","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Calf Raise","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Bar)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Dumbbell)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Tricep Pulldown","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Skull Crusher","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Dips","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Cable Crunch","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Leg Raises","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Russian Twist","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Hanging Knee Raise","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Kettlebell Swing","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Farmer Carry","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Clean and Press","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Run 1km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 3km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 5km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 10km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Bike","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Rowing Machine","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Side Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Hollow Hold","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Wall Sit","m":"Legs","c":"Time-Based","pt":"Hold Time"}]};
 const KEY = "gym:v1";
-const APP_VERSION = "8.4";   // bumped whenever the app changes
+const APP_VERSION = "8.5";   // bumped whenever the app changes
 const DATA_VERSION = 5;      // bumped only when the shape of stored data changes
 const DEFAULTS = {rest:90, goalSets:10, goalReps:10, step:2.5, perEx:{},
   cardioRuns:3, paceStep:10, holdStep:10};
@@ -1975,6 +2004,12 @@ function viewData(){
     + sRow("Pace step", fmtSecs(g.paceStep)+" /km", "setpace", "How much faster the target gets each time.")
     + sRow("Hold step", fmtSecs(g.holdStep), "sethold", "How much longer a hold target gets.")
 
+    +'<div class="eyebrow" style="margin:26px 0 9px">Plans</div>'
+    +'<div class="note" style="margin-bottom:10px">A plan is a named day — Push, Legs, Day A — with the exercises you do on it. On Train, one tap sets the whole session up.</div>'
+    +D.planDays.map(p=>'<div class="plan"><div class="ph"><input type="text" data-planname="'+esc(p.id)+'" value="'+esc(p.name)+'" aria-label="Plan name"><button data-act="delplan" data-v="'+esc(p.id)+'">Delete</button></div>'
+      +'<div class="pex">'+p.ex.map(n=>'<span>'+esc(n)+'<button data-act="planrm" data-v="'+esc(p.id)+'" data-n="'+esc(n)+'" aria-label="Remove">×</button></span>').join("")
+      +'<button class="padd" data-act="planadd" data-v="'+esc(p.id)+'">+ exercise</button></div></div>').join("")
+    +'<button class="solid" data-act="newplan">+ New plan</button>'
     +'<div class="eyebrow" style="margin:26px 0 9px">Your data</div>'
     +'<button class="solid" data-act="csv">Export CSV for Excel</button>'
     +'<div class="note" style="margin:9px 0 16px">Same columns as your workbook, plus bodyweight and notes.</div>'
@@ -2042,6 +2077,8 @@ function renderSheet(){
 
 /* ================= v8 views (override the v7 fragments above) ================= */
 D.sessions = D.sessions || {};            // { 'YYYY-MM-DD': startMs } — when each session began
+D.planDays = D.planDays || [];              // [{id,name,ex:[exercise names]}] — gym plans
+S.folded = S.folded || {};                  // exercise name → true when folded by hand; false when unfolded after clearing
 const ICONS = { today:"&#x1F3CB;", progress:"&#x1F4C8;", history:"&#x1F5D3;", data:"&#x2699;" };
 const DAYN = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
@@ -2167,15 +2204,27 @@ function viewToday(){
     +(clock?'<span class="pill"><b>'+clock+'</b></span>':'')
     +'<button class="finish" data-act="finish"'+((sets||realCardio(tc).length)?'':' disabled')+'>Finish</button></div>';
   h+='<div class="wrap">'+recoveryStrip();
+  if(D.planDays.length){
+    h+='<div class="plans"><span class="lbl">Start a plan</span>'+D.planDays.map(p=>'<button data-act="startplan" data-v="'+esc(p.id)+'">'+esc(p.name)+'<small>'+p.ex.length+'</small></button>').join("")+'</div>';
+  }
   if(!active.length && !activeCardio.length){
-    h+='<div class="empty">Add the first exercise of your session and log straight into it.</div>';
+    h+='<div class="empty">'+(D.planDays.length?'Pick a plan above, or add exercises one at a time.':'Add the first exercise of your session and log straight into it. You can save a plan under Settings → Plans.')+'</div>';
   }
   for(const s of activeCardio) h+=cardioCardHTML(s,tc);
   for(const s of active){
     const a=s.a, hd=head(a), i=esc(s.name), entry=te.find(e=>e.e===s.name);
-    h+='<div class="card" data-done="'+((a.bw?a.fresh:a.complete)?1:0)+'">'
+    const done=(a.bw?a.fresh:a.complete) && a.lastDate===todayISO();
+    const folded = S.folded[s.name]===true || (done && S.folded[s.name]!==false);
+    if(folded){
+      h+='<div class="card fold" data-done="'+(done?1:0)+'"><button class="foldrow" data-act="unfold" data-v="'+i+'">'
+        +'<div class="l"><div class="nm">'+i+'</div><div class="mg">'+(done?'<b>Cleared</b> · ':'')+entry.sets.length+' set'+(entry.sets.length!==1?'s':'')+' at '+hd.n+' '+hd.u.replace(/^(working|cleared) · /,'')+'</div></div>'
+        +'<span class="chev">'+(done?'✓':'▾')+'</span></button></div>';
+      continue;
+    }
+    h+='<div class="card" data-done="'+(done?1:0)+'">'
       +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+' · rest '+restLabel(restFor(s.name))+lastTimeInline(s.name,a)+'</div></div>'
-      +'<div class="r"><span class="n">'+hd.n+'</span><span class="u">'+hd.u.replace(/^(working|cleared) · /,'')+'</span></div></div>'
+      +'<div class="r"><span class="n">'+hd.n+'</span><span class="u">'+hd.u.replace(/^(working|cleared) · /,'')+'</span></div>'
+      +'<button class="foldbtn" data-act="fold" data-v="'+i+'" aria-label="Fold">▴</button></div>'
       + bankLine(a)
       + setTableHTML(s, entry, a)
       + noteHTML(entry,i)
@@ -2312,11 +2361,26 @@ function render(){
 }
 
 /* v8 actions: session clock, finish, summary */
+ROOT.addEventListener("change",ev=>{ const t=ev.target; if(t.dataset.planname){ const p=D.planDays.find(x=>x.id===t.dataset.planname); if(p){ p.name=t.value.trim()||p.name; save(); } } });
 ROOT.addEventListener("click",ev=>{
   const t=ev.target.closest("[data-act]"); if(!t) return;
   const act=t.dataset.act, tI=todayISO();
   if(["pickone","newex","totoday","add","cadd"].includes(act) && !sessStart(tI)){ setSession(tI,Date.now(),null); save(); }
-  if(act==="finish"){ S.summary=true; stopRest(); render(); window.scrollTo({top:0}); }
+  if(act==="fold"){ S.folded[t.dataset.v]=true; render(); }
+  else if(act==="unfold"){ S.folded[t.dataset.v]=false; render(); }
+  else if(act==="startplan"){
+    const p=D.planDays.find(x=>x.id===t.dataset.v); if(!p) return; let n=0;
+    p.ex.forEach(name=>{ const bk=D.bank.find(b=>b.n===name); if(!bk) return;
+      if(bk.c==="Time-Based"||isCardioName(name)){ if(!(D.cardio||[]).some(r=>r.d===tI&&r.e===name)){ D.cardio.push({id:uid(),d:tI,e:name,m:bk.m,type:cardioType(name),km:0,secs:0,placeholder:true}); n++; } }
+      else if(!D.entries.some(e=>e.d===tI&&e.e===name)){ D.entries.push({id:uid(),d:tI,e:name,m:bk.m,sets:[]}); n++; } });
+    if(!sessStart(tI)) setSession(tI,Date.now(),null);
+    save(); render(); toast(n?p.name+" — "+n+" exercise"+(n>1?"s":"")+" added":"Already set up"); window.scrollTo({top:0});
+  }
+  else if(act==="newplan"){ const name=(window.prompt("Name this plan (e.g. Push, Legs, Day A)")||"").trim(); if(!name) return; D.planDays.push({id:uid(),name,ex:[]}); save(); render(); }
+  else if(act==="delplan"){ const p=D.planDays.find(x=>x.id===t.dataset.v); if(p && confirm("Delete the plan '"+p.name+"'? Your exercises and history stay.")){ D.planDays=D.planDays.filter(x=>x.id!==p.id); save(); render(); } }
+  else if(act==="planrm"){ const p=D.planDays.find(x=>x.id===t.dataset.v); if(p){ p.ex=p.ex.filter(x=>x!==t.dataset.n); save(); render(); } }
+  else if(act==="planadd"){ S.pickFor=t.dataset.v; S.picking=true; S.q=""; S.editing=false; renderSheet(); }
+  else if(act==="finish"){ S.summary=true; stopRest(); render(); window.scrollTo({top:0}); }
   else if(act==="sumback"){ S.summary=false; render(); }
   else if(act==="sumdone"){ setSession(tI, sessStart(tI)||Date.now(), Date.now()); save(); S.summary=false; render(); window.scrollTo({top:0}); toast("Done for today"); }
   else if(act==="sumview"){ S.summary=true; render(); window.scrollTo({top:0}); }
@@ -2480,7 +2544,7 @@ ROOT.addEventListener("click",ev=>{
   else if(act==="filter"){ S.filter=v; render(); }
   else if(act==="expand"){ S.expanded=S.expanded===v?null:v; render(); }
   else if(act==="pick"){ S.picking=true; S.q=""; S.editing=false; renderSheet(); }
-  else if(act==="close"){ S.picking=false; S.editing=false; renderSheet(); }
+  else if(act==="close"){ S.pickFor=null; S.picking=false; S.editing=false; renderSheet(); }
   else if(act==="editmode"){ S.editing=!S.editing; renderSheet(); }
   else if(act==="newex"){
     const m=t.dataset.m, tI=todayISO();
@@ -2509,6 +2573,18 @@ ROOT.addEventListener("click",ev=>{
     delete S.draft[v];
     if(S.expanded===v) S.expanded=null;
     save(); render(); toast(v+" deleted");
+  }
+  else if(act==="pickone" && S.pickFor){
+    const p=D.planDays.find(x=>x.id===S.pickFor); S.picking=false; S.editing=false;
+    if(p && !p.ex.includes(v)) p.ex.push(v);
+    if(!D.bank.some(b=>b.n===v)) D.bank.push({n:v,m:t.dataset.m,c:t.dataset.c||"Strength",pt:t.dataset.pt||"Strength Score"});
+    S.pickFor=null; save(); render(); toast(v+" added to "+(p?p.name:"plan"));
+  }
+  else if(act==="newex" && S.pickFor){
+    const p=D.planDays.find(x=>x.id===S.pickFor); S.picking=false; S.editing=false;
+    if(!D.bank.some(b=>b.n===v)) D.bank.push({n:v,m:t.dataset.m,c:"Strength",pt:"Strength Score"});
+    if(p && !p.ex.includes(v)) p.ex.push(v);
+    S.pickFor=null; S.q=""; save(); render(); toast(v+" added to "+(p?p.name:"plan"));
   }
   else if(act==="pickone"){
     S.picking=false; S.editing=false;
@@ -3766,15 +3842,18 @@ const ROOT=document.getElementById("shop");
 const KEY="grocery:v1", CFGKEY="grocery:sync";
 const STORES=["Woolworths","Aldi","Coles"];
 const AREAS=["Kitchen","Bathroom","Laundry","Living room","Bedroom","Garage","Other"];
-const CATS=["Produce","Breads & Cereals","Meat","Dairy","Frozen Foods","Bakery","Pantry Items","Snacks & Candy","Household Items","Personal Care & Health","Wine/Beer/Spirits","Other"];
+const CATS=["Produce","Breads & Cereals","Meat","Dairy","Frozen Foods","Bakery","Pasta, rice & grains","Sauces & condiments","Herbs & spices","Baking & pantry","Snacks & Candy","Household Items","Personal Care & Health","Wine/Beer/Spirits","Other"];
 const CATWORDS={
  "Produce":["apple","banana","orange","mandarin","lemon","lime","grape","berry","berries","strawberry","strawberries","blueberry","blueberries","raspberry","raspberries","mango","pear","peach","plum","melon","watermelon","pineapple","kiwi","avocado","tomato","potato","sweet potato","onion","garlic","ginger","carrot","broccoli","cauliflower","capsicum","pepper","cucumber","lettuce","spinach","kale","rocket","salad","celery","zucchini","pumpkin","corn","mushroom","bean","peas","snow pea","cabbage","leek","herb","basil","coriander","parsley","mint","chilli","chili","eggplant","asparagus","beetroot","fruit","veg"],
- "Breads & Cereals":["cereal","oat","muesli","granola","weet-bix","weetbix","rice","pasta","spaghetti","noodle","quinoa","couscous","flour tortilla","wrap","taco shell","cracker","rice cake","porridge","corn flake","bran"],
+ "Breads & Cereals":["cereal","oat","muesli","granola","weet-bix","weetbix","flour tortilla","wrap","taco shell","cracker","rice cake","porridge","corn flake","bran"],
  "Meat":["chicken","beef","mince","steak","pork","lamb","bacon","ham","sausage","salami","turkey","fish","salmon","tuna","prawn","shrimp","seafood","chop","rib","schnitzel","meat","deli","kebab","roast"],
  "Dairy":["oat milk","almond milk","soy milk","plant milk","milk","cheese","yoghurt","yogurt","butter","cream","egg","margarine","custard","feta","mozzarella","parmesan","cheddar","halloumi","brie"],
  "Frozen Foods":["frozen","ice cream","icecream","ice-cream","icy pole","fish finger","sorbet","gelato","icypole"],
  "Bakery":["bread","loaf","roll","bun","bagel","croissant","muffin","wrap","tortilla","pita","naan","sourdough","crumpet","english muffin","cake","pastry","donut","doughnut"],
- "Pantry Items":["flour","sugar","baking powder","baking soda","bicarb","yeast","vanilla","cocoa","icing","choc chip","chocolate chip","sprinkle","food colour","condensed milk","cornflour","self raising","self-raising","gelatine","syrup","honey","oil","vinegar","salt","spice","stock","sauce","mayo","ketchup","tomato paste","soy","curry","seasoning","jam","peanut butter","nutella","spread","tea","coffee","can of","canned","tin","tinned"],
+ "Pasta, rice & grains":["pasta","spaghetti","penne","fusilli","macaroni","lasagne","lasagna","noodle","rice","risotto","quinoa","couscous","cous cous","polenta","lentil","chickpea","kidney bean","black bean","bean","grain","barley","bulgur","gnocchi"],
+ "Sauces & condiments":["sauce","mayo","mayonnaise","ketchup","tomato paste","passata","soy","mustard","vinegar","oil","dressing","relish","pickle","jam","honey","syrup","spread","peanut butter","nutella","stock","curry paste","pesto","aioli","chutney","marinade","gravy"],
+ "Herbs & spices":["salt","pepper","spice","seasoning","herb","paprika","cumin","cinnamon","chilli","chili","garlic powder","onion powder","oregano","basil","thyme","rosemary","turmeric","curry powder","coriander seed","nutmeg","ginger powder","mixed herbs","italian herbs","stock cube","bay leaf","cardamom","clove","allspice","five spice","garam masala"],
+ "Baking & pantry":["flour","sugar","baking powder","baking soda","bicarb","yeast","vanilla","cocoa","icing","choc chip","chocolate chip","sprinkle","food colour","condensed milk","cornflour","self raising","self-raising","gelatine","tea","coffee","can of","canned","tin","tinned"],
  "Snacks & Candy":["potato chip","corn chip","chip","crisp","pizza","nugget","dumpling","chocolate","lolly","lollies","candy","sweet","biscuit","cookie","popcorn","pretzel","nut","almond","cashew","peanut","trail mix","muesli bar","snack bar","jelly","gum"],
  "Household Items":["toilet paper","paper towel","tissue","bin bag","garbage","dishwash","detergent","laundry","washing powder","softener","bleach","cleaner","spray","sponge","scourer","wipes","foil","cling wrap","glad wrap","baking paper","glad","battery","batteries","light bulb","globe","candle","matches","lighter","air freshener","toilet paper","loo paper","pet food","dog food","cat food","litter","mop","broom","soap"],
  "Personal Care & Health":["shampoo","conditioner","toothpaste","toothbrush","floss","deodorant","razor","shave","body wash","hand wash","moisturiser","moisturizer","sunscreen","panadol","paracetamol","nurofen","ibuprofen","vitamin","tablet","bandaid","band-aid","tampon","pad","nappies","nappy","diaper","wipe","lotion","makeup","cotton","lip balm","hand soap","hair"],
@@ -3809,7 +3888,7 @@ function arr(x){ return Array.isArray(x)?x:(x&&typeof x==="object"?Object.values
 function migrate(j){
   if(!j||typeof j!=="object") return null;
   j.items=arr(j.items).filter(i=>i&&i.id).map(i=>({id:i.id,name:String(i.name||"").trim()||"(unnamed)",area:i.area||"Kitchen",qty:Number(i.qty)||0,crit:!!i.crit,usual:Math.max(1,Number(i.usual)||1),prices:(i.prices&&typeof i.prices==="object")?i.prices:{},cat:CATS.includes(i.cat)?i.cat:(i.cat==="Baking Items"?"Pantry Items":autoCat(i.name||"")),added:i.added||0,u:i.u||0}));
-  j.recipes=arr(j.recipes).filter(r=>r&&r.id).map(r=>({id:r.id,name:String(r.name||"").trim()||"(unnamed)",ings:arr(r.ings).map(String),u:r.u||0}));
+  j.recipes=arr(j.recipes).filter(r=>r&&r.id).map(r=>({id:r.id,name:String(r.name||"").trim()||"(unnamed)",ings:arr(r.ings).map(String),q:(r.q&&typeof r.q==="object")?r.q:{},u:r.u||0}));
   j.shops=arr(j.shops).filter(x=>x&&x.id).map(x=>({id:x.id,ts:x.ts||0,store:x.store||"",lines:arr(x.lines),total:Number(x.total)||0,u:x.u||x.ts||0}));
   j.got=arr(j.got); j.store=j.store||"Woolworths"; j.plans=(j.plans&&typeof j.plans==="object")?j.plans:{};
   if(!j.plans.week){ const ks=Object.keys(j.plans).sort(); if(ks.length){ j.plans={week:j.plans[ks[ks.length-1]]}; } }
@@ -3840,7 +3919,7 @@ function knownPrice(i,store){
   for(const s of STORES){ if(i.prices&&i.prices[s]!=null) return {price:i.prices[s],store:s,exact:false}; }
   return {price:null,store:null,exact:false};
 }
-const onList=()=>D.items.filter(isOut);
+const onList=()=>{ NEEDS=weekNeeds(0); return D.items.filter(i=>(isOut(i)&&!i.skip)||shortFor(i)>0); };
 const gotSet=()=>new Set(D.got);
 
 /* ---------- actions ---------- */
@@ -3851,7 +3930,7 @@ function addItem(name,area,qty,crit){
   D.items.push({id:uid(),name,area:area||"Kitchen",qty:qty,crit:!!crit,usual:1,prices:{},cat:autoCat(name),added:Date.now()});
   save();
 }
-function setQty(id,n){ const i=itemById(id); if(!i) return; i.qty=Math.max(0,n); if(i.qty>0) D.got=D.got.filter(g=>g!==id); save(); }
+function setQty(id,n){ const i=itemById(id); if(!i) return; i.qty=Math.max(0,n); if(i.qty>0) i.skip=false; if(i.qty>0) D.got=D.got.filter(g=>g!==id); save(); }
 function toggleCrit(id){ const i=itemById(id); if(i){ i.crit=!i.crit; save(); } }
 function setPrice(id,store,val){ const i=itemById(id); if(!i) return; i.prices=i.prices||{}; if(val===""||val==null||isNaN(val)) delete i.prices[store]; else i.prices[store]=Math.round(Number(val)*100)/100; save(); }
 function removeItem(id,withUndo){
@@ -3865,7 +3944,7 @@ let undo=null;
 function gotIt(id){
   const i=itemById(id); if(!i) return;
   const before=i.qty;
-  i.qty=Math.max(1,Number(i.usual)||1);
+  i.qty=Math.max(Math.max(1,Number(i.usual)||1), (Number(i.qty)||0)+shortFor(i)); i.skip=false;
   if(!D.got.includes(id)) D.got.push(id);
   undo={id,before};
   save();
@@ -3916,7 +3995,7 @@ function listRow(i,got){
   return '<div class="swipe has-have" data-swipe="'+i.id+'"><button class="del" data-act="swipedel" data-id="'+i.id+'" tabindex="-1">Delete</button><button class="have" data-act="haveit" data-id="'+i.id+'" tabindex="-1">Have it</button>'
     +'<div class="row'+(i.crit?' crit':'')+(got?' got':'')+'" data-id="'+i.id+'">'
     +'<div class="rail"></div>'
-    +'<div class="body"><div class="nm">'+esc(i.name)+'</div><div class="meta">'+priceMeta(i)+'</div></div>'
+    +'<div class="body"><div class="nm">'+esc(i.name)+(getQty(i)>1?' <span class="getn">×'+getQty(i)+'</span>':'')+'</div><div class="meta">'+(shortFor(i)?'<span class="h">meals need '+(NEEDS.needBy[keyOf(i.name)]||shortFor(i))+' · have '+(NEEDS.haveBy[keyOf(i.name)]||0)+'</span> · ':'')+priceMeta(i)+'</div></div>'
     +'<button class="tick" data-act="got" data-id="'+i.id+'" aria-label="'+(got?'Got it — tap to untick':'Got it')+'"><i><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></i></button>'
     +'</div></div>';
 }
@@ -3925,7 +4004,7 @@ function renderList(){
   const out=onList();
   const crit=out.filter(i=>i.crit), non=out.filter(i=>!i.crit);
   const gotItems=D.got.map(itemById).filter(Boolean);
-  const est=out.reduce((a,i)=>a+(knownPrice(i,D.store).price||0),0);
+  const est=out.reduce((a,i)=>a+(knownPrice(i,D.store).price||0)*getQty(i),0);
   let h="";
   if(!out.length&&!gotItems.length){
     h+='<div class="card"><div class="empty">Nothing needed. When something at home hits zero it shows up here.</div></div>';
@@ -3992,9 +4071,9 @@ function renderHome(){
   if(!D.items.length){
     h+='<div class="card"><div class="empty">Add what you keep at home. Set a count to 0 and it goes straight onto the list. Tap ! for must-buys.</div></div>';
   } else {
-    if(WK.size) h+='<div class="filt"><button class="chip" data-act="homefilt" aria-pressed="'+S.homeFilter+'">This week\'s meals only</button></div>';
+    h+='<div class="filt"><input type="search" id="hsearch" placeholder="Search at home" value="'+esc(S.homeQ||"")+'" autocomplete="off">'+(WK.size?'<button class="chip" data-act="homefilt" aria-pressed="'+S.homeFilter+'">This week\'s meals only</button>':'')+'</div>';
     h+='<div class="sec-h" style="margin-bottom:12px"><h2>'+D.items.length+' items</h2><span class="n">worth about <span class="money">'+money(worth)+'</span> at '+esc(D.store)+'</span></div>';
-    const byArea={}; D.items.filter(i=>!S.homeFilter||WK.has(keyOf(i.name))).forEach(i=>{ (byArea[i.area||"Other"]=byArea[i.area||"Other"]||[]).push(i); });
+    const hq=keyOf(S.homeQ||""); const byArea={}; D.items.filter(i=>(!S.homeFilter||WK.has(keyOf(i.name)))&&(!hq||keyOf(i.name).includes(hq))).forEach(i=>{ (byArea[i.area||"Other"]=byArea[i.area||"Other"]||[]).push(i); });
     AREAS.forEach(a=>{
       const arr=(byArea[a]||[]);
       if(!arr.length) return;
@@ -4050,14 +4129,33 @@ function suggest(q){
   return D.items.filter(i=>{ const n=keyOf(i.name); if(n.includes(k)) return true; const nw=words(i.name); return qw.length&&qw.every(w=>nw.some(x=>x.startsWith(w))); })
     .sort((a,b)=>keyOf(a.name).indexOf(k)-keyOf(b.name).indexOf(k)||a.name.localeCompare(b.name)).slice(0,6);
 }
-function saveRecipe(id,name,ings){
-  name=name.trim(); if(!name) return null;
+function saveRecipe(id,name,ings,q){
+  name=name.trim(); if(!name) return null; q=q||{};
   ings=[...new Set(ings.map(x=>x.trim()).filter(Boolean))];
   ings.forEach(n=>{ if(!matchItems(n).length) ensureItem(n); });
   let r=id?recipeById(id):null;
   if(!r){ r={id:uid(),name,ings:[]}; D.recipes.push(r); }
-  r.name=name; r.ings=ings; save(); return r;
+  r.name=name; r.ings=ings; r.q={}; ings.forEach(n=>{ const v=Math.max(1,Math.round(Number(q[keyOf(n)])||1)); if(v>1) r.q[keyOf(n)]=v; }); save(); return r;
 }
+const ingQty=(r,n)=>Math.max(1,Number((r.q||{})[keyOf(n)])||1);
+function ingCost(n){ const m=matchItems(n); if(!m.length) return null; const p=knownPrice(m[0],D.store).price; return p==null?null:p; }
+function mealCost(r){ let t=0, known=0; r.ings.forEach(n=>{ const p=ingCost(n); if(p!=null){ t+=p*ingQty(r,n); known++; } }); return {total:t,known,of:r.ings.length}; }
+/* what this week's planned meals need, in packets, against what's at home */
+function weekNeeds(off){
+  const need={}; const names={};
+  Object.values(plan(off)).flatMap(v=>Array.isArray(v)?v:[v]).forEach(id=>{ const r=recipeById(id); if(!r) return;
+    r.ings.forEach(n=>{ const m=matchItems(n); const key=m.length?m.map(i=>keyOf(i.name)).sort().join("|"):keyOf(n);
+      need[key]=(need[key]||0)+ingQty(r,n); names[key]=names[key]||(m.length?m.map(i=>i.name):[n]); }); });
+  const short={}, needBy={}, haveBy={};
+  Object.keys(need).forEach(key=>{ const ks=key.split("|"); const items=ks.map(k=>D.items.find(i=>keyOf(i.name)===k)).filter(Boolean);
+    const have=items.reduce((t,i)=>t+(Number(i.qty)||0),0); const sh=Math.max(0,need[key]-have);
+    const target=items.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0))[0];
+    if(target){ needBy[keyOf(target.name)]=(needBy[keyOf(target.name)]||0)+need[key]; haveBy[keyOf(target.name)]=have; if(sh>0) short[keyOf(target.name)]=(short[keyOf(target.name)]||0)+sh; } });
+  return {short,needBy,haveBy};
+}
+let NEEDS={short:{},needBy:{},haveBy:{}};
+const shortFor=i=>NEEDS.short[keyOf(i.name)]||0;
+const getQty=i=>Math.max(isOut(i)?Math.max(1,Number(i.usual)||1):0, shortFor(i));
 function setSlot(slot,recipeId,replaceId){ const k=weekKey(S.weekOff); D.plans[k]=D.plans[k]||{}; let ids=slotIds(D.plans[k],slot);
   if(replaceId) ids=ids.map(x=>x===replaceId?recipeId:x); else if(recipeId && !ids.includes(recipeId)) ids.push(recipeId);
   ids=[...new Set(ids.filter(Boolean))]; if(ids.length) D.plans[k][slot]=ids; else delete D.plans[k][slot]; pruneWeeks(); save(); }
@@ -4082,7 +4180,7 @@ function renderMeals(){
           h+='<button class="t" data-act="slot" data-slot="'+key+'" aria-expanded="'+open+'"><span>'+esc(r.name)+'</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>';
           if(open){
             h+='<div class="ing"><ul>'+(r.ings.length?r.ings.map(n=>{ const st=ingStatus(n); const multi=st.items.length>1;
-                return '<li><span>'+esc(n)+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
+                return '<li><span>'+(ingQty(r,n)>1?'<b>'+ingQty(r,n)+'×</b> ':'')+esc(n)+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
               +'<div class="acts"><button class="lnk" data-act="pick" data-slot="'+slot+'" data-replace="'+r.id+'">Swap</button><button class="lnk" data-act="editrec" data-id="'+r.id+'" data-slot="'+slot+'">Edit</button><button class="lnk danger" data-act="unslot" data-slot="'+slot+'" data-id="'+r.id+'">Remove</button></div></div>';
           }
         });
@@ -4094,7 +4192,7 @@ function renderMeals(){
     h+='</div></div>';
   });
   h+='<div class="sec"><div class="sec-h"><h2>Recipes</h2><button class="lnk" data-act="newrec" style="min-height:0">New recipe</button></div>';
-  h+=D.recipes.length?'<div class="card">'+D.recipes.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(r=>'<div class="row"><div class="rail"></div><div class="body" style="padding-left:12px"><div class="nm">'+esc(r.name)+'</div><div class="meta"><span>'+r.ings.length+' ingredient'+(r.ings.length===1?'':'s')+'</span></div></div><button class="lnk" data-act="editrec" data-id="'+r.id+'">Edit</button></div>').join("")+'</div>'
+  h+=D.recipes.length?'<div class="card">'+D.recipes.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(r=>'<div class="row"><div class="rail"></div><div class="body" style="padding-left:12px"><div class="nm">'+esc(r.name)+'</div><div class="meta"><span>'+r.ings.length+' ingredient'+(r.ings.length===1?'':'s')+(mealCost(r).known?' · about '+money(mealCost(r).total)+(mealCost(r).known<r.ings.length?' ('+mealCost(r).known+' of '+r.ings.length+' priced)':''):'')+'</span></div></div><button class="lnk" data-act="editrec" data-id="'+r.id+'">Edit</button></div>').join("")+'</div>'
     :'<div class="card"><div class="empty">Tap + Add on any meal to create your first recipe.</div></div>';
   h+='</div>';
   $("#view-meals").innerHTML=h;
@@ -4114,7 +4212,7 @@ function openPicker(slot,replaceId){
   function draw(){
     const q=keyOf(inp.value);
     const rs=D.recipes.filter(r=>!q||keyOf(r.name).includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
-    let h=rs.map(r=>'<li><button data-rid="'+r.id+'"><span>'+esc(r.name)+'</span><small>'+r.ings.length+' ingredients</small></button></li>').join("");
+    let h=rs.map(r=>'<li><button data-rid="'+r.id+'"><span>'+esc(r.name)+'</span><small>'+r.ings.length+' ingredients'+(mealCost(r).known?' · ~'+money(mealCost(r).total):'')+'</small></button></li>').join("");
     if(q&&!rs.some(r=>keyOf(r.name)===q)) h+='<li><button data-new="1"><span>Create “'+esc(inp.value.trim())+'”</span><small>new</small></button></li>';
     list.innerHTML=h||'<li><button disabled><small>No recipes yet — type a name to create one</small></button></li>';
   }
@@ -4143,18 +4241,18 @@ function openHaveIt(id){
 
 /* create / edit a recipe's name and ingredients */
 function openRecipe(id,slot){
-  const r=id?recipeById(id):{name:"",ings:[]}; let ings=r.ings.slice();
+  const r=id?recipeById(id):{name:"",ings:[],q:{}}; let ings=r.ings.slice(); let q=Object.assign({},r.q||{});
   const sh=$("#sheet"); sh.className="sheet-bg";
   sh.innerHTML='<div class="sheet" role="dialog" aria-label="Recipe"><h2>'+(id?'Edit recipe':'New recipe')+'</h2>'
     +'<label for="rn">Meal name</label><input type="text" id="rn" value="'+esc(r.name)+'">'
     +'<label for="ri">Ingredients — type one, press Enter</label><div class="sugwrap"><input type="text" id="ri" placeholder="e.g. Chicken breast" autocomplete="off" autocorrect="off" autocapitalize="none" enterkeyhint="done"><div class="sug" id="rsug" hidden></div></div>'+'</datalist>'
     +'<div class="chips" id="rchips"></div>'
-    +'<p style="margin-top:10px">Ingredients become At home items. Anything not in the house yet is added at 0, so it goes on the list.</p>'
+    +'<p style="margin-top:10px">Ingredients become At home items. The number is packets per meal — three meals with mince this week means three packets at home, and the shortfall goes on the list.</p>'
     +'<div class="btns"><button id="rcancel">Cancel</button>'+(id?'<button id="rdel">Delete recipe</button>':'')+'<button class="pri" id="rsave">Save</button></div></div>';
   const close=()=>{ sh.className="hidden"; sh.innerHTML=""; };
   sh.onclick=e=>{ if(e.target===sh) close(); };
   const chips=$("#rchips"), ri=$("#ri");
-  function draw(){ chips.innerHTML=ings.map((n,i)=>'<span>'+esc(n)+'<button data-x="'+i+'" aria-label="Remove '+esc(n)+'">×</button></span>').join("")||'<span style="border:0;background:none;color:var(--ink-3)">Nothing yet</span>'; }
+  function draw(){ chips.innerHTML=ings.map((n,i)=>{ const v=Math.max(1,Number(q[keyOf(n)])||1); return '<span class="ingchip"><button data-q="-" data-i="'+i+'" aria-label="Fewer">−</button><b>'+v+'</b><button data-q="+" data-i="'+i+'" aria-label="More">+</button>'+esc(n)+'<button data-x="'+i+'" aria-label="Remove '+esc(n)+'">×</button></span>'; }).join("")||'<span style="border:0;background:none;color:var(--ink-3)">Nothing yet</span>'; }
   const sug=$("#rsug"); let sugRows=[];
   function addIng(v){ v=(v!=null?v:ri.value).trim(); if(!v) return; if(!ings.some(x=>keyOf(x)===keyOf(v))) ings.push(v); ri.value=""; drawSug(); draw(); }
   function drawSug(){
@@ -4169,12 +4267,14 @@ function openRecipe(id,slot){
   sug.onmousedown=e=>e.preventDefault();          // keep the input focused while tapping a suggestion
   sug.onclick=e=>{ const b=e.target.closest("[data-s]"); if(!b) return; addIng(b.dataset.s==="new"?ri.value:sugRows[+b.dataset.s].name); ri.focus(); };
   ri.onblur=()=>{ setTimeout(()=>{ sug.hidden=true; if(ri.value.trim()) addIng(); },150); };
-  chips.onclick=e=>{ const b=e.target.closest("button[data-x]"); if(b){ ings.splice(+b.dataset.x,1); draw(); } };
+  chips.onclick=e=>{ const b=e.target.closest("button[data-x],button[data-q]"); if(!b) return;
+    if(b.dataset.x!==undefined){ ings.splice(+b.dataset.x,1); draw(); return; }
+    const n=ings[+b.dataset.i], k=keyOf(n); q[k]=Math.max(1,(Number(q[k])||1)+(b.dataset.q==="+"?1:-1)); draw(); };
   draw();
   $("#rcancel").onclick=close;
   if($("#rdel")) $("#rdel").onclick=()=>{ if(!confirm("Delete this recipe? Meals using it this week will be cleared.")) return;
     D.recipes=D.recipes.filter(x=>x.id!==id); Object.values(D.plans).forEach(p=>{ Object.keys(p).forEach(k=>{ const ids=slotIds(p,k).filter(x=>x!==id); if(ids.length) p[k]=ids; else delete p[k]; }); }); close(); save(); };
-  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
+  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings,q); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
   setTimeout(()=>(id?ri:$("#rn")).focus(),50);
 }
 
@@ -4193,7 +4293,8 @@ ROOT.addEventListener("click",e=>{
   if(act==="got") (D.got.includes(id)?ungotIt(id):gotIt(id));
   else if(act==="done") doneShopping();
   else if(act==="inc"){ const i=itemById(id); setQty(id,(Number(i.qty)||0)+1); }
-  else if(act==="dec"){ const i=itemById(id); setQty(id,(Number(i.qty)||0)-1); }
+  else if(act==="dec"){ const i=itemById(id); const was=Number(i.qty)||0; setQty(id,was-1);
+    if(was===1 && !i.crit){ i.skip=false; save(); toast(i.name+" is out — on the list", ()=>{ i.skip=true; save(); render(); }, "Not this time"); } }
   else if(act==="crit") toggleCrit(id);
   else if(act==="open"){ S.open=S.open===id?null:id; render(); }
   else if(act==="ptab"){ S.priceTab[id]=t.dataset.store; render(); $('[data-price="'+id+'"]')?.focus(); }
@@ -4211,6 +4312,9 @@ ROOT.addEventListener("click",e=>{
   else if(act==="remove"){ if(confirm("Remove this item from the house?")){ S.open=null; removeItem(id); } }
   else if(act==="swipedel"){ S.open=null; removeItem(id,true); }
   else if(act==="haveit"){ openHaveIt(id); }
+});
+ROOT.addEventListener("input",e=>{
+  if(e.target.id==="hsearch"){ S.homeQ=e.target.value; const pos=e.target.selectionStart; render(); const n=$("#hsearch"); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(x){} } }
 });
 ROOT.addEventListener("change",e=>{
   const el=e.target;
@@ -4251,7 +4355,12 @@ function doAdd(){ const n=$("#addname"); const v=n.value; const qty=Math.max(0,p
 
 /* ---------- toast ---------- */
 let toastT;
-function toast(msg,undoFn){
+function toast(msg,undoFn,label){
+  const el=$("#toast"); el.className="toast"; el.innerHTML=esc(msg)+(undoFn?'<button id="undo">'+esc(label||"Undo")+'</button>':'');
+  if(undoFn) $("#undo").onclick=()=>{ undoFn(); el.className="hidden"; };
+  clearTimeout(toastT); toastT=setTimeout(()=>el.className="hidden",undoFn?6000:3000);
+}
+function toast_old(msg,undoFn){
   const el=$("#toast"); el.className="toast"; el.innerHTML=esc(msg)+(undoFn?'<button id="undo">Undo</button>':'');
   if(undoFn) $("#undo").onclick=()=>{ undoFn(); el.className="hidden"; };
   clearTimeout(toastT); toastT=setTimeout(()=>el.className="hidden",undoFn?6000:3000);
@@ -4745,12 +4854,12 @@ function tripForm(){
     +'<div class="f"><label>or km driven</label><input type="number" inputmode="decimal" id="tf-k" value="'+(f.km!=null&&f.start==null?f.km:'')+'" placeholder="0"></div></div>'
     +'<label class="chk"><input type="checkbox" id="tf-b"'+(f.biz?' checked':'')+'> Business trip (for the logbook)</label>'
     +'<div class="f-act"><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="savetrip">Save trip</button></div>'
-    +'<p class="hint">Fill start and end and the km works itself out; or just type the km. The end reading becomes the car\'s new odometer.</p></div>';
+    +'<p class="hint">Fill start and end and the km works itself out; or just type the km. Type just the last three digits of a reading and the rest fills in. The end reading becomes the car\'s new odometer.</p></div>';
 }
 function fillForm(){
   const f=S.form||{}, c=car(), odo=lastOdo(), last=fills()[0]; const u=unitFor(f.fuel||(c&&c.fuel)||"");
   return '<div class="card form"><div class="fh">'+(f.id?(u==="kWh"?'Edit charge':'Edit fill'):(u==="kWh"?'Log a charge':'Log fuel'))+'</div>'
-    +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="ff-d" value="'+(f.d||today())+'"></div><div class="f"><label>Odometer</label><input type="number" inputmode="numeric" id="ff-o" value="'+(f.odo!=null?f.odo:'')+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div></div>'
+    +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="ff-d" value="'+(f.d||today())+'"></div><div class="f"><label>Odometer</label><input type="number" inputmode="numeric" id="ff-o" value="'+(f.odo!=null?f.odo:(odo!=null?odo:''))+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div></div>'
     +'<div class="f3"><div class="f"><label id="ff-ul">'+(u==="kWh"?"kWh":"Litres")+'</label><input type="number" inputmode="decimal" step="0.01" id="ff-l" value="'+(f.l!=null?f.l:'')+'" placeholder="0.00"></div>'
     +'<div class="f"><label>Cost A$</label><input type="number" inputmode="decimal" step="0.01" id="ff-c" value="'+(f.cost!=null?f.cost:'')+'" placeholder="0.00"></div>'
     +'<div class="f"><label id="ff-pl">Price /'+u+'</label><input type="number" inputmode="decimal" step="0.001" id="ff-p" value="'+(f.l&&f.cost?(f.cost/f.l).toFixed(3):(last&&last.l?(last.cost/last.l).toFixed(3):''))+'" placeholder="1.899"></div></div>'
@@ -4867,6 +4976,12 @@ ROOT.addEventListener("click", e => {
   else if(a==="savecar"){ saveCar(); render(); }
   else if(a==="export"){ exportCSV(); }
 });
+/* odometer shorthand: type the last three digits and the thousands come from the last reading */
+function completeOdo(el){
+  const last=lastOdo(); if(last==null) return; const raw=String(el.value||"").trim(); if(!/^\d{1,3}$/.test(raw)) return;
+  let v=Math.floor(last/1000)*1000+Number(raw); if(v<last) v+=1000; el.value=v;
+}
+ROOT.addEventListener("change", e => { const t=e.target; if(t.id==="tf-e"||t.id==="ff-o"||t.id==="tf-s"){ completeOdo(t); if(t.id!=="ff-o"){ const s0=num(q("#tf-s").value), en=num(q("#tf-e").value); if(s0!=null&&en!=null&&en>s0) q("#tf-k").value=Math.round((en-s0)*10)/10; } } });
 ROOT.addEventListener("input", e => {
   const t=e.target;
   // trip: start + end → km
@@ -5176,6 +5291,8 @@ function applyModules(){
 }
 const SET=document.getElementById("appsettings");
 function settingsOpen(){
+  try{ const v=(document.querySelector('meta[name="app-version"]')||{}).content, b=(document.querySelector('meta[name="app-build"]')||{}).content;
+    document.getElementById("set-ver").textContent = "Connected Life v"+v+" · build "+b; }catch(e){}
   document.getElementById("modlist").innerHTML = Object.entries(MODINFO).map(([k,[n,d]]) =>
     '<div class="modrow"><div class="t"><b>'+n+'</b><span>'+d+'</span></div><button type="button" class="sw2" role="switch" aria-checked="'+isOn(k)+'" data-mod-toggle="'+k+'" aria-label="'+n+'"></button></div>').join("");
   SET.hidden=false; document.body.style.overflow="hidden";
