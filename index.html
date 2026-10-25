@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-version" content="1.1.0">
-<meta name="app-build" content="20261024-055610">
+<meta name="app-version" content="1.2.0">
+<meta name="app-build" content="20261025-134831">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -462,6 +462,7 @@ input:-webkit-autofill, input:-webkit-autofill:focus{-webkit-text-fill-color:var
 #car .chk input{width:18px;height:18px;accent-color:var(--teal)}
 #car .f-act{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
 #car .f-act .btn{flex:0 0 auto}
+#car .odohint{font-size:11.5px;color:var(--teal);height:15px;line-height:15px;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #car .hint{font-size:12.5px;color:var(--mute);line-height:1.5;margin:10px 0 0}
 #car .empty{color:var(--slate);font-size:14.5px;line-height:1.55;padding:20px 4px}
 #car .empty b{color:var(--ink)}
@@ -720,6 +721,22 @@ body{padding:0}
 #gym .pex span{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 11px;font-size:13px}
 #gym .pex span button{width:20px;height:20px;border-radius:50%;color:var(--mute);font-size:14px;line-height:1}
 #gym .pex .padd{border:1px dashed var(--line);border-radius:999px;padding:5px 11px;font-size:13px;color:var(--acc)}
+#gym .pill.loc{cursor:pointer}
+#gym .loctag{font-size:10.5px;font-weight:600;border-radius:5px;padding:2px 6px;margin-left:8px;background:var(--teal-bg);color:var(--acc)}
+#gym .loctag[data-loc="home"]{background:var(--amber-bg);color:var(--acc2)}
+#gym .plan .ph .ploc{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--slate)}
+#gym .goal{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+#gym .goal .gl{font-size:13.5px;margin:6px 0 2px}
+#gym .goal .gs{font-size:12.5px;color:var(--slate);line-height:1.5;margin-bottom:8px}
+#gym .goal .gs[data-state="ahead"],#gym .goal .gs[data-state="done"]{color:var(--acc)}
+#gym .goal .gs[data-state="behind"],#gym .goal .gs[data-state="stalled"]{color:var(--acc2)}
+#gym .goal .gf{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#gym .goal .gf input{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:14px}
+#gym .goal .gf input[type=number]{width:84px}
+#gym .goal .gf button{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--acc)}
+#gym .goalline{display:block;font-size:12px;margin-top:4px;color:var(--slate)}
+#gym .goalline[data-state="ahead"]{color:var(--acc)}
+#gym .goalline[data-state="behind"],#gym .goalline[data-state="stalled"]{color:var(--acc2)}
 /* steppers (bodyweight, cardio, settings) */
 #gym .st{display:flex;align-items:center;gap:6px}
 #gym .st button{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;color:var(--slate);font-size:18px;background:var(--paper)}
@@ -1248,7 +1265,7 @@ const ROOT = document.getElementById("gym");
 
 const SEED = {"entries":[],"timeEntries":[],"bank":[{"n":"Iso-lateral Decline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Incline Bench Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push-ups","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Incline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push Up","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Assisted Pull-up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Basic Back Extension","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Barbell Row","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Iso-lateral pull","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Pull Up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Deadlift","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Dumbbell Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Lateral Raise","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Face Pull","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength ground base squat/lunge both legs","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer strength ground base squat/lunge single leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Leg extension Single Leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Adduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Abduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Leg Extension","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Calf Raise","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Bar)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Dumbbell)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Tricep Pulldown","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Skull Crusher","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Dips","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Cable Crunch","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Leg Raises","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Russian Twist","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Hanging Knee Raise","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Kettlebell Swing","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Farmer Carry","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Clean and Press","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Run 1km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 3km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 5km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 10km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Bike","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Rowing Machine","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Side Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Hollow Hold","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Wall Sit","m":"Legs","c":"Time-Based","pt":"Hold Time"}]};
 const KEY = "gym:v1";
-const APP_VERSION = "8.5";   // bumped whenever the app changes
+const APP_VERSION = "8.6";   // bumped whenever the app changes
 const DATA_VERSION = 5;      // bumped only when the shape of stored data changes
 const DEFAULTS = {rest:90, goalSets:10, goalReps:10, step:2.5, perEx:{},
   cardioRuns:3, paceStep:10, holdStep:10};
@@ -1855,7 +1872,7 @@ function entryHTML(s,d,a){
 function slug(n){ return n.replace(/[^a-zA-Z0-9]/g,"").slice(0,20); }
 function detailHTML(s){
   const a=s.a;
-  if(a.isNew) return '<div class="detail"><div class="note">Nothing logged yet. Add a set and this fills in.</div></div>';
+  if(a.isNew) return '<div class="detail"><div class="note">Nothing logged yet. Add a set and this fills in.</div>'+goalHTML(s.name)+'</div>';
   let h='<div class="detail">'+sparkHTML(a.trend)
     +'<div class="note" style="margin-bottom:9px">'+(a.bw?"Best set each session":"Estimated 1-rep max")+' · are you getting stronger?</div>';
   if(a.bw){
@@ -1889,6 +1906,7 @@ function detailHTML(s){
       +'<div class="note" style="margin-top:8px">'+g.sets+' clean sets of '+g.reps+' in one session clears a weight here.</div>'
       +(g.custom?'<button class="usebtn" data-act="exclear" data-v="'+esc(s.name)+'" style="margin-left:0;margin-right:0;width:100%">Use the default goal instead</button>':"");
   }
+  h+=goalHTML(s.name);
   return h+'</div>';
 }
 
@@ -2006,7 +2024,7 @@ function viewData(){
 
     +'<div class="eyebrow" style="margin:26px 0 9px">Plans</div>'
     +'<div class="note" style="margin-bottom:10px">A plan is a named day — Push, Legs, Day A — with the exercises you do on it. On Train, one tap sets the whole session up.</div>'
-    +D.planDays.map(p=>'<div class="plan"><div class="ph"><input type="text" data-planname="'+esc(p.id)+'" value="'+esc(p.name)+'" aria-label="Plan name"><button data-act="delplan" data-v="'+esc(p.id)+'">Delete</button></div>'
+    +D.planDays.map(p=>'<div class="plan"><div class="ph"><input type="text" data-planname="'+esc(p.id)+'" value="'+esc(p.name)+'" aria-label="Plan name"><button class="ploc" data-act="planloc" data-v="'+esc(p.id)+'">'+locLabel(p.loc||"gym")+'</button><button data-act="delplan" data-v="'+esc(p.id)+'">Delete</button></div>'
       +'<div class="pex">'+p.ex.map(n=>'<span>'+esc(n)+'<button data-act="planrm" data-v="'+esc(p.id)+'" data-n="'+esc(n)+'" aria-label="Remove">×</button></span>').join("")
       +'<button class="padd" data-act="planadd" data-v="'+esc(p.id)+'">+ exercise</button></div></div>').join("")
     +'<button class="solid" data-act="newplan">+ New plan</button>'
@@ -2095,7 +2113,11 @@ function streakWeeks(){
 function thisWeek(){ const k=weekKey(todayISO()); return sessionDates().filter(d=>weekKey(d)===k).length; }
 function sessStart(d){ const s=D.sessions[d]; return s==null?null:(typeof s==="number"?s:s.start); }
 function sessEnd(d){ const s=D.sessions[d]; return s&&typeof s==="object"?s.end||null:null; }
-function setSession(d,start,end){ D.sessions[d]={start,end:end||null}; }
+function sessLoc(d){ const x=D.sessions[d]; return (x&&typeof x==="object"&&x.loc)||null; }
+function setSession(d,start,end,loc){ const prev=D.sessions[d]; const keep=prev&&typeof prev==="object"?prev.loc:null; D.sessions[d]={start,end:end||null,loc:loc||keep||null}; }
+function lastLoc(){ const ds=Object.keys(D.sessions).sort().reverse(); for(const d of ds){ const l=sessLoc(d); if(l) return l; } return "gym"; }
+function todayLoc(){ return sessLoc(todayISO())||lastLoc(); }
+function locLabel(l){ return l==="home"?"🏠 Home":"🏋 Gym"; }
 function sessionClock(){
   const t=todayISO(), s=sessStart(t); if(!s) return "";
   const until=sessEnd(t)||Date.now();
@@ -2103,6 +2125,52 @@ function sessionClock(){
 }
 function sessionDone(){ return !!sessEnd(todayISO()); }
 function volumeOn(d){ return D.entries.filter(e=>e.d===d).reduce((t,e)=>t+e.sets.reduce((u,s)=>u+Math.abs(s.w)*s.r,0),0); }
+
+/* ---- goals: target by a date, with a projection from the trend ---- */
+function goalOf(name){ const o=D.settings.perEx&&D.settings.perEx[name]; return o&&o.goal&&o.goal.target?o.goal:null; }
+function setGoal(name, g){ D.settings.perEx=D.settings.perEx||{}; const o=D.settings.perEx[name]=D.settings.perEx[name]||{}; if(g) o.goal=g; else { delete o.goal; if(!Object.keys(o).length) delete D.settings.perEx[name]; } save(); }
+function goalSeries(name){
+  const bw=isBodyweight(name); const by={};
+  D.entries.filter(e=>e.e===name&&e.sets.length).forEach(e=>{ const v=bw?Math.max(...e.sets.map(x=>x.r)):Math.max(...e.sets.map(x=>Math.abs(x.w))); if(v>(by[e.d]||0)) by[e.d]=v; });
+  return Object.keys(by).sort().map(d=>({d,v:by[d]}));
+}
+function goalStatus(name){
+  const g=goalOf(name); if(!g) return null;
+  const bw=isBodyweight(name), unit=bw?"reps":"kg", ser=goalSeries(name), today=todayISO();
+  const cur=ser.length?ser[ser.length-1].v:0, pb=ser.length?Math.max(...ser.map(x=>x.v)):0;
+  const daysLeft=Math.round((M_ISO(g.by)-M_ISO(today))/864e5);
+  const out={ target:+g.target, by:g.by, unit, cur, pb, daysLeft, done:pb>=+g.target };
+  if(out.done){ out.text="Reached — best "+pb+" "+unit; return out; }
+  const recent=ser.filter(x=>x.d>=addDaysISO(today,-56));
+  const pts=(recent.length>=3?recent:ser).map(x=>({x:(M_ISO(x.d)-M_ISO(today))/864e5, y:x.v}));
+  const span=pts.length?pts[pts.length-1].x-pts[0].x:0;
+  const weeksLeft=Math.max(0.1,daysLeft/7);
+  out.needPerWeek=(out.target-cur)/weeksLeft;
+  if(pts.length<3||span<7){ out.text="Need about "+fmt1(out.needPerWeek)+" "+unit+" a week to make "+fmtDate(g.by)+" — log a few more sessions for a projection"; out.state="early"; return out; }
+  const n=pts.length, mx=pts.reduce((t,p)=>t+p.x,0)/n, my=pts.reduce((t,p)=>t+p.y,0)/n;
+  const slope=pts.reduce((t,p)=>t+(p.x-mx)*(p.y-my),0)/Math.max(1e-9,pts.reduce((t,p)=>t+(p.x-mx)*(p.x-mx),0));
+  out.perWeek=slope*7;
+  const lastGain=pts[pts.length-1].y-pts[0].y;
+  if(slope<=0.01 || lastGain<=0){ out.state="stalled"; out.text="No improvement over the last "+Math.round(span)+" days. Need "+fmt1(out.needPerWeek)+" "+unit+" a week to make "+fmtDate(g.by); return out; }
+  const daysToGo=(out.target-cur)/slope; const eta=addDaysISO(today, Math.ceil(daysToGo)); out.eta=eta;
+  out.state=eta<=g.by?"ahead":"behind";
+  out.text="At this rate "+out.target+" by "+fmtDate(eta)+" — "+(out.state==="ahead"?"on track for ":"after ")+fmtDate(g.by)+(out.state==="behind"?" (need "+fmt1(out.needPerWeek)+" "+unit+"/wk, doing "+fmt1(out.perWeek)+")":"");
+  return out;
+}
+function isBodyweight(name){ const b=D.bank.find(x=>x.n===name); return !!(b&&(b.c==="Bodyweight"||/push.?up|pull.?up|chin.?up|dip|sit.?up|burpee|plank|squat jump|lunge$/i.test(name)&&!/barbell|dumbbell|machine|cable|smith/i.test(name))) || D.entries.filter(e=>e.e===name).every(e=>e.sets.every(x=>Math.abs(x.w)<=1)) && D.entries.some(e=>e.e===name); }
+function addDaysISO(iso,n){ const t=M_ISO(iso); t.setDate(t.getDate()+n); return t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate()); }
+function fmt1(n){ return Math.abs(n)>=10?Math.round(n):Math.round(n*10)/10; }
+function goalHTML(name){
+  const g=goalOf(name), st=goalStatus(name), id=slug(name), bw=isBodyweight(name), unit=bw?"reps":"kg";
+  let h='<div class="goal"><div class="eyebrow">Goal</div>';
+  if(st){
+    h+='<div class="gl"><b>'+st.target+' '+unit+'</b> by '+fmtDate(st.by)+' · best so far '+st.pb+'</div>'
+      +'<div class="gs" data-state="'+(st.state||(st.done?"done":""))+'">'+esc(st.text)+'</div>';
+  }
+  h+='<div class="gf"><input type="number" inputmode="decimal" id="gt_'+id+'" placeholder="'+(bw?'reps':'kg')+'" value="'+(g?g.target:'')+'"><input type="date" id="gd_'+id+'" value="'+(g?g.by:'')+'">'
+    +'<button data-act="goalsave" data-v="'+esc(name)+'">'+(g?'Update':'Set goal')+'</button>'+(g?'<button data-act="goalclear" data-v="'+esc(name)+'">Clear</button>':'')+'</div></div>';
+  return h;
+}
 
 /* ---- header with bodyweight in the corner ---- */
 function headerHTML(title, sub){
@@ -2175,7 +2243,7 @@ function bankLine(a){
 function viewDoneCard(){
   const t=todayISO(), te=todayEntries().filter(e=>e.sets.length), sets=te.reduce((n,e)=>n+e.sets.length,0), vol=volumeOn(t);
   const dn=new Date();
-  let h=headerHTML(DAYN[dn.getDay()], 'Session done · <b>'+te.length+'</b> exercise'+(te.length!==1?'s':'')+' · <b>'+sets+'</b> sets · <b>'+Math.round(vol).toLocaleString()+'</b> kg');
+  let h=headerHTML(DAYN[dn.getDay()], locLabel(todayLoc())+' · Session done · <b>'+te.length+'</b> exercise'+(te.length!==1?'s':'')+' · <b>'+sets+'</b> sets · <b>'+Math.round(vol).toLocaleString()+'</b> kg');
   const streak=streakWeeks(), wk=thisWeek(), clock=sessionClock();
   h+='<div class="sbar">'+(streak?'<span class="pill"><i></i>'+streak+' week streak</span>':'')+'<span class="pill">'+wk+' this week</span>'+(clock?'<span class="pill"><b>'+clock+'</b></span>':'')+'</div>';
   h+='<div class="wrap">'+recoveryStrip();
@@ -2202,6 +2270,7 @@ function viewToday(){
     +(streak?'<span class="pill"><i></i>'+streak+' week streak</span>':'')
     +'<span class="pill">'+wk+' this week</span>'
     +(clock?'<span class="pill"><b>'+clock+'</b></span>':'')
+    +'<button class="pill loc" data-act="loc" title="Where is this session?">'+locLabel(todayLoc())+'</button>'
     +'<button class="finish" data-act="finish"'+((sets||realCardio(tc).length)?'':' disabled')+'>Finish</button></div>';
   h+='<div class="wrap">'+recoveryStrip();
   if(D.planDays.length){
@@ -2222,7 +2291,7 @@ function viewToday(){
       continue;
     }
     h+='<div class="card" data-done="'+(done?1:0)+'">'
-      +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+' · rest '+restLabel(restFor(s.name))+lastTimeInline(s.name,a)+'</div></div>'
+      +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+' · rest '+restLabel(restFor(s.name))+lastTimeInline(s.name,a)+'</div>'+(goalStatus(s.name)?'<div class="mg goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+goalStatus(s.name).target+' '+goalStatus(s.name).unit+' by '+fmtDate(goalStatus(s.name).by)+(goalStatus(s.name).eta?' · at this rate '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?' · stalled':'')+'</div>':'')+'</div>'
       +'<div class="r"><span class="n">'+hd.n+'</span><span class="u">'+hd.u.replace(/^(working|cleared) · /,'')+'</span></div>'
       +'<button class="foldbtn" data-act="fold" data-v="'+i+'" aria-label="Fold">▴</button></div>'
       + bankLine(a)
@@ -2312,7 +2381,7 @@ function viewProgress(){
     const cap = a.isNew?"new":(a.cardio?a.banked+"/"+a.runs+" at target":a.bw?(done?"best":a.lastBest+"/"+a.target):(a.complete?"cleared":(a.sets||0)+"/"+(a.N||10)+" clean"));
     h+='<div class="prow" data-done="'+(done?1:0)+'"><button style="width:100%;text-align:left" data-act="expand" data-v="'+i+'">'
       +'<span class="a"><span class="nm">'+i+'</span><span class="w">'+big+'</span></span>'
-      +'<span class="b">'+miniHTML(a)+'<span class="c">'+cap+' · '+agoLabel(a.lastDate)+'</span></span></button>'
+      +'<span class="b">'+miniHTML(a)+'<span class="c">'+cap+' · '+agoLabel(a.lastDate)+'</span></span>'+(goalStatus(s.name)?'<span class="goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+goalStatus(s.name).target+' '+goalStatus(s.name).unit+' by '+fmtDate(goalStatus(s.name).by)+' · '+(goalStatus(s.name).done?'reached':goalStatus(s.name).eta?'at this rate '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?'stalled':'need more data')+'</span>':'')+'</button>'
       +(open?(a.cardio?cardioDetailHTML(s):detailHTML(s))
         +'<button class="solid" data-act="totoday" data-v="'+i+'" style="margin-top:12px;background:var(--acc);color:var(--acc-ink);border:0;font-weight:600">Add to today</button>'
         +'<button class="solid" data-alt="1" data-act="wipe" data-v="'+i+'" style="margin-top:8px">Delete exercise</button>':"")
@@ -2333,7 +2402,7 @@ function viewHistory(){
     const open=S.expanded===d, cr=realCardio((D.cardio||[]).filter(x=>x.d===d));
     const sets=es.reduce((n,e)=>n+e.sets.length,0);
     const names=[...es.map(e=>e.e),...cr.map(r=>r.e)];
-    h+='<div class="sess"><button class="d" data-act="expand" data-v="'+esc(d)+'"><span class="dt">'+fmtDate(d)+'</span>'
+    h+='<div class="sess"><button class="d" data-act="expand" data-v="'+esc(d)+'"><span class="dt">'+fmtDate(d)+'</span>'+(sessLoc(d)?'<span class="loctag" data-loc="'+sessLoc(d)+'">'+(sessLoc(d)==="home"?"Home":"Gym")+'</span>':'')
       +'<span class="sm">'+esc(names.join(", "))+'</span><span class="ar">'+(sets?sets+' sets':'')+(open?' ▴':' ▾')+'</span></button>';
     if(open){
       h+='<div class="body">';
@@ -2373,9 +2442,14 @@ ROOT.addEventListener("click",ev=>{
     p.ex.forEach(name=>{ const bk=D.bank.find(b=>b.n===name); if(!bk) return;
       if(bk.c==="Time-Based"||isCardioName(name)){ if(!(D.cardio||[]).some(r=>r.d===tI&&r.e===name)){ D.cardio.push({id:uid(),d:tI,e:name,m:bk.m,type:cardioType(name),km:0,secs:0,placeholder:true}); n++; } }
       else if(!D.entries.some(e=>e.d===tI&&e.e===name)){ D.entries.push({id:uid(),d:tI,e:name,m:bk.m,sets:[]}); n++; } });
-    if(!sessStart(tI)) setSession(tI,Date.now(),null);
+    setSession(tI, sessStart(tI)||Date.now(), null, p.loc||"gym");
     save(); render(); toast(n?p.name+" — "+n+" exercise"+(n>1?"s":"")+" added":"Already set up"); window.scrollTo({top:0});
   }
+  else if(act==="goalsave"){ const name=t.dataset.v, id=slug(name); const tg=parseFloat((ROOT.querySelector("#gt_"+id)||{}).value), by=(ROOT.querySelector("#gd_"+id)||{}).value;
+    if(!(tg>0)||!by){ toast("Enter a target and a date"); return; } setGoal(name,{target:tg,by}); render(); toast("Goal set"); }
+  else if(act==="goalclear"){ setGoal(t.dataset.v,null); render(); }
+  else if(act==="loc"){ const cur=todayLoc(); setSession(tI, sessStart(tI)||Date.now(), sessEnd(tI), cur==="home"?"gym":"home"); save(); render(); }
+  else if(act==="planloc"){ const p=D.planDays.find(x=>x.id===t.dataset.v); if(p){ p.loc=(p.loc||"gym")==="home"?"gym":"home"; save(); render(); } }
   else if(act==="newplan"){ const name=(window.prompt("Name this plan (e.g. Push, Legs, Day A)")||"").trim(); if(!name) return; D.planDays.push({id:uid(),name,ex:[]}); save(); render(); }
   else if(act==="delplan"){ const p=D.planDays.find(x=>x.id===t.dataset.v); if(p && confirm("Delete the plan '"+p.name+"'? Your exercises and history stay.")){ D.planDays=D.planDays.filter(x=>x.id!==p.id); save(); render(); } }
   else if(act==="planrm"){ const p=D.planDays.find(x=>x.id===t.dataset.v); if(p){ p.ex=p.ex.filter(x=>x!==t.dataset.n); save(); render(); } }
@@ -2791,13 +2865,15 @@ if(window.caches && caches.keys){
 
 /* ---- shared read-only surface for the rest of the app ---- */
 function wentDates(){ return [...new Set(D.entries.map(e=>e.d))]; }
+function gymDates(){ return wentDates().filter(d=>sessLoc(d)!=="home"); }
+function homeDates(){ return wentDates().filter(d=>sessLoc(d)==="home"); }
 function planned(){ return D.plan.slice(); }
 function togglePlan(iso){
   const i = D.plan.indexOf(iso);
   if(i>=0) D.plan.splice(i,1); else D.plan.push(iso);
   D.plan.sort(); save();
 }
-return { render, api:{ wentDates, planned, togglePlan, version:()=>APP_VERSION } };
+return { render, api:{ wentDates, gymDates, homeDates, planned, togglePlan, version:()=>APP_VERSION } };
 })();
 
 
@@ -4849,17 +4925,17 @@ function tripForm(){
   const f=S.form||{}, odo=lastOdo();
   return '<div class="card form"><div class="fh">'+(f.id?'Edit trip':'Log a trip')+'</div>'
     +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="tf-d" value="'+(f.d||today())+'"></div><div class="f"><label>Purpose</label><input type="text" id="tf-p" value="'+esc(f.purpose||'')+'" placeholder="Work site, groceries…"></div></div>'
-    +'<div class="f3"><div class="f"><label>Odometer start</label><input type="number" inputmode="numeric" id="tf-s" value="'+(f.start!=null?f.start:(odo!=null?odo:''))+'"></div>'
-    +'<div class="f"><label>Odometer end</label><input type="number" inputmode="numeric" id="tf-e" value="'+(f.end!=null?f.end:'')+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div>'
-    +'<div class="f"><label>or km driven</label><input type="number" inputmode="decimal" id="tf-k" value="'+(f.km!=null&&f.start==null?f.km:'')+'" placeholder="0"></div></div>'
+    +'<div class="f3"><div class="f"><label>Start (odometer)</label><input type="number" inputmode="numeric" id="tf-s" value="'+(f.start!=null?f.start:(odo!=null?odo:''))+'"></div>'
+    +'<div class="f"><label>End (odometer)</label><input type="number" inputmode="numeric" id="tf-e" value="'+(f.end!=null?f.end:'')+'" placeholder="km driven or reading"><div class="odohint" id="tf-e-hint"></div></div>'
+    +'<div class="f"><label>Distance (km)</label><input type="number" inputmode="decimal" id="tf-k" value="'+(f.km!=null&&f.start==null?f.km:'')+'" placeholder="auto"></div></div>'
     +'<label class="chk"><input type="checkbox" id="tf-b"'+(f.biz?' checked':'')+'> Business trip (for the logbook)</label>'
     +'<div class="f-act"><button type="button" class="ghost" data-act="cancel">Cancel</button><button type="button" class="btn" data-act="savetrip">Save trip</button></div>'
-    +'<p class="hint">Fill start and end and the km works itself out; or just type the km. Type just the last three digits of a reading and the rest fills in. The end reading becomes the car\'s new odometer.</p></div>';
+    +'<p class="hint">Start is filled in from the last reading. For End, type just the last digits — with a start of 100,000, typing 10 becomes 100,010 — or type the whole number. Distance fills in by itself; type it directly if you don\'t know the readings.</p></div>';
 }
 function fillForm(){
   const f=S.form||{}, c=car(), odo=lastOdo(), last=fills()[0]; const u=unitFor(f.fuel||(c&&c.fuel)||"");
   return '<div class="card form"><div class="fh">'+(f.id?(u==="kWh"?'Edit charge':'Edit fill'):(u==="kWh"?'Log a charge':'Log fuel'))+'</div>'
-    +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="ff-d" value="'+(f.d||today())+'"></div><div class="f"><label>Odometer</label><input type="number" inputmode="numeric" id="ff-o" value="'+(f.odo!=null?f.odo:(odo!=null?odo:''))+'" placeholder="'+(odo!=null?odo+'…':'')+'"></div></div>'
+    +'<div class="f2"><div class="f"><label>Date</label><input type="date" id="ff-d" value="'+(f.d||today())+'"></div><div class="f"><label>Odometer</label><input type="number" inputmode="numeric" id="ff-o" value="'+(f.odo!=null?f.odo:(odo!=null?odo:''))+'" placeholder="km since last or reading"><div class="odohint" id="ff-o-hint"></div></div></div>'
     +'<div class="f3"><div class="f"><label id="ff-ul">'+(u==="kWh"?"kWh":"Litres")+'</label><input type="number" inputmode="decimal" step="0.01" id="ff-l" value="'+(f.l!=null?f.l:'')+'" placeholder="0.00"></div>'
     +'<div class="f"><label>Cost A$</label><input type="number" inputmode="decimal" step="0.01" id="ff-c" value="'+(f.cost!=null?f.cost:'')+'" placeholder="0.00"></div>'
     +'<div class="f"><label id="ff-pl">Price /'+u+'</label><input type="number" inputmode="decimal" step="0.001" id="ff-p" value="'+(f.l&&f.cost?(f.cost/f.l).toFixed(3):(last&&last.l?(last.cost/last.l).toFixed(3):''))+'" placeholder="1.899"></div></div>'
@@ -4915,6 +4991,7 @@ function render(){
 function q(s){ return ROOT.querySelector(s); }
 function fuelSel(){ const b=ROOT.querySelector('[data-fuel][aria-pressed="true"]'); return b?b.dataset.fuel:null; }
 function saveTrip(){
+  completeOdo(q("#tf-e"));
   const d=q("#tf-d").value||today(), s=num(q("#tf-s").value), e=num(q("#tf-e").value); let km=num(q("#tf-k").value);
   if(s!=null && e!=null && e>s) km=e-s;
   if(!km || km<=0){ q(km==null&&s!=null?"#tf-e":"#tf-k").focus(); return; }
@@ -4923,6 +5000,7 @@ function saveTrip(){
   save(); S.add=null; S.form=null;
 }
 function saveFill(){
+  completeOdo(q("#ff-o"));
   const d=q("#ff-d").value||today(), odo=num(q("#ff-o").value); let l=num(q("#ff-l").value), cost=num(q("#ff-c").value), p=num(q("#ff-p").value);
   if(l!=null && cost==null && p) cost=l*p; if(cost!=null && l==null && p) l=cost/p;
   if(!cost || cost<=0){ q("#ff-c").focus(); return; }
@@ -4977,15 +5055,23 @@ ROOT.addEventListener("click", e => {
   else if(a==="export"){ exportCSV(); }
 });
 /* odometer shorthand: type the last three digits and the thousands come from the last reading */
-function completeOdo(el){
-  const last=lastOdo(); if(last==null) return; const raw=String(el.value||"").trim(); if(!/^\d{1,3}$/.test(raw)) return;
-  let v=Math.floor(last/1000)*1000+Number(raw); if(v<last) v+=1000; el.value=v;
+function odoBase(el){ if(el.id==="tf-e"){ const s0=num((q("#tf-s")||{}).value); if(s0!=null) return s0; } return lastOdo(); }
+/* a number smaller than the base is kilometres driven: End = Start + typed. A number at or above the base is the reading itself. */
+function odoComplete(base, raw){
+  if(base==null || !/^\d+(\.\d+)?$/.test(raw)) return null;
+  const v=Number(raw); if(!(v>0)) return null;
+  return v<base ? Math.round((base+v)*10)/10 : null;
 }
-ROOT.addEventListener("change", e => { const t=e.target; if(t.id==="tf-e"||t.id==="ff-o"||t.id==="tf-s"){ completeOdo(t); if(t.id!=="ff-o"){ const s0=num(q("#tf-s").value), en=num(q("#tf-e").value); if(s0!=null&&en!=null&&en>s0) q("#tf-k").value=Math.round((en-s0)*10)/10; } } });
+function completeOdo(el){ const raw=String(el.value||"").trim(), v=odoComplete(odoBase(el), raw); if(v!=null){ el.value=v; const h=q("#"+el.id+"-hint"); if(h) h.textContent="+"+raw+" km"; } }
+function previewOdo(el){ const h=q("#"+el.id+"-hint"); if(!h) return; const base=odoBase(el), raw=String(el.value||"").trim(), v=odoComplete(base, raw); h.textContent=v!=null?"→ "+v.toLocaleString():""; }
+ROOT.addEventListener("change", e => { const t=e.target; if(t.id==="tf-e"||t.id==="ff-o"){ completeOdo(t); if(t.id==="tf-e"){ const s0=num(q("#tf-s").value), en=num(q("#tf-e").value); if(s0!=null&&en!=null&&en>s0) q("#tf-k").value=Math.round((en-s0)*10)/10; } } });
 ROOT.addEventListener("input", e => {
   const t=e.target;
   // trip: start + end → km
-  if(t.id==="tf-s"||t.id==="tf-e"){ const s=num(q("#tf-s").value), en=num(q("#tf-e").value); if(s!=null&&en!=null&&en>s) q("#tf-k").value=Math.round((en-s)*10)/10; }
+  if(t.id==="tf-e"||t.id==="ff-o") previewOdo(t);
+  if(t.id==="tf-s") previewOdo(q("#tf-e"));
+  if(t.id==="tf-s"||t.id==="tf-e"){ const s=num(q("#tf-s").value); const en=odoComplete(s, String(q("#tf-e").value||"").trim()) ?? num(q("#tf-e").value);
+    if(s!=null&&en!=null&&en>s) q("#tf-k").value=Math.round((en-s)*10)/10; }
   // fill: any two of litres / cost / price
   if(t.id==="ff-l"||t.id==="ff-c"||t.id==="ff-p"){
     const l=num(q("#ff-l").value), c=num(q("#ff-c").value), p=num(q("#ff-p").value);
@@ -5016,7 +5102,7 @@ const HISTORY = 6;               // how many closed cycles the insights look bac
 /* ---------- facts: everything the rules are allowed to know ---------- */
 function factsFor(c, today){
   const inC = iso => { const d = M.fromISO(iso); return d && d >= c.start && d <= c.end; };
-  const went = G.wentDates().filter(inC), plan = G.planned().filter(inC), wentSet = new Set(went);
+  const went = (G.gymDates||G.wentDates)().filter(inC), plan = G.planned().filter(inC), wentSet = new Set(went);
   const bill = M.gymBill();
   const cost = bill ? M.perCycle(bill) : 0;
   const done = went.length, planned = plan.length;
@@ -5040,7 +5126,7 @@ function facts(){
     if(!f.done && !f.planned && !f.everyday) break;     // nothing recorded before this point
     hist.push(f);
   }
-  const all = G.wentDates().sort();
+  const all = (G.gymDates||G.wentDates)().sort();
   const last = all.length ? all[all.length-1] : null;
   const sinceLast = last ? Math.round((M.fromISO(today) - M.fromISO(last))/86400000) : null;
   // weekday miss pattern over the last 8 weeks
