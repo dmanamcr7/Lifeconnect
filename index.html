@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-version" content="1.2.0">
-<meta name="app-build" content="20261025-134831">
+<meta name="app-version" content="1.3.0">
+<meta name="app-build" content="20261026-110758">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -725,18 +725,38 @@ body{padding:0}
 #gym .loctag{font-size:10.5px;font-weight:600;border-radius:5px;padding:2px 6px;margin-left:8px;background:var(--teal-bg);color:var(--acc)}
 #gym .loctag[data-loc="home"]{background:var(--amber-bg);color:var(--acc2)}
 #gym .plan .ph .ploc{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--slate)}
-#gym .goal{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-#gym .goal .gl{font-size:13.5px;margin:6px 0 2px}
-#gym .goal .gs{font-size:12.5px;color:var(--slate);line-height:1.5;margin-bottom:8px}
-#gym .goal .gs[data-state="ahead"],#gym .goal .gs[data-state="done"]{color:var(--acc)}
-#gym .goal .gs[data-state="behind"],#gym .goal .gs[data-state="stalled"]{color:var(--acc2)}
-#gym .goal .gf{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-#gym .goal .gf input{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:14px}
-#gym .goal .gf input[type=number]{width:84px}
-#gym .goal .gf button{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--acc)}
+#gym .exgoal{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+#gym .exgoal .gl{font-size:13.5px;margin:6px 0 2px}
+#gym .exgoal .gs{font-size:12.5px;color:var(--slate);line-height:1.5;margin-bottom:8px}
+#gym .exgoal .gs[data-state="ahead"],#gym .exgoal .gs[data-state="done"]{color:var(--acc)}
+#gym .exgoal .gs[data-state="behind"],#gym .exgoal .gs[data-state="stalled"]{color:var(--acc2)}
+#gym .exgoal .gf{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#gym .exgoal .gf input{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:14px}
+#gym .exgoal .gf input[type=number]{width:84px}
+#gym .exgoal .gf button{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--acc)}
 #gym .goalline{display:block;font-size:12px;margin-top:4px;color:var(--slate)}
 #gym .goalline[data-state="ahead"]{color:var(--acc)}
 #gym .goalline[data-state="behind"],#gym .goalline[data-state="stalled"]{color:var(--acc2)}
+#gym .sets{padding:8px 15px 0}
+#gym .sets .set{display:flex;align-items:center;gap:12px;padding:7px 0;border-top:1px solid var(--line-soft);font-size:14.5px}
+#gym .sets .set .i{color:var(--mute);font-size:13px;width:18px}
+#gym .sets .set .v{flex:1;font-variant-numeric:tabular-nums}
+#gym .sets .set .v em{font-style:normal;color:var(--mute);font-size:12.5px}
+#gym .sets .set button{font-size:12.5px;color:var(--slate);border:1px solid var(--line);border-radius:7px;padding:4px 9px}
+#gym .card.swipe{position:relative;overflow:hidden}
+#gym .card.swipe .swbody{position:relative;background:var(--card);transition:transform .15s;z-index:1}
+#gym .card.swipe .swrm{position:absolute;top:0;left:0;bottom:0;width:96px;background:var(--clay);color:var(--paper);font-weight:700;font-size:14px;border-radius:0;z-index:0}
+#gym .card.swipe.openr .swbody{transform:translateX(96px)}
+#gym .exbank{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:2px 12px}
+#gym .brow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line-soft)}
+#gym .brow:last-child{border-bottom:0}
+#gym .brow input{flex:1;min-width:0;padding:7px 9px;border:1px solid transparent;border-radius:8px;background:transparent;font-size:14.5px}
+#gym .brow input:focus{border-color:var(--acc);background:var(--paper);outline:none}
+#gym .brow .bm{font-size:12px;color:var(--mute);flex:0 0 auto;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gym .brow button{width:28px;height:28px;border-radius:50%;color:var(--mute);font-size:18px;line-height:1}
+#gym .card .goal{display:flex;justify-content:space-between;gap:10px;padding:8px 15px 0;font-size:12.5px;color:var(--slate)}
+#gym .card .goal b{color:var(--ink);font-weight:500}
+#gym .card .goal span{color:var(--acc)}
 /* steppers (bodyweight, cardio, settings) */
 #gym .st{display:flex;align-items:center;gap:6px}
 #gym .st button{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;color:var(--slate);font-size:18px;background:var(--paper)}
@@ -1265,7 +1285,7 @@ const ROOT = document.getElementById("gym");
 
 const SEED = {"entries":[],"timeEntries":[],"bank":[{"n":"Iso-lateral Decline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Incline Bench Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push-ups","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Incline Chest Press","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Push Up","m":"Chest","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Assisted Pull-up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Basic Back Extension","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Barbell Row","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Iso-lateral pull","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Pull Up","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Deadlift","m":"Back","c":"Strength","pt":"Strength Score"},{"n":"Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Dumbbell Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Lateral Raise","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Iso-Lateral Shoulder Press","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Face Pull","m":"Shoulders","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength ground base squat/lunge both legs","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer strength ground base squat/lunge single leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hammer Strength Leg extension Single Leg","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Adduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Hip Abduction","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Leg Extension","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Calf Raise","m":"Legs","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Bar)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Bicep Curl (Dumbbell)","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Tricep Pulldown","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Skull Crusher","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Dips","m":"Arms","c":"Strength","pt":"Strength Score"},{"n":"Cable Crunch","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Leg Raises","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Russian Twist","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Hanging Knee Raise","m":"Core","c":"Strength","pt":"Strength Score"},{"n":"Kettlebell Swing","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Farmer Carry","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Clean and Press","m":"Full Body","c":"Strength","pt":"Strength Score"},{"n":"Run 1km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 3km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 5km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Run 10km","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Bike","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Rowing Machine","m":"Cardio","c":"Time-Based","pt":"Speed"},{"n":"Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Side Plank","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Hollow Hold","m":"Core","c":"Time-Based","pt":"Hold Time"},{"n":"Wall Sit","m":"Legs","c":"Time-Based","pt":"Hold Time"}]};
 const KEY = "gym:v1";
-const APP_VERSION = "8.6";   // bumped whenever the app changes
+const APP_VERSION = "8.7";   // bumped whenever the app changes
 const DATA_VERSION = 5;      // bumped only when the shape of stored data changes
 const DEFAULTS = {rest:90, goalSets:10, goalReps:10, step:2.5, perEx:{},
   cardioRuns:3, paceStep:10, holdStep:10};
@@ -1757,8 +1777,7 @@ function cardioCardHTML(s,tc){
   const hold=a.type==="hold";
 
   let h='<div class="card" data-done="'+(a.fresh?1:0)+'">'
-    +'<div class="chd"><div class="l"><div class="mg">'+esc(s.muscle)+' · '+(hold?'hold':'time-based')+'</div>'
-    +'<div class="nm">'+i+'</div></div>'
+    +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+' · '+(hold?'hold':'time-based')+'</div>'+(hold&&goalStatus(s.name)?'<div class="mg goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+fmtSecs(goalStatus(s.name).target)+' by '+fmtDate(goalStatus(s.name).by)+(goalStatus(s.name).eta?' · '+(goalStatus(s.name).state==="ahead"?'on track':'not on track')+', '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?' · not on track':'')+'</div>':'')+'</div>'
     +'<div class="r"><span class="n">'+hd.n+'</span><span class="u">'+hd.u+'</span></div></div>'
     + tallyHTML(a)
     +'<div class="goal">'+goalLine(a)+'</div>';
@@ -1773,7 +1792,7 @@ function cardioCardHTML(s,tc){
   }
 
   if(mine.length){
-    h+='<div class="sets">'+mine.map((r,k)=>'<div class="set"><span class="i">'+pad(k+1)+'</span>'
+    h+='<div class="sets">'+mine.map((r,k)=>'<div class="set"><span class="i">'+(k+1)+'</span>'
       +'<span class="v">'+(r.km?nice(r.km)+' km · ':'')+fmtSecs(r.secs)
       +(r.km?' <em>· '+fmtPace(r.secs/r.km)+' · '+nice(kmh(r.km,r.secs))+' km/h</em>':'')+'</span>'
       +'<button data-act="cundo" data-v="'+i+'" data-k="'+r.id+'">Undo</button></div>').join("")+'</div>';
@@ -1806,7 +1825,7 @@ function cardioCardHTML(s,tc){
 }
 function cardioDetailHTML(s){
   const a=s.a, hold=a.type==="hold";
-  if(a.isNew) return '<div class="detail"><div class="note">Nothing logged yet. Your first effort sets the target.</div></div>';
+  if(a.isNew) return '<div class="detail"><div class="note">Nothing logged yet. Your first effort sets the target.</div>'+(hold?goalHTML(s.name):'')+'</div>';
   let h='<div class="detail">'+sparkHTML(a.trend)
     +'<div class="note" style="margin-bottom:9px">'+(hold?'Hold time':'Pace')+' each session · '
     +(hold?'higher is better':'lower is better')+'</div>'
@@ -1816,6 +1835,7 @@ function cardioDetailHTML(s){
   if(!hold) h+='<div class="row"><span>Total distance</span><b>'+nice(a.totalKm)+' km</b></div>'
     +'<div class="row"><span>Last run</span><b>'+nice(a.last.km)+' km in '+fmtSecs(a.last.secs)+'</b></div>';
   h+='<div class="row"><span>Target tightened</span><b>'+a.tightened+' time'+(a.tightened===1?'':'s')+'</b></div>';
+  if(hold) h+=goalHTML(s.name);
   return h+'</div>';
 }
 function lastTimeHTML(name,a){
@@ -2022,6 +2042,11 @@ function viewData(){
     + sRow("Pace step", fmtSecs(g.paceStep)+" /km", "setpace", "How much faster the target gets each time.")
     + sRow("Hold step", fmtSecs(g.holdStep), "sethold", "How much longer a hold target gets.")
 
+    +'<div class="eyebrow" style="margin:26px 0 9px">Exercise bank</div>'
+    +'<div class="note" style="margin-bottom:8px">Rename an exercise here and its history, plans and goals follow. Delete removes it and its history.</div>'
+    +'<input type="search" id="bankq" placeholder="Search exercises" value="'+esc(S.bankQ||"")+'" autocomplete="off" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);margin-bottom:8px">'
+    +'<div class="exbank">'+D.bank.filter(b=>!S.bankQ||b.n.toLowerCase().includes(S.bankQ.toLowerCase())).slice().sort((a,b)=>a.n.localeCompare(b.n)).map(b=>{ const n=D.entries.filter(e=>e.e===b.n&&e.sets.length).length+realCardio((D.cardio||[]).filter(r=>r.e===b.n)).length;
+        return '<div class="brow"><input type="text" data-bankname="'+esc(b.n)+'" value="'+esc(b.n)+'" aria-label="Exercise name"><span class="bm">'+esc(b.m)+(n?' · '+n+' session'+(n>1?'s':''):'')+'</span><button data-act="wipe" data-v="'+esc(b.n)+'" aria-label="Delete">×</button></div>'; }).join("")+'</div>'
     +'<div class="eyebrow" style="margin:26px 0 9px">Plans</div>'
     +'<div class="note" style="margin-bottom:10px">A plan is a named day — Push, Legs, Day A — with the exercises you do on it. On Train, one tap sets the whole session up.</div>'
     +D.planDays.map(p=>'<div class="plan"><div class="ph"><input type="text" data-planname="'+esc(p.id)+'" value="'+esc(p.name)+'" aria-label="Plan name"><button class="ploc" data-act="planloc" data-v="'+esc(p.id)+'">'+locLabel(p.loc||"gym")+'</button><button data-act="delplan" data-v="'+esc(p.id)+'">Delete</button></div>'
@@ -2129,45 +2154,51 @@ function volumeOn(d){ return D.entries.filter(e=>e.d===d).reduce((t,e)=>t+e.sets
 /* ---- goals: target by a date, with a projection from the trend ---- */
 function goalOf(name){ const o=D.settings.perEx&&D.settings.perEx[name]; return o&&o.goal&&o.goal.target?o.goal:null; }
 function setGoal(name, g){ D.settings.perEx=D.settings.perEx||{}; const o=D.settings.perEx[name]=D.settings.perEx[name]||{}; if(g) o.goal=g; else { delete o.goal; if(!Object.keys(o).length) delete D.settings.perEx[name]; } save(); }
+function isHold(name){ return cardioType(name)==="hold"; }
 function goalSeries(name){
+  if(isHold(name)){ const by={}; realCardio((D.cardio||[]).filter(r=>r.e===name)).forEach(r=>{ if(r.secs>(by[r.d]||0)) by[r.d]=r.secs; }); return Object.keys(by).sort().map(d=>({d,v:by[d]})); }
   const bw=isBodyweight(name); const by={};
   D.entries.filter(e=>e.e===name&&e.sets.length).forEach(e=>{ const v=bw?Math.max(...e.sets.map(x=>x.r)):Math.max(...e.sets.map(x=>Math.abs(x.w))); if(v>(by[e.d]||0)) by[e.d]=v; });
   return Object.keys(by).sort().map(d=>({d,v:by[d]}));
 }
 function goalStatus(name){
   const g=goalOf(name); if(!g) return null;
-  const bw=isBodyweight(name), unit=bw?"reps":"kg", ser=goalSeries(name), today=todayISO();
+  const hold=isHold(name), bw=!hold&&isBodyweight(name), unit=hold?"":(bw?"reps":"kg"), ser=goalSeries(name), today=todayISO();
+  const fv=v=>hold?fmtSecs(v):String(v);
   const cur=ser.length?ser[ser.length-1].v:0, pb=ser.length?Math.max(...ser.map(x=>x.v)):0;
   const daysLeft=Math.round((M_ISO(g.by)-M_ISO(today))/864e5);
   const out={ target:+g.target, by:g.by, unit, cur, pb, daysLeft, done:pb>=+g.target };
-  if(out.done){ out.text="Reached — best "+pb+" "+unit; return out; }
-  const recent=ser.filter(x=>x.d>=addDaysISO(today,-56));
-  const pts=(recent.length>=3?recent:ser).map(x=>({x:(M_ISO(x.d)-M_ISO(today))/864e5, y:x.v}));
-  const span=pts.length?pts[pts.length-1].x-pts[0].x:0;
-  const weeksLeft=Math.max(0.1,daysLeft/7);
-  out.needPerWeek=(out.target-cur)/weeksLeft;
-  if(pts.length<3||span<7){ out.text="Need about "+fmt1(out.needPerWeek)+" "+unit+" a week to make "+fmtDate(g.by)+" — log a few more sessions for a projection"; out.state="early"; return out; }
-  const n=pts.length, mx=pts.reduce((t,p)=>t+p.x,0)/n, my=pts.reduce((t,p)=>t+p.y,0)/n;
-  const slope=pts.reduce((t,p)=>t+(p.x-mx)*(p.y-my),0)/Math.max(1e-9,pts.reduce((t,p)=>t+(p.x-mx)*(p.x-mx),0));
-  out.perWeek=slope*7;
-  const lastGain=pts[pts.length-1].y-pts[0].y;
-  if(slope<=0.01 || lastGain<=0){ out.state="stalled"; out.text="No improvement over the last "+Math.round(span)+" days. Need "+fmt1(out.needPerWeek)+" "+unit+" a week to make "+fmtDate(g.by); return out; }
-  const daysToGo=(out.target-cur)/slope; const eta=addDaysISO(today, Math.ceil(daysToGo)); out.eta=eta;
-  out.state=eta<=g.by?"ahead":"behind";
-  out.text="At this rate "+out.target+" by "+fmtDate(eta)+" — "+(out.state==="ahead"?"on track for ":"after ")+fmtDate(g.by)+(out.state==="behind"?" (need "+fmt1(out.needPerWeek)+" "+unit+"/wk, doing "+fmt1(out.perWeek)+")":"");
+  out.fv=fv; out.hold=hold;
+  if(out.done){ out.text="Reached — best "+(hold?"hold ":"set ")+fv(pb)+(unit?" "+unit:""); out.state="done"; return out; }
+  if(ser.length<2){ out.text="Log a couple more sessions and this tells you whether you are on track"; out.state="early"; return out; }
+  // compare the best set in the last window with the best set in the window before it
+  let win=7, now=ser.filter(x=>x.d>addDaysISO(today,-win)), before=ser.filter(x=>x.d<=addDaysISO(today,-win)&&x.d>addDaysISO(today,-2*win));
+  if(now.length<2||!before.length){ win=14; now=ser.filter(x=>x.d>addDaysISO(today,-win)); before=ser.filter(x=>x.d<=addDaysISO(today,-win)&&x.d>addDaysISO(today,-2*win)); }
+  if(!now.length||!before.length){ const last=ser.slice(-2); now=[last[1]]; before=[last[0]]; win=Math.max(1,Math.round((M_ISO(last[1].d)-M_ISO(last[0].d))/864e5)); }
+  const nowBest=Math.max(...now.map(x=>x.v)), beforeBest=Math.max(...before.map(x=>x.v));
+  const gain=nowBest-beforeBest, pct=beforeBest?Math.round(100*gain/beforeBest):null;
+  out.win=win; out.nowBest=nowBest; out.beforeBest=beforeBest; out.pct=pct;
+  const change = gain>0 ? "+"+(pct!=null?pct+"% ":"")+"in the last "+win+" days ("+fv(beforeBest)+" → "+fv(nowBest)+")" : gain<0 ? (pct!=null?pct+"% ":"Down ")+"in the last "+win+" days ("+fv(beforeBest)+" → "+fv(nowBest)+")" : "No change in the last "+win+" days ("+fv(nowBest)+")";
+  if(gain<=0){ out.state="stalled"; out.text=change+". Not on track for "+fmtDate(g.by)+"."; return out; }
+  const perDay=gain/win, eta=addDaysISO(today, Math.ceil((out.target-nowBest)/perDay)); out.eta=eta;
+  out.state = eta<=g.by ? "ahead" : "behind";
+  out.text = change+". At this pace "+fv(out.target)+" by "+fmtDate(eta)+" — "+(out.state==="ahead"?"on track for ":"not on track for ")+fmtDate(g.by)+".";
   return out;
 }
 function isBodyweight(name){ const b=D.bank.find(x=>x.n===name); return !!(b&&(b.c==="Bodyweight"||/push.?up|pull.?up|chin.?up|dip|sit.?up|burpee|plank|squat jump|lunge$/i.test(name)&&!/barbell|dumbbell|machine|cable|smith/i.test(name))) || D.entries.filter(e=>e.e===name).every(e=>e.sets.every(x=>Math.abs(x.w)<=1)) && D.entries.some(e=>e.e===name); }
 function addDaysISO(iso,n){ const t=M_ISO(iso); t.setDate(t.getDate()+n); return t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate()); }
 function fmt1(n){ return Math.abs(n)>=10?Math.round(n):Math.round(n*10)/10; }
 function goalHTML(name){
-  const g=goalOf(name), st=goalStatus(name), id=slug(name), bw=isBodyweight(name), unit=bw?"reps":"kg";
-  let h='<div class="goal"><div class="eyebrow">Goal</div>';
+  const g=goalOf(name), st=goalStatus(name), id=slug(name), hold=isHold(name), bw=!hold&&isBodyweight(name), unit=hold?"":(bw?"reps":"kg");
+  let h='<div class="exgoal"><div class="eyebrow">Goal</div>';
   if(st){
-    h+='<div class="gl"><b>'+st.target+' '+unit+'</b> by '+fmtDate(st.by)+' · best so far '+st.pb+'</div>'
+    h+='<div class="gl"><b>'+(hold?fmtSecs(st.target)+' hold':st.target+' '+unit+(bw?' in one set':''))+'</b> by '+fmtDate(st.by)+' · best so far '+(hold?fmtSecs(st.pb):st.pb)+'</div>'
       +'<div class="gs" data-state="'+(st.state||(st.done?"done":""))+'">'+esc(st.text)+'</div>';
   }
-  h+='<div class="gf"><input type="number" inputmode="decimal" id="gt_'+id+'" placeholder="'+(bw?'reps':'kg')+'" value="'+(g?g.target:'')+'"><input type="date" id="gd_'+id+'" value="'+(g?g.by:'')+'">'
+  h+='<div class="gf">'+(hold
+      ? '<input type="number" inputmode="numeric" id="gm_'+id+'" placeholder="min" value="'+(g?Math.floor(g.target/60):'')+'" style="width:60px"><span>:</span><input type="number" inputmode="numeric" id="gs_'+id+'" placeholder="sec" value="'+(g?pad(g.target%60):'')+'" style="width:60px">'
+      : '<input type="number" inputmode="decimal" id="gt_'+id+'" placeholder="'+(bw?'reps':'kg')+'" value="'+(g?g.target:'')+'">')
+    +'<input type="date" id="gd_'+id+'" value="'+(g?g.by:'')+'">'
     +'<button data-act="goalsave" data-v="'+esc(name)+'">'+(g?'Update':'Set goal')+'</button>'+(g?'<button data-act="goalclear" data-v="'+esc(name)+'">Clear</button>':'')+'</div></div>';
   return h;
 }
@@ -2290,8 +2321,8 @@ function viewToday(){
         +'<span class="chev">'+(done?'✓':'▾')+'</span></button></div>';
       continue;
     }
-    h+='<div class="card" data-done="'+(done?1:0)+'">'
-      +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+' · rest '+restLabel(restFor(s.name))+lastTimeInline(s.name,a)+'</div>'+(goalStatus(s.name)?'<div class="mg goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+goalStatus(s.name).target+' '+goalStatus(s.name).unit+' by '+fmtDate(goalStatus(s.name).by)+(goalStatus(s.name).eta?' · at this rate '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?' · stalled':'')+'</div>':'')+'</div>'
+    h+='<div class="card swipe" data-done="'+(done?1:0)+'" data-sw="'+i+'"><button class="swrm" data-act="drop" data-v="'+i+'" tabindex="-1">Remove</button><div class="swbody">'
+      +'<div class="chd"><div class="l"><div class="nm">'+i+'</div><div class="mg">'+esc(s.muscle)+(a.bw?' · bodyweight':'')+' · rest '+restLabel(restFor(s.name))+lastTimeInline(s.name,a)+'</div>'+(goalStatus(s.name)?'<div class="mg goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+goalStatus(s.name).fv(goalStatus(s.name).target)+(goalStatus(s.name).unit?' '+goalStatus(s.name).unit:'')+' by '+fmtDate(goalStatus(s.name).by)+(goalStatus(s.name).eta?' · '+(goalStatus(s.name).state==="ahead"?'on track':'not on track')+', '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?' · not on track':'')+'</div>':'')+'</div>'
       +'<div class="r"><span class="n">'+hd.n+'</span><span class="u">'+hd.u.replace(/^(working|cleared) · /,'')+'</span></div>'
       +'<button class="foldbtn" data-act="fold" data-v="'+i+'" aria-label="Fold">▴</button></div>'
       + bankLine(a)
@@ -2300,7 +2331,7 @@ function viewToday(){
       +'<div class="foot"><div class="grp"><button data-act="expand" data-v="'+i+'">'+(S.expanded===s.name?"Hide detail":"Detail")+'</button></div>'
       +'<button data-act="drop" data-v="'+i+'">Remove from today</button></div>'
       + (S.expanded===s.name?detailHTML(s):"")
-      +'</div>';
+      +'</div></div>';
   }
   h+='<button class="addex'+(active.length||activeCardio.length?'':' solid')+'" data-act="pick">+ Add exercise</button>';
   return h+'</div>';
@@ -2381,7 +2412,7 @@ function viewProgress(){
     const cap = a.isNew?"new":(a.cardio?a.banked+"/"+a.runs+" at target":a.bw?(done?"best":a.lastBest+"/"+a.target):(a.complete?"cleared":(a.sets||0)+"/"+(a.N||10)+" clean"));
     h+='<div class="prow" data-done="'+(done?1:0)+'"><button style="width:100%;text-align:left" data-act="expand" data-v="'+i+'">'
       +'<span class="a"><span class="nm">'+i+'</span><span class="w">'+big+'</span></span>'
-      +'<span class="b">'+miniHTML(a)+'<span class="c">'+cap+' · '+agoLabel(a.lastDate)+'</span></span>'+(goalStatus(s.name)?'<span class="goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+goalStatus(s.name).target+' '+goalStatus(s.name).unit+' by '+fmtDate(goalStatus(s.name).by)+' · '+(goalStatus(s.name).done?'reached':goalStatus(s.name).eta?'at this rate '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?'stalled':'need more data')+'</span>':'')+'</button>'
+      +'<span class="b">'+miniHTML(a)+'<span class="c">'+cap+' · '+agoLabel(a.lastDate)+'</span></span>'+(goalStatus(s.name)?'<span class="goalline" data-state="'+(goalStatus(s.name).state||"")+'">Goal '+goalStatus(s.name).fv(goalStatus(s.name).target)+(goalStatus(s.name).unit?' '+goalStatus(s.name).unit:'')+' by '+fmtDate(goalStatus(s.name).by)+' · '+(goalStatus(s.name).done?'reached':goalStatus(s.name).eta?(goalStatus(s.name).state==="ahead"?'on track':'not on track')+', '+fmtDate(goalStatus(s.name).eta):goalStatus(s.name).state==="stalled"?'not on track':'need more data')+'</span>':'')+'</button>'
       +(open?(a.cardio?cardioDetailHTML(s):detailHTML(s))
         +'<button class="solid" data-act="totoday" data-v="'+i+'" style="margin-top:12px;background:var(--acc);color:var(--acc-ink);border:0;font-weight:600">Add to today</button>'
         +'<button class="solid" data-alt="1" data-act="wipe" data-v="'+i+'" style="margin-top:8px">Delete exercise</button>':"")
@@ -2429,8 +2460,37 @@ function render(){
   renderSheet();
 }
 
+/* swipe right on a Train card to reveal Remove */
+(()=>{
+  let el=null, sx=0, sy=0, axis=null, dx=0;
+  const closeAll=ex=>ROOT.querySelectorAll(".swipe.openr").forEach(w=>{ if(w!==ex) w.classList.remove("openr"); });
+  ROOT.addEventListener("touchstart",e=>{ const w=e.target.closest(".card.swipe"); if(!w||e.target.closest("input,button,.swrm")){ el=null; return; } el=w; sx=e.touches[0].clientX; sy=e.touches[0].clientY; axis=null; dx=0; },{passive:true});
+  ROOT.addEventListener("touchmove",e=>{ if(!el) return; const mx=e.touches[0].clientX-sx, my=e.touches[0].clientY-sy;
+    if(!axis){ if(Math.abs(mx)<8&&Math.abs(my)<8) return; axis=Math.abs(mx)>Math.abs(my)?"x":"y"; }
+    if(axis!=="x") return; const open=el.classList.contains("openr"); dx=Math.max(0,Math.min(110,mx+(open?96:0)));
+    el.querySelector(".swbody").style.transform="translateX("+dx+"px)"; },{passive:true});
+  ROOT.addEventListener("touchend",()=>{ if(!el) return; const b=el.querySelector(".swbody"); b.style.transform="";
+    if(axis==="x"){ closeAll(el); el.classList.toggle("openr", dx>48); } el=null; });
+  ROOT.addEventListener("click",e=>{ if(!e.target.closest(".swipe.openr")) closeAll(); });
+})();
+
 /* v8 actions: session clock, finish, summary */
-ROOT.addEventListener("change",ev=>{ const t=ev.target; if(t.dataset.planname){ const p=D.planDays.find(x=>x.id===t.dataset.planname); if(p){ p.name=t.value.trim()||p.name; save(); } } });
+function renameExercise(from,to){
+  to=(to||"").trim(); if(!to||to===from) return false;
+  if(D.bank.some(b=>b.n===to)){ toast("There is already an exercise called "+to); return false; }
+  D.bank.forEach(b=>{ if(b.n===from) b.n=to; });
+  D.entries.forEach(e=>{ if(e.e===from) e.e=to; });
+  (D.cardio||[]).forEach(r=>{ if(r.e===from) r.e=to; });
+  D.planDays.forEach(p=>{ p.ex=p.ex.map(x=>x===from?to:x); });
+  if(D.settings.perEx&&D.settings.perEx[from]){ D.settings.perEx[to]=D.settings.perEx[from]; delete D.settings.perEx[from]; }
+  if(S.draft[from]){ S.draft[to]=S.draft[from]; delete S.draft[from]; }
+  if(S.expanded===from) S.expanded=to;
+  save(); return true;
+}
+ROOT.addEventListener("change",ev=>{ const t=ev.target;
+  if(t.dataset.bankname!==undefined){ if(renameExercise(t.dataset.bankname,t.value)) { render(); toast("Renamed"); } else t.value=t.dataset.bankname; }
+  if(t.dataset.planname){ const p=D.planDays.find(x=>x.id===t.dataset.planname); if(p){ p.name=t.value.trim()||p.name; save(); } } });
+ROOT.addEventListener("input",ev=>{ if(ev.target.id==="bankq"){ S.bankQ=ev.target.value; const pos=ev.target.selectionStart; render(); const n=ROOT.querySelector("#bankq"); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} } } });
 ROOT.addEventListener("click",ev=>{
   const t=ev.target.closest("[data-act]"); if(!t) return;
   const act=t.dataset.act, tI=todayISO();
@@ -2445,7 +2505,8 @@ ROOT.addEventListener("click",ev=>{
     setSession(tI, sessStart(tI)||Date.now(), null, p.loc||"gym");
     save(); render(); toast(n?p.name+" — "+n+" exercise"+(n>1?"s":"")+" added":"Already set up"); window.scrollTo({top:0});
   }
-  else if(act==="goalsave"){ const name=t.dataset.v, id=slug(name); const tg=parseFloat((ROOT.querySelector("#gt_"+id)||{}).value), by=(ROOT.querySelector("#gd_"+id)||{}).value;
+  else if(act==="goalsave"){ const name=t.dataset.v, id=slug(name); const by=(ROOT.querySelector("#gd_"+id)||{}).value;
+    const tg=isHold(name) ? (parseInt((ROOT.querySelector("#gm_"+id)||{}).value,10)||0)*60+(parseInt((ROOT.querySelector("#gs_"+id)||{}).value,10)||0) : parseFloat((ROOT.querySelector("#gt_"+id)||{}).value);
     if(!(tg>0)||!by){ toast("Enter a target and a date"); return; } setGoal(name,{target:tg,by}); render(); toast("Goal set"); }
   else if(act==="goalclear"){ setGoal(t.dataset.v,null); render(); }
   else if(act==="loc"){ const cur=todayLoc(); setSession(tI, sessStart(tI)||Date.now(), sessEnd(tI), cur==="home"?"gym":"home"); save(); render(); }
@@ -2644,6 +2705,8 @@ ROOT.addEventListener("click",ev=>{
     D.entries=D.entries.filter(e=>e.e!==v);
     D.cardio=(D.cardio||[]).filter(r=>r.e!==v);
     D.bank=D.bank.filter(b=>b.n!==v);
+    D.planDays.forEach(p=>{ p.ex=p.ex.filter(x=>x!==v); });
+    if(D.settings.perEx) delete D.settings.perEx[v];
     delete S.draft[v];
     if(S.expanded===v) S.expanded=null;
     save(); render(); toast(v+" deleted");
