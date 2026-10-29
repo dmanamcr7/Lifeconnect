@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-version" content="1.3.0">
-<meta name="app-build" content="20261026-110758">
+<meta name="app-version" content="1.5.0">
+<meta name="app-build" content="20261029-030405">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -488,6 +488,14 @@ input:-webkit-autofill, input:-webkit-autofill:focus{-webkit-text-fill-color:var
 #shop .slot .rs .t.more{color:var(--mute);font-size:13px;padding-top:4px}
 #shop .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 #shop .sheet label span{display:block;font-size:12.5px;color:var(--slate);margin-bottom:4px}
+#money .subhead{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin:4px 2px 10px}
+#money .subhead + .hero{margin-top:0}
+#money #overdraw{margin-top:10px}
+#money .odrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--clay-bg);border:1px solid var(--clay);border-radius:10px;padding:10px 12px;font-size:13.5px;color:var(--clay)}
+#money .odrow select{width:auto;flex:1;min-width:140px;font-size:13px;padding:6px 8px}
+#money .odrow .btn{flex:0 0 auto}
+#money .cardtog{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:14.5px}
+#money .cardtog input{width:18px;height:18px;accent-color:var(--teal)}
 /* ================= SHELL ================= */
 .shell-top .backbtn{border:0;background:none;color:var(--teal);font:inherit;font-size:15px;font-weight:600;padding:6px 8px 6px 0;cursor:pointer;flex:0 0 auto}
 .shell-top .backbtn[hidden]{display:none}
@@ -897,6 +905,19 @@ body{padding:0}
 #shop .ingchip button[data-q]{width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:none;color:inherit;font-size:14px;line-height:1;padding:0;min-height:0}
 #shop #hsearch{flex:1;min-width:140px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:inherit;font:inherit;font-size:14px}
 #shop .filt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+#shop .mealctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0 4px}
+#shop .mealctl .srv{display:inline-flex;align-items:center;gap:4px;font-size:13px}
+#shop .mealctl .srv b{min-width:18px;text-align:center}
+#shop .mealctl .srv small{color:var(--ink-3);margin-left:2px}
+#shop .mealctl .srv button{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:none;color:inherit;font-size:15px;line-height:1;padding:0;min-height:0}
+#shop .mealctl .tog{border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12.5px;color:var(--ink-2);background:none;min-height:0}
+#shop .mealctl .tog[aria-pressed="true"]{background:var(--teal);color:#04201B;border-color:var(--teal)}
+#shop .slot .t.done span{color:var(--ink-3);text-decoration:line-through}
+#shop .slot .t.done span small{text-decoration:none}
+#shop .oncetag{font-size:11px;color:var(--ink-3);border:1px dashed var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+#shop #addonce{margin-left:6px}
+#shop #rsv{margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -984,9 +1005,8 @@ body{padding:0}
   <div class="tabs" role="tablist">
     <button role="tab" data-t="overview" aria-selected="true">Overview</button>
     <button role="tab" data-t="cycle" aria-selected="false">This cycle</button>
-    <button role="tab" data-t="ahead" aria-selected="false">Ahead</button>
     <button role="tab" data-t="debt" aria-selected="false">Debt</button>
-    <button role="tab" data-t="savings" aria-selected="false">Savings</button>
+    <button role="tab" data-t="savings" aria-selected="false">Savings &amp; ahead</button>
     <button role="tab" data-t="spending" aria-selected="false">Spending</button>
     <button role="tab" data-t="setup" aria-selected="false">Setup</button>
   </div>
@@ -997,6 +1017,7 @@ body{padding:0}
       <div class="lbl">Left to spend this cycle</div>
       <div class="big num" id="h-left">—</div>
       <div class="sub" id="h-sub"></div>
+      <div id="overdraw" hidden></div>
       <div class="runway">
         <div class="rlbl"><span>Payday</span><span>Next payday</span></div>
         <div class="strip" id="strip"></div>
@@ -1004,20 +1025,20 @@ body{padding:0}
       </div>
     </div>
 
-    <div class="stats">
+    <div class="stats" data-card="stats">
       <div class="stat"><div class="k">Income</div><div class="v num" id="s-inc">—</div><div class="p">this cycle</div></div>
       <div class="stat"><div class="k">Total due</div><div class="v num" id="s-due">—</div><div class="p" id="s-duep"></div></div>
       <div class="stat pos"><div class="k">Paid</div><div class="v num" id="s-paid">—</div><div class="p" id="s-paidp"></div></div>
       <div class="stat neg"><div class="k">Still to pay</div><div class="v num" id="s-still">—</div><div class="p" id="s-stillp"></div></div>
     </div>
 
-    <div class="card">
+    <div class="card" data-card="where">
       <h2>Where the money goes</h2>
       <div class="hint">This cycle, as a share of what comes in.</div>
       <div id="split"></div>
     </div>
 
-    <div class="grid2">
+    <div class="grid2" data-card="pictures">
       <div class="card">
         <h2>Monthly picture</h2>
         <div class="hint">Every recurring item converted to a monthly figure.</div>
@@ -1028,6 +1049,12 @@ body{padding:0}
         <div class="hint">The share of each week's pay already committed.</div>
         <div id="weekly"></div>
       </div>
+    </div>
+
+    <div class="card" data-card="savings">
+      <h2>Savings</h2>
+      <div class="hint">Where every goal stands right now.</div>
+      <div id="ov-savings"></div>
     </div>
   </section>
 
@@ -1073,13 +1100,39 @@ body{padding:0}
     </div>
 
     <div class="card">
-      <h2>Recent spending</h2>
+      <h2>Spent this cycle</h2>
+      <div class="hint" id="spendsum"></div>
       <div id="spendlist"></div>
     </div>
   </section>
 
   <!-- ============ AHEAD ============ -->
-  <section id="p-ahead" hidden>
+  
+
+  <!-- ============ DEBT ============ -->
+  <section id="p-debt" hidden>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat neg"><div class="k">Total owing</div><div class="v num" id="d-total">—</div><div class="p" id="d-carried"></div></div>
+      <div class="stat"><div class="k">Paying / month</div><div class="v num" id="d-perm">—</div><div class="p">scheduled</div></div>
+      <div class="stat"><div class="k">Clear by</div><div class="v num" id="d-by">—</div><div class="p" id="d-months"></div></div>
+    </div>
+    <div class="card">
+      <h2>Your debts</h2>
+      <div class="hint">Started at is what you owed when you began tracking — set it once and leave it. Owing now counts every payment you've ticked in This cycle, across all cycles, so it keeps moving on its own. Paid something straight from your bank instead? Click Owing now and put in the real figure. Rate is annual interest; leave it at 0 for interest-free. Clear by is that debt on its own minimum. The big Clear by at the top runs the whole plan together: interest accrues, spare money goes to your highest-rate debt first, and a cleared debt's payment rolls onto the next one.</div>
+      <div class="tblwrap"><table id="t-debts"></table></div>
+      <div class="btnrow">
+        <button class="btn sm ghost" data-add="debts">Add a debt</button>
+        <div style="flex:1"></div>
+        <div style="font-size:12.5px;color:var(--slate);align-self:center">Extra per month
+          <input type="number" id="d-extra" step="1" min="0" style="width:90px;display:inline-block;margin-left:6px">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SAVINGS ============ -->
+  <section id="p-savings" hidden>
+    <div class="subhead">Looking ahead</div>
     <div class="hero" style="padding:18px">
       <div class="lbl">Safe to save each cycle</div>
       <div class="big num" id="ah-safe">—</div>
@@ -1107,31 +1160,8 @@ body{padding:0}
       <div class="hint">Set aside is what to hold back from a good cycle so the lean ones aren't short. Move it somewhere with a name — a savings goal, or a separate account — or it just gets spent.</div>
       <div id="ah-level"></div>
     </div>
-  </section>
-
-  <!-- ============ DEBT ============ -->
-  <section id="p-debt" hidden>
-    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
-      <div class="stat neg"><div class="k">Total owing</div><div class="v num" id="d-total">—</div><div class="p" id="d-carried"></div></div>
-      <div class="stat"><div class="k">Paying / month</div><div class="v num" id="d-perm">—</div><div class="p">scheduled</div></div>
-      <div class="stat"><div class="k">Clear by</div><div class="v num" id="d-by">—</div><div class="p" id="d-months"></div></div>
-    </div>
-    <div class="card">
-      <h2>Your debts</h2>
-      <div class="hint">Started at is what you owed when you began tracking — set it once and leave it. Owing now counts every payment you've ticked in This cycle, across all cycles, so it keeps moving on its own. Paid something straight from your bank instead? Click Owing now and put in the real figure. Rate is annual interest; leave it at 0 for interest-free. Clear by is that debt on its own minimum. The big Clear by at the top runs the whole plan together: interest accrues, spare money goes to your highest-rate debt first, and a cleared debt's payment rolls onto the next one.</div>
-      <div class="tblwrap"><table id="t-debts"></table></div>
-      <div class="btnrow">
-        <button class="btn sm ghost" data-add="debts">Add a debt</button>
-        <div style="flex:1"></div>
-        <div style="font-size:12.5px;color:var(--slate);align-self:center">Extra per month
-          <input type="number" id="d-extra" step="1" min="0" style="width:90px;display:inline-block;margin-left:6px">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SAVINGS ============ -->
-  <section id="p-savings" hidden>
+  
+    <div class="subhead">Saving</div>
     <div class="hero" style="padding:18px">
       <div class="lbl">Left over, all cycles</div>
       <div class="big num" id="lg-total">—</div>
@@ -1152,6 +1182,11 @@ body{padding:0}
       <div class="tblwrap"><table id="t-savings"></table></div>
       <div class="btnrow"><button class="btn sm ghost" data-add="savings">Add a goal</button></div>
     </div>
+    <div class="card" id="drawcard" hidden>
+      <h2>Taken out</h2>
+      <div class="hint">Money moved from a goal to cover a cycle that went over.</div>
+      <div id="drawlist"></div>
+    </div>
   </section>
 
   <!-- ============ SPENDING ============ -->
@@ -1170,6 +1205,11 @@ body{padding:0}
 
   <!-- ============ SETUP ============ -->
   <section id="p-setup" hidden>
+    <div class="card">
+      <h2>Overview cards</h2>
+      <div class="hint">Turn off anything you don't look at. The left-to-spend figure always shows.</div>
+      <div id="cardtoggles"></div>
+    </div>
     <div class="note">
       <b>Your numbers stay on this device.</b> Everything you type is saved in this browser only — nothing is uploaded and nobody else can see it. That also means it doesn't follow you to another phone or computer, and clearing your browser data wipes it. Use Download backup below to keep a copy.
     </div>
@@ -3185,6 +3225,8 @@ if(typeof state.aheadCount !== "number") state.aheadCount = 6;
 if(typeof state.showReceived !== "boolean") state.showReceived = true;
 if(typeof state.extra !== "number") state.extra = 0;
 if(state.gymBillId === undefined) state.gymBillId = null;
+state.drawdowns = state.drawdowns || [];
+state.cards = Object.assign({stats:true,where:true,pictures:true,savings:true}, state.cards||{});
 
 /* ============================================================
    Cycle maths
@@ -3238,7 +3280,8 @@ function lifetimePaid(type, id){
   return s;
 }
 function owingNow(d){ return Math.max(0, (+d.balance || 0) - lifetimePaid("debt", d.id)); }
-function savedNow(g){ return (+g.saved || 0) + lifetimePaid("savings", g.id); }
+function drawnFrom(id){ return (state.drawdowns||[]).filter(d=>d.goal===id).reduce((t,d)=>t+(+d.amount||0),0); }
+function savedNow(g){ return (+g.saved || 0) + lifetimePaid("savings", g.id) - drawnFrom(g.id); }
 
 // Everything derived, in one place.
 function compute(cyc){
@@ -3371,6 +3414,27 @@ function renderOverview(R){
     ? "Add your pay and your bills in Setup to bring this to life."
     : money(R.leftOver / perDay) + " a day for the " + perDay + " days left, after everything due and " + money(R.everyday) + " already spent.";
 
+  // card toggles
+  document.querySelectorAll("#money [data-card]").forEach(el => { el.hidden = state.cards[el.dataset.card] === false; });
+  // over → cover from savings
+  const od = document.getElementById("overdraw");
+  const goals = state.savings.filter(g => g.active !== false && savedNow(g) > 0);
+  if(R.leftOver < 0 && goals.length){
+    od.hidden = false;
+    od.innerHTML = '<div class="odrow"><span>' + money(-R.leftOver) + ' over this cycle</span>'
+      + '<select id="od-goal">' + goals.map(g => '<option value="' + g.id + '">' + esc(g.name) + ' · ' + money0(savedNow(g)) + '</option>').join("") + '</select>'
+      + '<button class="btn sm" id="od-take">Take from savings</button></div>';
+  } else if(R.leftOver < 0){
+    od.hidden = false; od.innerHTML = '<div class="odrow"><span>' + money(-R.leftOver) + ' over this cycle · no savings to draw on</span></div>';
+  } else od.hidden = true;
+  // savings snapshot
+  const sv = document.getElementById("ov-savings");
+  const act = state.savings.filter(g => g.active !== false);
+  sv.innerHTML = act.length ? act.map(g => { const now = savedNow(g), tg = +g.target || 0, p = tg > 0 ? Math.min(1, now / tg) : 0;
+      return '<div class="bud"><div class="budtop"><span>' + esc(g.name) + '</span><span class="r num">' + money0(now) + (tg > 0 ? ' / ' + money0(tg) + '  ' + pct(p) : '') + '</span></div>'
+        + '<div class="track"><div class="fill" style="width:' + (p * 100) + '%"></div></div></div>'; }).join("")
+      + '<div class="hint" style="margin-top:8px">Total saved ' + money0(act.reduce((t,g) => t + savedNow(g), 0)) + (state.drawdowns.length ? ' · ' + money0(state.drawdowns.reduce((t,d) => t + (+d.amount||0), 0)) + ' taken out over time' : '') + '</div>'
+    : '<div class="empty">No savings goals yet — add one under Savings &amp; ahead.</div>';
   document.getElementById("s-inc").textContent   = money0(R.income);
   document.getElementById("s-due").textContent   = money0(R.totalDue);
   document.getElementById("s-paid").textContent  = money0(R.paid);
@@ -3481,11 +3545,14 @@ function renderCycle(R){
       + '<div class="track"><div class="fill ' + cls + '" style="width:' + Math.min(100, p * 100) + '%"></div></div></div>';
   }).join("");
 
-  // recent
-  const recent = state.spends.slice().sort((a,b) => (b.date || "").localeCompare(a.date || "")).slice(0,8);
-  document.getElementById("spendlist").innerHTML = recent.length
-    ? recent.map(sp => spendRow(sp)).join("")
-    : '<div class="empty">Nothing logged yet.</div>';
+  // every spend inside this cycle, newest first
+  const inCycle = state.spends.filter(sp => { const d = fromISO(sp.date); return d && d >= R.c.start && d <= R.c.end; })
+    .sort((a,b) => (b.date || "").localeCompare(a.date || ""));
+  const spent = inCycle.filter(sp => +sp.amount > 0), covered = inCycle.filter(sp => +sp.amount < 0).reduce((t,sp) => t - (+sp.amount), 0);
+  document.getElementById("spendsum").textContent = inCycle.length ? spent.length + " spend" + (spent.length === 1 ? "" : "s") + " · " + money(spent.reduce((t,sp) => t + (+sp.amount || 0), 0)) + (covered ? " · " + money(covered) + " covered from savings" : "") + " · the full list is under Spending" : "";
+  document.getElementById("spendlist").innerHTML = inCycle.length
+    ? inCycle.map(sp => spendRow(sp)).join("")
+    : '<div class="empty">Nothing logged in this cycle yet.</div>';
 }
 function spendRow(sp){
   const d = fromISO(sp.date);
@@ -3602,7 +3669,16 @@ function renderDebt(R){
 }
 
 /* ---- savings ---- */
+function renderDrawdowns(){
+  const el = document.getElementById("drawlist"), card = document.getElementById("drawcard"); if(!el) return;
+  const rows = (state.drawdowns||[]).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  card.hidden = !rows.length;
+  el.innerHTML = rows.map(d => { const g = state.savings.find(x => x.id === d.goal); const dt = fromISO(d.date);
+    return '<div class="row"><div class="when"><div class="d num">' + (dt?dt.getDate():"–") + '</div><div class="m">' + (dt?MONTHS[dt.getMonth()]:"") + '</div></div>'
+      + '<div class="body"><div class="nm">' + esc(g ? g.name : "Goal") + '</div><div class="meta">covered a cycle that went over</div></div><div class="amt num">' + money(d.amount) + '</div></div>'; }).join("");
+}
 function renderSavings(R){
+  renderDrawdowns();
   // pay received
   document.getElementById("rec-card").hidden = state.showReceived === false;
   document.getElementById("opt-received").checked = state.showReceived !== false;
@@ -3676,7 +3752,10 @@ function renderSpending(R){
 }
 
 /* ---- setup ---- */
+const CARD_NAMES = { stats:"Income / due / paid / still to pay", where:"Where the money goes", pictures:"Monthly and weekly picture", savings:"Savings snapshot" };
 function renderSetup(){
+  const ct = document.getElementById("cardtoggles");
+  if(ct) ct.innerHTML = Object.keys(CARD_NAMES).map(k => '<label class="cardtog"><input type="checkbox" data-card="' + k + '"' + (state.cards[k] !== false ? ' checked' : '') + '> ' + CARD_NAMES[k] + '</label>').join("");
   document.getElementById("anchor").value = state.anchor || "";
   document.getElementById("cyclen").value = state.cycleLen || 14;
   editTable("t-income","income",
@@ -3720,7 +3799,17 @@ function editTable(elId, coll, cols){
 /* ============================================================
    Events (delegated — survives re-render)
    ============================================================ */
+ROOT.addEventListener("click", e => {
+  if(e.target.id === "od-take"){
+    const R = compute(); const gid = document.getElementById("od-goal").value; const g = state.savings.find(x => x.id === gid); if(!g || R.leftOver >= 0) return;
+    const amt = Math.min(-R.leftOver, savedNow(g));
+    state.drawdowns.push({ id:nid(), date:toISO(new Date()), goal:gid, amount:Math.round(amt*100)/100, cycle:R.c.key });
+    state.spends.push({ id:nid(), date:toISO(new Date()), name:"From savings · " + g.name, cat:"From savings", amount:-Math.round(amt*100)/100 });
+    save(); render(); toast(money(amt) + " taken from " + g.name);
+  }
+});
 ROOT.addEventListener("change", e => {
+  if(e.target.dataset.card){ state.cards[e.target.dataset.card] = e.target.checked; save(); render(); return; }
   const t = e.target;
 
   // settle checkbox
@@ -3836,7 +3925,7 @@ ROOT.addEventListener("click", e => {
   }
   if(t.dataset.t){
     ROOT.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b === t)));
-    ["overview","cycle","ahead","debt","savings","spending","setup"].forEach(p =>
+    ["overview","cycle","debt","savings","spending","setup"].forEach(p =>
       document.getElementById("p-" + p).hidden = (p !== t.dataset.t));
     window.scrollTo({ top:0, behavior:"smooth" });
     return;
@@ -3981,9 +4070,9 @@ const ROOT=document.getElementById("shop");
 const KEY="grocery:v1", CFGKEY="grocery:sync";
 const STORES=["Woolworths","Aldi","Coles"];
 const AREAS=["Kitchen","Bathroom","Laundry","Living room","Bedroom","Garage","Other"];
-const CATS=["Produce","Breads & Cereals","Meat","Dairy","Frozen Foods","Bakery","Pasta, rice & grains","Sauces & condiments","Herbs & spices","Baking & pantry","Snacks & Candy","Household Items","Personal Care & Health","Wine/Beer/Spirits","Other"];
+const CATS=["Fruit & vegetables","Breads & Cereals","Meat","Dairy","Frozen Foods","Bakery","Pasta, rice & grains","Sauces & condiments","Seasonings","Baking & pantry","Snacks & Candy","Household Items","Personal Care & Health","Wine/Beer/Spirits","Other"];
 const CATWORDS={
- "Produce":["apple","banana","orange","mandarin","lemon","lime","grape","berry","berries","strawberry","strawberries","blueberry","blueberries","raspberry","raspberries","mango","pear","peach","plum","melon","watermelon","pineapple","kiwi","avocado","tomato","potato","sweet potato","onion","garlic","ginger","carrot","broccoli","cauliflower","capsicum","pepper","cucumber","lettuce","spinach","kale","rocket","salad","celery","zucchini","pumpkin","corn","mushroom","bean","peas","snow pea","cabbage","leek","herb","basil","coriander","parsley","mint","chilli","chili","eggplant","asparagus","beetroot","fruit","veg"],
+ "Fruit & vegetables":["apple","banana","orange","mandarin","lemon","lime","grape","berry","berries","strawberry","strawberries","blueberry","blueberries","raspberry","raspberries","mango","pear","peach","plum","melon","watermelon","pineapple","kiwi","avocado","tomato","potato","sweet potato","onion","garlic","ginger","carrot","broccoli","cauliflower","capsicum","pepper","cucumber","lettuce","spinach","kale","rocket","salad","celery","zucchini","pumpkin","corn","mushroom","bean","peas","snow pea","cabbage","leek","herb","basil","coriander","parsley","mint","chilli","chili","eggplant","asparagus","beetroot","fruit","veg"],
  "Breads & Cereals":["cereal","oat","muesli","granola","weet-bix","weetbix","flour tortilla","wrap","taco shell","cracker","rice cake","porridge","corn flake","bran"],
  "Meat":["chicken","beef","mince","steak","pork","lamb","bacon","ham","sausage","salami","turkey","fish","salmon","tuna","prawn","shrimp","seafood","chop","rib","schnitzel","meat","deli","kebab","roast"],
  "Dairy":["oat milk","almond milk","soy milk","plant milk","milk","cheese","yoghurt","yogurt","butter","cream","egg","margarine","custard","feta","mozzarella","parmesan","cheddar","halloumi","brie"],
@@ -3991,7 +4080,7 @@ const CATWORDS={
  "Bakery":["bread","loaf","roll","bun","bagel","croissant","muffin","wrap","tortilla","pita","naan","sourdough","crumpet","english muffin","cake","pastry","donut","doughnut"],
  "Pasta, rice & grains":["pasta","spaghetti","penne","fusilli","macaroni","lasagne","lasagna","noodle","rice","risotto","quinoa","couscous","cous cous","polenta","lentil","chickpea","kidney bean","black bean","bean","grain","barley","bulgur","gnocchi"],
  "Sauces & condiments":["sauce","mayo","mayonnaise","ketchup","tomato paste","passata","soy","mustard","vinegar","oil","dressing","relish","pickle","jam","honey","syrup","spread","peanut butter","nutella","stock","curry paste","pesto","aioli","chutney","marinade","gravy"],
- "Herbs & spices":["salt","pepper","spice","seasoning","herb","paprika","cumin","cinnamon","chilli","chili","garlic powder","onion powder","oregano","basil","thyme","rosemary","turmeric","curry powder","coriander seed","nutmeg","ginger powder","mixed herbs","italian herbs","stock cube","bay leaf","cardamom","clove","allspice","five spice","garam masala"],
+ "Seasonings":["salt","pepper","spice","seasoning","herb","paprika","cumin","cinnamon","chilli","chili","garlic powder","onion powder","oregano","basil","thyme","rosemary","turmeric","curry powder","coriander seed","nutmeg","ginger powder","mixed herbs","italian herbs","stock cube","bay leaf","cardamom","clove","allspice","five spice","garam masala"],
  "Baking & pantry":["flour","sugar","baking powder","baking soda","bicarb","yeast","vanilla","cocoa","icing","choc chip","chocolate chip","sprinkle","food colour","condensed milk","cornflour","self raising","self-raising","gelatine","tea","coffee","can of","canned","tin","tinned"],
  "Snacks & Candy":["potato chip","corn chip","chip","crisp","pizza","nugget","dumpling","chocolate","lolly","lollies","candy","sweet","biscuit","cookie","popcorn","pretzel","nut","almond","cashew","peanut","trail mix","muesli bar","snack bar","jelly","gum"],
  "Household Items":["toilet paper","paper towel","tissue","bin bag","garbage","dishwash","detergent","laundry","washing powder","softener","bleach","cleaner","spray","sponge","scourer","wipes","foil","cling wrap","glad wrap","baking paper","glad","battery","batteries","light bulb","globe","candle","matches","lighter","air freshener","toilet paper","loo paper","pet food","dog food","cat food","litter","mop","broom","soap"],
@@ -4027,7 +4116,7 @@ function arr(x){ return Array.isArray(x)?x:(x&&typeof x==="object"?Object.values
 function migrate(j){
   if(!j||typeof j!=="object") return null;
   j.items=arr(j.items).filter(i=>i&&i.id).map(i=>({id:i.id,name:String(i.name||"").trim()||"(unnamed)",area:i.area||"Kitchen",qty:Number(i.qty)||0,crit:!!i.crit,usual:Math.max(1,Number(i.usual)||1),prices:(i.prices&&typeof i.prices==="object")?i.prices:{},cat:CATS.includes(i.cat)?i.cat:(i.cat==="Baking Items"?"Pantry Items":autoCat(i.name||"")),added:i.added||0,u:i.u||0}));
-  j.recipes=arr(j.recipes).filter(r=>r&&r.id).map(r=>({id:r.id,name:String(r.name||"").trim()||"(unnamed)",ings:arr(r.ings).map(String),q:(r.q&&typeof r.q==="object")?r.q:{},u:r.u||0}));
+  j.recipes=arr(j.recipes).filter(r=>r&&r.id).map(r=>({id:r.id,name:String(r.name||"").trim()||"(unnamed)",ings:arr(r.ings).map(String),q:(r.q&&typeof r.q==="object")?r.q:{},serves:Math.max(1,Number(r.serves)||2),u:r.u||0}));
   j.shops=arr(j.shops).filter(x=>x&&x.id).map(x=>({id:x.id,ts:x.ts||0,store:x.store||"",lines:arr(x.lines),total:Number(x.total)||0,u:x.u||x.ts||0}));
   j.got=arr(j.got); j.store=j.store||"Woolworths"; j.plans=(j.plans&&typeof j.plans==="object")?j.plans:{};
   if(!j.plans.week){ const ks=Object.keys(j.plans).sort(); if(ks.length){ j.plans={week:j.plans[ks[ks.length-1]]}; } }
@@ -4062,11 +4151,11 @@ const onList=()=>{ NEEDS=weekNeeds(0); return D.items.filter(i=>(isOut(i)&&!i.sk
 const gotSet=()=>new Set(D.got);
 
 /* ---------- actions ---------- */
-function addItem(name,area,qty,crit){
+function addItem(name,area,qty,crit,once){
   name=name.trim(); if(!name) return;
   const ex=D.items.find(i=>keyOf(i.name)===keyOf(name));
-  if(ex){ ex.qty=qty; if(crit) ex.crit=true; if(area) ex.area=area; save(); return; }
-  D.items.push({id:uid(),name,area:area||"Kitchen",qty:qty,crit:!!crit,usual:1,prices:{},cat:autoCat(name),added:Date.now()});
+  if(ex){ ex.qty=qty; if(crit) ex.crit=true; if(once) ex.once=true; if(area) ex.area=area; save(); return; }
+  D.items.push({id:uid(),name,area:area||"Kitchen",qty:qty,crit:!!crit,once:!!once,usual:1,prices:{},cat:autoCat(name),added:Date.now()});
   save();
 }
 function setQty(id,n){ const i=itemById(id); if(!i) return; i.qty=Math.max(0,n); if(i.qty>0) i.skip=false; if(i.qty>0) D.got=D.got.filter(g=>g!==id); save(); }
@@ -4103,6 +4192,7 @@ function doneShopping(){
     const cats=Money.api.cats(); const cat=cats.find(c=>/grocer/i.test(c))||cats[0]||"Groceries";
     Money.api.addSpend({date:iso,name:D.store+" · "+lines.length+" item"+(lines.length>1?"s":""),cat,amount:Math.round(total*100)/100}); } }catch(e){}
   D.shops=D.shops.slice(0,30);
+  D.items=D.items.filter(i=>!(i.once && ids.includes(i.id)));
   D.got=[];
   save();
   toast("Shop saved — "+money(total)+" at "+D.store);
@@ -4134,7 +4224,7 @@ function listRow(i,got){
   return '<div class="swipe has-have" data-swipe="'+i.id+'"><button class="del" data-act="swipedel" data-id="'+i.id+'" tabindex="-1">Delete</button><button class="have" data-act="haveit" data-id="'+i.id+'" tabindex="-1">Have it</button>'
     +'<div class="row'+(i.crit?' crit':'')+(got?' got':'')+'" data-id="'+i.id+'">'
     +'<div class="rail"></div>'
-    +'<div class="body"><div class="nm">'+esc(i.name)+(getQty(i)>1?' <span class="getn">×'+getQty(i)+'</span>':'')+'</div><div class="meta">'+(shortFor(i)?'<span class="h">meals need '+(NEEDS.needBy[keyOf(i.name)]||shortFor(i))+' · have '+(NEEDS.haveBy[keyOf(i.name)]||0)+'</span> · ':'')+priceMeta(i)+'</div></div>'
+    +'<div class="body"><div class="nm">'+esc(i.name)+(getQty(i)>1?' <span class="getn">×'+getQty(i)+'</span>':'')+(i.once?' <span class="oncetag">once</span>':'')+'</div><div class="meta">'+(shortFor(i)?'<span class="h">meals need '+(NEEDS.needBy[keyOf(i.name)]||shortFor(i))+' · have '+(NEEDS.haveBy[keyOf(i.name)]||0)+'</span> · ':'')+priceMeta(i)+'</div></div>'
     +'<button class="tick" data-act="got" data-id="'+i.id+'" aria-label="'+(got?'Got it — tap to untick':'Got it')+'"><i><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></i></button>'
     +'</div></div>';
 }
@@ -4205,7 +4295,7 @@ function renderHome(){
     +'<div class="addmore">'
     +'<label><span>Area</span><select id="addarea">'+AREAS.map(a=>'<option>'+a+'</option>').join("")+'</select></label>'
     +'<label><span>Have now</span><input type="number" id="addqty" inputmode="numeric" min="0" step="1" value="1"></label>'
-    +'<div class="crit-opt"><button id="addcrit" aria-pressed="'+S.addCrit+'">! Critical</button></div>'
+    +'<div class="crit-opt"><button id="addcrit" aria-pressed="'+S.addCrit+'">! Critical</button><button id="addonce" aria-pressed="'+!!S.addOnce+'">Buy once</button></div>'
     +'</div>';
   if(!D.items.length){
     h+='<div class="card"><div class="empty">Add what you keep at home. Set a count to 0 and it goes straight onto the list. Tap ! for must-buys.</div></div>';
@@ -4240,6 +4330,10 @@ function weekLabel(off){ const m=mondayOf(new Date()); m.setDate(m.getDate()+7*(
   const f=d=>d.toLocaleDateString("en-AU",{day:"numeric",month:"short"}); return f(m)+" – "+f(e); }
 const plan=(off)=>D.plans[weekKey(off)]||{};
 const slotIds=(P,slot)=>{ const v=P[slot]; return Array.isArray(v)?v:(v?[v]:[]); };
+const mealKey=(slot,rid)=>slot+"|"+rid;
+function mealMeta(off,slot,rid){ const P=plan(off); const m=(P.__meta||{})[mealKey(slot,rid)]||{}; const r=recipeById(rid); return {servings:m.servings!=null?m.servings:(r?r.serves||2:2), leftovers:!!m.leftovers, cooked:!!m.cooked}; }
+function setMealMeta(off,slot,rid,patch){ const k=weekKey(off); D.plans[k]=D.plans[k]||{}; D.plans[k].__meta=D.plans[k].__meta||{}; D.plans[k].__meta[mealKey(slot,rid)]=Object.assign({},D.plans[k].__meta[mealKey(slot,rid)]||{},patch); save(); }
+function mealFactor(off,slot,rid){ const m=mealMeta(off,slot,rid), r=recipeById(rid); if(m.leftovers||!r) return 0; return m.servings/(r.serves||2); }
 const recipeById=id=>D.recipes.find(r=>r.id===id);
 function ensureItem(name){
   name=name.trim(); if(!name) return null;
@@ -4268,13 +4362,13 @@ function suggest(q){
   return D.items.filter(i=>{ const n=keyOf(i.name); if(n.includes(k)) return true; const nw=words(i.name); return qw.length&&qw.every(w=>nw.some(x=>x.startsWith(w))); })
     .sort((a,b)=>keyOf(a.name).indexOf(k)-keyOf(b.name).indexOf(k)||a.name.localeCompare(b.name)).slice(0,6);
 }
-function saveRecipe(id,name,ings,q){
+function saveRecipe(id,name,ings,q,serves){
   name=name.trim(); if(!name) return null; q=q||{};
   ings=[...new Set(ings.map(x=>x.trim()).filter(Boolean))];
   ings.forEach(n=>{ if(!matchItems(n).length) ensureItem(n); });
   let r=id?recipeById(id):null;
   if(!r){ r={id:uid(),name,ings:[]}; D.recipes.push(r); }
-  r.name=name; r.ings=ings; r.q={}; ings.forEach(n=>{ const v=Math.max(1,Math.round(Number(q[keyOf(n)])||1)); if(v>1) r.q[keyOf(n)]=v; }); save(); return r;
+  r.name=name; r.ings=ings; r.serves=Math.max(1,Number(serves)||r.serves||2); r.q={}; ings.forEach(n=>{ const v=Math.max(1,Math.round(Number(q[keyOf(n)])||1)); if(v>1) r.q[keyOf(n)]=v; }); save(); return r;
 }
 const ingQty=(r,n)=>Math.max(1,Number((r.q||{})[keyOf(n)])||1);
 function ingCost(n){ const m=matchItems(n); if(!m.length) return null; const p=knownPrice(m[0],D.store).price; return p==null?null:p; }
@@ -4282,9 +4376,11 @@ function mealCost(r){ let t=0, known=0; r.ings.forEach(n=>{ const p=ingCost(n); 
 /* what this week's planned meals need, in packets, against what's at home */
 function weekNeeds(off){
   const need={}; const names={};
-  Object.values(plan(off)).flatMap(v=>Array.isArray(v)?v:[v]).forEach(id=>{ const r=recipeById(id); if(!r) return;
+  const P=plan(off); Object.keys(P).filter(k=>k!=="__meta").forEach(slot=>slotIds(P,slot).forEach(id=>{ const r=recipeById(id); if(!r) return;
+    const f=mealFactor(off,slot,id); const meta=mealMeta(off,slot,id); if(!f||meta.cooked) return;
     r.ings.forEach(n=>{ const m=matchItems(n); const key=m.length?m.map(i=>keyOf(i.name)).sort().join("|"):keyOf(n);
-      need[key]=(need[key]||0)+ingQty(r,n); names[key]=names[key]||(m.length?m.map(i=>i.name):[n]); }); });
+      need[key]=(need[key]||0)+ingQty(r,n)*f; names[key]=names[key]||(m.length?m.map(i=>i.name):[n]); }); }));
+  Object.keys(need).forEach(k=>{ need[k]=Math.ceil(need[k]-1e-9); });
   const short={}, needBy={}, haveBy={};
   Object.keys(need).forEach(key=>{ const ks=key.split("|"); const items=ks.map(k=>D.items.find(i=>keyOf(i.name)===k)).filter(Boolean);
     const have=items.reduce((t,i)=>t+(Number(i.qty)||0),0); const sh=Math.max(0,need[key]-have);
@@ -4300,7 +4396,7 @@ function setSlot(slot,recipeId,replaceId){ const k=weekKey(S.weekOff); D.plans[k
   ids=[...new Set(ids.filter(Boolean))]; if(ids.length) D.plans[k][slot]=ids; else delete D.plans[k][slot]; pruneWeeks(); save(); }
 function unslot(slot,recipeId){ const k=weekKey(S.weekOff); if(!D.plans[k]) return; const ids=slotIds(D.plans[k],slot).filter(x=>x!==recipeId); if(ids.length) D.plans[k][slot]=ids; else delete D.plans[k][slot]; save(); }
 function pruneWeeks(){ const keys=Object.keys(D.plans).sort(); while(keys.length>8){ delete D.plans[keys.shift()]; } }
-function weekItems(off){ const set=new Set(); Object.values(plan(off)).flatMap(v=>Array.isArray(v)?v:[v]).forEach(id=>{ const r=recipeById(id); if(r) r.ings.forEach(n=>{ const m=matchItems(n); if(m.length) m.forEach(i=>set.add(keyOf(i.name))); else set.add(keyOf(n)); }); }); return set; }
+function weekItems(off){ const set=new Set(); const P0=plan(off); Object.keys(P0).filter(k=>k!=="__meta").flatMap(k=>slotIds(P0,k)).forEach(id=>{ const r=recipeById(id); if(r) r.ings.forEach(n=>{ const m=matchItems(n); if(m.length) m.forEach(i=>set.add(keyOf(i.name))); else set.add(keyOf(n)); }); }); return set; }
 function copyLastWeek(){ const prev=D.plans[weekKey(S.weekOff-1)]; if(!prev||!Object.keys(prev).length){ toast("Nothing planned last week"); return; } D.plans[weekKey(S.weekOff)]=Object.assign({},prev); save(); toast("Copied last week"); }
 
 function renderMeals(){
@@ -4316,10 +4412,13 @@ function renderMeals(){
         h+='<div class="rs">';
         rs.forEach(r=>{
           const key=slot+"|"+r.id, open=S.slotOpen===key;
-          h+='<button class="t" data-act="slot" data-slot="'+key+'" aria-expanded="'+open+'"><span>'+esc(r.name)+'</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>';
+          const mm=mealMeta(S.weekOff,slot,r.id); h+='<button class="t'+(mm.cooked?' done':'')+'" data-act="slot" data-slot="'+key+'" aria-expanded="'+open+'"><span>'+esc(r.name)+(mm.leftovers?' <small class="h">leftovers</small>':(mm.servings!==(r.serves||2)?' <small class="h">'+mm.servings+' serves</small>':''))+(mm.cooked?' <small class="h">✓</small>':'')+'</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>';
           if(open){
             h+='<div class="ing"><ul>'+(r.ings.length?r.ings.map(n=>{ const st=ingStatus(n); const multi=st.items.length>1;
-                return '<li><span>'+(ingQty(r,n)>1?'<b>'+ingQty(r,n)+'×</b> ':'')+esc(n)+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
+                const fq=Math.ceil(ingQty(r,n)*mealFactor(S.weekOff,slot,r.id)-1e-9); return '<li><span>'+(fq>1?'<b>'+fq+'×</b> ':'')+esc(n)+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
+              +'<div class="mealctl">'+(()=>{ const m=mealMeta(S.weekOff,slot,r.id); return '<span class="srv"><button data-act="srv" data-slot="'+slot+'" data-id="'+r.id+'" data-d="-1" aria-label="Fewer servings">−</button><b>'+m.servings+'</b><button data-act="srv" data-slot="'+slot+'" data-id="'+r.id+'" data-d="1" aria-label="More servings">+</button><small>serves</small></span>'
+                  +'<button class="tog" data-act="leftovers" data-slot="'+slot+'" data-id="'+r.id+'" aria-pressed="'+m.leftovers+'">Leftovers</button>'
+                  +'<button class="tog cooked" data-act="cooked" data-slot="'+slot+'" data-id="'+r.id+'" aria-pressed="'+m.cooked+'">'+(m.cooked?'✓ Cooked':'Cooked')+'</button></div>'; })()
               +'<div class="acts"><button class="lnk" data-act="pick" data-slot="'+slot+'" data-replace="'+r.id+'">Swap</button><button class="lnk" data-act="editrec" data-id="'+r.id+'" data-slot="'+slot+'">Edit</button><button class="lnk danger" data-act="unslot" data-slot="'+slot+'" data-id="'+r.id+'">Remove</button></div></div>';
           }
         });
@@ -4380,13 +4479,14 @@ function openHaveIt(id){
 
 /* create / edit a recipe's name and ingredients */
 function openRecipe(id,slot){
-  const r=id?recipeById(id):{name:"",ings:[],q:{}}; let ings=r.ings.slice(); let q=Object.assign({},r.q||{});
+  const r=id?recipeById(id):{name:"",ings:[],q:{},serves:2}; let ings=r.ings.slice(); let q=Object.assign({},r.q||{});
   const sh=$("#sheet"); sh.className="sheet-bg";
   sh.innerHTML='<div class="sheet" role="dialog" aria-label="Recipe"><h2>'+(id?'Edit recipe':'New recipe')+'</h2>'
     +'<label for="rn">Meal name</label><input type="text" id="rn" value="'+esc(r.name)+'">'
+    +'<label for="rsv">Serves</label><input type="number" id="rsv" inputmode="numeric" min="1" value="'+(r.serves||2)+'" style="width:90px">'
     +'<label for="ri">Ingredients — type one, press Enter</label><div class="sugwrap"><input type="text" id="ri" placeholder="e.g. Chicken breast" autocomplete="off" autocorrect="off" autocapitalize="none" enterkeyhint="done"><div class="sug" id="rsug" hidden></div></div>'+'</datalist>'
     +'<div class="chips" id="rchips"></div>'
-    +'<p style="margin-top:10px">Ingredients become At home items. The number is packets per meal — three meals with mince this week means three packets at home, and the shortfall goes on the list.</p>'
+    +'<p style="margin-top:10px">Ingredients become At home items. The number is packets for the servings above; a meal planned for more or fewer people scales it. Mark a second day as Leftovers and it adds nothing to the list.</p>'
     +'<div class="btns"><button id="rcancel">Cancel</button>'+(id?'<button id="rdel">Delete recipe</button>':'')+'<button class="pri" id="rsave">Save</button></div></div>';
   const close=()=>{ sh.className="hidden"; sh.innerHTML=""; };
   sh.onclick=e=>{ if(e.target===sh) close(); };
@@ -4412,8 +4512,8 @@ function openRecipe(id,slot){
   draw();
   $("#rcancel").onclick=close;
   if($("#rdel")) $("#rdel").onclick=()=>{ if(!confirm("Delete this recipe? Meals using it this week will be cleared.")) return;
-    D.recipes=D.recipes.filter(x=>x.id!==id); Object.values(D.plans).forEach(p=>{ Object.keys(p).forEach(k=>{ const ids=slotIds(p,k).filter(x=>x!==id); if(ids.length) p[k]=ids; else delete p[k]; }); }); close(); save(); };
-  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings,q); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
+    D.recipes=D.recipes.filter(x=>x.id!==id); Object.values(D.plans).forEach(p=>{ Object.keys(p).filter(k=>k!=="__meta").forEach(k=>{ const ids=slotIds(p,k).filter(x=>x!==id); if(ids.length) p[k]=ids; else delete p[k]; }); }); close(); save(); };
+  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings,q,parseInt($("#rsv").value,10)||2); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
   setTimeout(()=>(id?ri:$("#rn")).focus(),50);
 }
 
@@ -4425,6 +4525,7 @@ ROOT.addEventListener("click",e=>{
   if(t.id==="gear"){ openSettings(); return; }
   if(t.id==="addbtn"){ doAdd(); return; }
   if(t.id==="addcrit"){ S.addCrit=!S.addCrit; t.setAttribute("aria-pressed",S.addCrit); return; }
+  if(t.id==="addonce"){ S.addOnce=!S.addOnce; t.setAttribute("aria-pressed",S.addOnce); return; }
   if(t.id==="exp"){ const b=new Blob([JSON.stringify(D,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="groceries-backup.json"; a.click(); return; }
   if(t.id==="imp"){ $("#impfile").click(); return; }
   const act=t.dataset.act, id=t.dataset.id;
@@ -4440,6 +4541,13 @@ ROOT.addEventListener("click",e=>{
   else if(act==="slot"){ S.slotOpen=S.slotOpen===t.dataset.slot?null:t.dataset.slot; render(); }
   else if(act==="pick") openPicker(t.dataset.slot,t.dataset.replace||null);
   else if(act==="unslot"){ unslot(t.dataset.slot,id); S.slotOpen=null; }
+  else if(act==="srv"){ const m=mealMeta(S.weekOff,t.dataset.slot,id); setMealMeta(S.weekOff,t.dataset.slot,id,{servings:Math.max(1,m.servings+Number(t.dataset.d)),leftovers:false}); }
+  else if(act==="leftovers"){ const m=mealMeta(S.weekOff,t.dataset.slot,id); setMealMeta(S.weekOff,t.dataset.slot,id,{leftovers:!m.leftovers}); }
+  else if(act==="cooked"){ const m=mealMeta(S.weekOff,t.dataset.slot,id); const r=recipeById(id); const f=mealFactor(S.weekOff,t.dataset.slot,id);
+    if(r && f){ r.ings.forEach(n=>{ const q=Math.ceil(ingQty(r,n)*f-1e-9); const items=matchItems(n).sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0)); let left=q;
+      items.forEach(i=>{ if(left<=0) return; if(!m.cooked){ const take=Math.min(left,Number(i.qty)||0); i.qty=Math.max(0,(Number(i.qty)||0)-take); left-=take; i.u=Date.now(); } });
+      if(m.cooked){ const i=items[0]; if(i){ i.qty=(Number(i.qty)||0)+q; i.u=Date.now(); } } }); }
+    setMealMeta(S.weekOff,t.dataset.slot,id,{cooked:!m.cooked}); toast(m.cooked?"Un-cooked — items put back":"Cooked — items taken off At home"); }
   else if(act==="editrec") openRecipe(id,t.dataset.slot);
   else if(act==="newrec") openRecipe(null,null);
   else if(act==="wk"){ S.weekOff+=Number(t.dataset.n); S.slotOpen=null; render(); }
@@ -4490,7 +4598,7 @@ ROOT.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="addname"
   });
   ROOT.addEventListener("click",e=>{ if(!e.target.closest(".swipe.open,.swipe.openr")) closeAll(); });
 })();
-function doAdd(){ const n=$("#addname"); const v=n.value; const qty=Math.max(0,parseInt($("#addqty").value)||0); addItem(v,$("#addarea").value,qty,S.addCrit); S.addCrit=false; setTimeout(()=>{ const nn=$("#addname"); if(nn){ nn.value=""; nn.focus(); } },0); }
+function doAdd(){ const n=$("#addname"); const v=n.value; const qty=Math.max(0,parseInt($("#addqty").value)||0); addItem(v,$("#addarea").value,qty,S.addCrit,S.addOnce); S.addCrit=false; S.addOnce=false; setTimeout(()=>{ const nn=$("#addname"); if(nn){ nn.value=""; nn.focus(); } },0); }
 
 /* ---------- toast ---------- */
 let toastT;
