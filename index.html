@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E1621">
-<meta name="app-version" content="1.5.0">
-<meta name="app-build" content="20261029-030405">
+<meta name="app-version" content="1.6.0">
+<meta name="app-build" content="20261030-075434">
 <title>Connected Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -918,6 +918,21 @@ body{padding:0}
 #shop .oncetag{font-size:11px;color:var(--ink-3);border:1px dashed var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:1px}
 #shop #addonce{margin-left:6px}
 #shop #rsv{margin-bottom:8px}
+
+#shop .measure{display:inline-flex;gap:4px;align-items:center}
+#shop .measure input{width:64px;padding:7px 8px}
+#shop .measure select{width:auto;padding:7px 24px 7px 8px;font-size:13px}
+#shop .msz{color:var(--ink-3);margin-right:8px}
+#shop .ingrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+#shop .ingrow .ingnm{flex:1 1 100%;font-size:14.5px;font-weight:500}
+#shop .ingrow .measure input{width:60px;padding:6px 8px;font-size:13px;min-height:0}
+#shop .ingrow .measure select{padding:6px 22px 6px 8px;font-size:12.5px;min-height:0}
+#shop .ingrow .pk{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:13px}
+#shop .ingrow .pk b{min-width:16px;text-align:center}
+#shop .ingrow .pk small{color:var(--ink-3)}
+#shop .ingrow .pk button{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:none;color:inherit;font-size:14px;line-height:1;padding:0;min-height:0}
+#shop .ingrow .rm{border:0;background:none;color:var(--ink-3);font-size:18px;padding:0 4px;min-height:0}
+#shop #rchips{display:block}
 </style>
 </head>
 <body>
@@ -4069,6 +4084,8 @@ const Groceries=(()=>{
 const ROOT=document.getElementById("shop");
 const KEY="grocery:v1", CFGKEY="grocery:sync";
 const STORES=["Woolworths","Aldi","Coles"];
+const UNITS=["packet","g","kg","ml","L","tsp","tbsp","cup","piece","can","bottle","jar","slice","bunch","roll"];
+const fmtMeasure=(a,u)=>(a!=null&&a!==""&&!isNaN(a)?(+a)+(u&&u!=="packet"?" "+u:(u==="packet"?" pkt":"")):(u&&u!=="packet"?u:""));
 const AREAS=["Kitchen","Bathroom","Laundry","Living room","Bedroom","Garage","Other"];
 const CATS=["Fruit & vegetables","Breads & Cereals","Meat","Dairy","Frozen Foods","Bakery","Pasta, rice & grains","Sauces & condiments","Seasonings","Baking & pantry","Snacks & Candy","Household Items","Personal Care & Health","Wine/Beer/Spirits","Other"];
 const CATWORDS={
@@ -4116,7 +4133,7 @@ function arr(x){ return Array.isArray(x)?x:(x&&typeof x==="object"?Object.values
 function migrate(j){
   if(!j||typeof j!=="object") return null;
   j.items=arr(j.items).filter(i=>i&&i.id).map(i=>({id:i.id,name:String(i.name||"").trim()||"(unnamed)",area:i.area||"Kitchen",qty:Number(i.qty)||0,crit:!!i.crit,usual:Math.max(1,Number(i.usual)||1),prices:(i.prices&&typeof i.prices==="object")?i.prices:{},cat:CATS.includes(i.cat)?i.cat:(i.cat==="Baking Items"?"Pantry Items":autoCat(i.name||"")),added:i.added||0,u:i.u||0}));
-  j.recipes=arr(j.recipes).filter(r=>r&&r.id).map(r=>({id:r.id,name:String(r.name||"").trim()||"(unnamed)",ings:arr(r.ings).map(String),q:(r.q&&typeof r.q==="object")?r.q:{},serves:Math.max(1,Number(r.serves)||2),u:r.u||0}));
+  j.recipes=arr(j.recipes).filter(r=>r&&r.id).map(r=>({id:r.id,name:String(r.name||"").trim()||"(unnamed)",ings:arr(r.ings).map(String),q:(r.q&&typeof r.q==="object")?r.q:{},m:(r.m&&typeof r.m==="object")?r.m:{},serves:Math.max(1,Number(r.serves)||2),u:r.u||0}));
   j.shops=arr(j.shops).filter(x=>x&&x.id).map(x=>({id:x.id,ts:x.ts||0,store:x.store||"",lines:arr(x.lines),total:Number(x.total)||0,u:x.u||x.ts||0}));
   j.got=arr(j.got); j.store=j.store||"Woolworths"; j.plans=(j.plans&&typeof j.plans==="object")?j.plans:{};
   if(!j.plans.week){ const ks=Object.keys(j.plans).sort(); if(ks.length){ j.plans={week:j.plans[ks[ks.length-1]]}; } }
@@ -4268,7 +4285,7 @@ function stockRow(i){
     +'<div class="rail"></div>'
     +'<button class="bang" data-act="crit" data-id="'+i.id+'" aria-pressed="'+!!i.crit+'" aria-label="'+(i.crit?'Critical — tap to make optional':'Mark as critical')+'">!</button>'
     +'<div class="body"><button style="display:block;text-align:left;width:100%;min-height:0" data-act="open" data-id="'+i.id+'"><div class="nm">'+esc(i.name)+'</div>'
-    +'<div class="meta">'+(isOut(i)?'<span class="out">out — on the list</span>':'')+priceMeta(i)+(WK.has(keyOf(i.name))?'<span class="tagwk">this week</span>':'')+'</div></button></div>'
+    +'<div class="meta">'+(isOut(i)?'<span class="out">out — on the list</span>':'')+(fmtMeasure(i.size,i.unit)?'<span class="msz">'+esc(fmtMeasure(i.size,i.unit))+' each</span>':'')+priceMeta(i)+(WK.has(keyOf(i.name))?'<span class="tagwk">this week</span>':'')+'</div></button></div>'
     +'<div class="qty"><button data-act="dec" data-id="'+i.id+'" aria-label="One less">−</button><output class="'+(isOut(i)?'zero':'')+'">'+(Number(i.qty)||0)+'</output><button data-act="inc" data-id="'+i.id+'" aria-label="One more">+</button></div>'
     +'</div></div>';
   if(open){
@@ -4278,6 +4295,7 @@ function stockRow(i){
       +'<div class="grid">'
       +'<label><span>Price at '+st+'</span><input type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" data-price="'+i.id+'" data-store="'+st+'" value="'+(p[st]!=null?p[st]:"")+'"></label>'
       +'<label><span>Restock to (when ticked)</span><input type="number" inputmode="numeric" min="1" step="1" data-usual="'+i.id+'" value="'+(i.usual||1)+'"></label>'
+      +'<label><span>Pack size</span><span class="measure"><input type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 1" data-size="'+i.id+'" value="'+(i.size!=null?i.size:"")+'"><select data-unit="'+i.id+'"><option value="">unit</option>'+UNITS.map(u=>'<option'+(u===i.unit?' selected':'')+'>'+u+'</option>').join("")+'</select></span></label>'
       +'<label><span>Where it lives</span><select data-area="'+i.id+'">'+AREAS.map(a=>'<option'+(a===i.area?' selected':'')+'>'+a+'</option>').join("")+'</select></label>'
       +'<label><span>Shop category</span><select data-cat="'+i.id+'">'+CATS.map(c=>'<option'+(c===(i.cat||"Other")?' selected':'')+'>'+c+'</option>').join("")+'</select></label>'
       +'<label><span>Name</span><input type="text" data-name="'+i.id+'" value="'+esc(i.name)+'"></label>'
@@ -4362,13 +4380,13 @@ function suggest(q){
   return D.items.filter(i=>{ const n=keyOf(i.name); if(n.includes(k)) return true; const nw=words(i.name); return qw.length&&qw.every(w=>nw.some(x=>x.startsWith(w))); })
     .sort((a,b)=>keyOf(a.name).indexOf(k)-keyOf(b.name).indexOf(k)||a.name.localeCompare(b.name)).slice(0,6);
 }
-function saveRecipe(id,name,ings,q,serves){
-  name=name.trim(); if(!name) return null; q=q||{};
+function saveRecipe(id,name,ings,q,serves,m){
+  name=name.trim(); if(!name) return null; q=q||{}; m=m||{};
   ings=[...new Set(ings.map(x=>x.trim()).filter(Boolean))];
   ings.forEach(n=>{ if(!matchItems(n).length) ensureItem(n); });
   let r=id?recipeById(id):null;
   if(!r){ r={id:uid(),name,ings:[]}; D.recipes.push(r); }
-  r.name=name; r.ings=ings; r.serves=Math.max(1,Number(serves)||r.serves||2); r.q={}; ings.forEach(n=>{ const v=Math.max(1,Math.round(Number(q[keyOf(n)])||1)); if(v>1) r.q[keyOf(n)]=v; }); save(); return r;
+  r.name=name; r.ings=ings; r.serves=Math.max(1,Number(serves)||r.serves||2); r.q={}; r.m={}; ings.forEach(n=>{ const x=m[keyOf(n)]; if(x&&((x.a!=null&&x.a!=="")||x.u)) r.m[keyOf(n)]={a:x.a!=null&&x.a!==""?Number(x.a):null,u:x.u||""}; }); ings.forEach(n=>{ const v=Math.max(1,Math.round(Number(q[keyOf(n)])||1)); if(v>1) r.q[keyOf(n)]=v; }); save(); return r;
 }
 const ingQty=(r,n)=>Math.max(1,Number((r.q||{})[keyOf(n)])||1);
 function ingCost(n){ const m=matchItems(n); if(!m.length) return null; const p=knownPrice(m[0],D.store).price; return p==null?null:p; }
@@ -4415,7 +4433,7 @@ function renderMeals(){
           const mm=mealMeta(S.weekOff,slot,r.id); h+='<button class="t'+(mm.cooked?' done':'')+'" data-act="slot" data-slot="'+key+'" aria-expanded="'+open+'"><span>'+esc(r.name)+(mm.leftovers?' <small class="h">leftovers</small>':(mm.servings!==(r.serves||2)?' <small class="h">'+mm.servings+' serves</small>':''))+(mm.cooked?' <small class="h">✓</small>':'')+'</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>';
           if(open){
             h+='<div class="ing"><ul>'+(r.ings.length?r.ings.map(n=>{ const st=ingStatus(n); const multi=st.items.length>1;
-                const fq=Math.ceil(ingQty(r,n)*mealFactor(S.weekOff,slot,r.id)-1e-9); return '<li><span>'+(fq>1?'<b>'+fq+'×</b> ':'')+esc(n)+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
+                const fq=Math.ceil(ingQty(r,n)*mealFactor(S.weekOff,slot,r.id)-1e-9); const mm=(r.m||{})[keyOf(n)]; const f0=mealFactor(S.weekOff,slot,r.id)||1; const ms=mm?fmtMeasure(mm.a!=null?Math.round(mm.a*f0*100)/100:null,mm.u):""; return '<li><span>'+(ms?'<b>'+esc(ms)+'</b> ':'')+esc(n)+(fq>1?' <small class="h">'+fq+' pkt</small>':'')+(multi?' <small class="h">('+esc(st.names.join(", "))+')</small>':'')+'</span>'+(st.items.length?(st.out?'<span class="o">on the list</span>':'<span class="h">'+st.qty+' at home</span>'):'<span class="o">not at home</span>')+'</li>'; }).join(""):'<li class="h">No ingredients yet</li>')+'</ul>'
               +'<div class="mealctl">'+(()=>{ const m=mealMeta(S.weekOff,slot,r.id); return '<span class="srv"><button data-act="srv" data-slot="'+slot+'" data-id="'+r.id+'" data-d="-1" aria-label="Fewer servings">−</button><b>'+m.servings+'</b><button data-act="srv" data-slot="'+slot+'" data-id="'+r.id+'" data-d="1" aria-label="More servings">+</button><small>serves</small></span>'
                   +'<button class="tog" data-act="leftovers" data-slot="'+slot+'" data-id="'+r.id+'" aria-pressed="'+m.leftovers+'">Leftovers</button>'
                   +'<button class="tog cooked" data-act="cooked" data-slot="'+slot+'" data-id="'+r.id+'" aria-pressed="'+m.cooked+'">'+(m.cooked?'✓ Cooked':'Cooked')+'</button></div>'; })()
@@ -4479,19 +4497,25 @@ function openHaveIt(id){
 
 /* create / edit a recipe's name and ingredients */
 function openRecipe(id,slot){
-  const r=id?recipeById(id):{name:"",ings:[],q:{},serves:2}; let ings=r.ings.slice(); let q=Object.assign({},r.q||{});
+  const r=id?recipeById(id):{name:"",ings:[],q:{},m:{},serves:2}; let ings=r.ings.slice(); let q=Object.assign({},r.q||{}); let m=JSON.parse(JSON.stringify(r.m||{}));
   const sh=$("#sheet"); sh.className="sheet-bg";
   sh.innerHTML='<div class="sheet" role="dialog" aria-label="Recipe"><h2>'+(id?'Edit recipe':'New recipe')+'</h2>'
     +'<label for="rn">Meal name</label><input type="text" id="rn" value="'+esc(r.name)+'">'
     +'<label for="rsv">Serves</label><input type="number" id="rsv" inputmode="numeric" min="1" value="'+(r.serves||2)+'" style="width:90px">'
     +'<label for="ri">Ingredients — type one, press Enter</label><div class="sugwrap"><input type="text" id="ri" placeholder="e.g. Chicken breast" autocomplete="off" autocorrect="off" autocapitalize="none" enterkeyhint="done"><div class="sug" id="rsug" hidden></div></div>'+'</datalist>'
     +'<div class="chips" id="rchips"></div>'
-    +'<p style="margin-top:10px">Ingredients become At home items. The number is packets for the servings above; a meal planned for more or fewer people scales it. Mark a second day as Leftovers and it adds nothing to the list.</p>'
+    +'<p style="margin-top:10px">Amount and unit are for the recipe (2 tbsp, 500 g) and show on the meal. Packets is what the shopping list counts — how many packs this meal uses up for the servings above.</p>'
     +'<div class="btns"><button id="rcancel">Cancel</button>'+(id?'<button id="rdel">Delete recipe</button>':'')+'<button class="pri" id="rsave">Save</button></div></div>';
   const close=()=>{ sh.className="hidden"; sh.innerHTML=""; };
   sh.onclick=e=>{ if(e.target===sh) close(); };
   const chips=$("#rchips"), ri=$("#ri");
-  function draw(){ chips.innerHTML=ings.map((n,i)=>{ const v=Math.max(1,Number(q[keyOf(n)])||1); return '<span class="ingchip"><button data-q="-" data-i="'+i+'" aria-label="Fewer">−</button><b>'+v+'</b><button data-q="+" data-i="'+i+'" aria-label="More">+</button>'+esc(n)+'<button data-x="'+i+'" aria-label="Remove '+esc(n)+'">×</button></span>'; }).join("")||'<span style="border:0;background:none;color:var(--ink-3)">Nothing yet</span>'; }
+  function draw(){ chips.innerHTML=ings.map((n,i)=>{ const v=Math.max(1,Number(q[keyOf(n)])||1); const mm=m[keyOf(n)]||{};
+      return '<div class="ingrow"><div class="ingnm">'+esc(n)+'</div>'
+        +'<span class="measure"><input type="number" inputmode="decimal" step="any" min="0" placeholder="amt" data-ma="'+i+'" value="'+(mm.a!=null?mm.a:"")+'" aria-label="Amount"><select data-mu="'+i+'" aria-label="Unit"><option value="">unit</option>'+UNITS.map(u=>'<option'+(u===mm.u?' selected':'')+'>'+u+'</option>').join("")+'</select></span>'
+        +'<span class="pk" title="Packets per meal — what the list counts"><button data-q="-" data-i="'+i+'" aria-label="Fewer packets">−</button><b>'+v+'</b><button data-q="+" data-i="'+i+'" aria-label="More packets">+</button><small>pkt</small></span>'
+        +'<button class="rm" data-x="'+i+'" aria-label="Remove '+esc(n)+'">×</button></div>'; }).join("")||'<span style="border:0;background:none;color:var(--ink-3)">Nothing yet</span>'; }
+  chips.oninput=e=>{ const t=e.target; if(t.dataset.ma!==undefined){ const n=ings[+t.dataset.ma]; m[keyOf(n)]=Object.assign({},m[keyOf(n)]||{},{a:t.value}); } };
+  chips.onchange=e=>{ const t=e.target; if(t.dataset.mu!==undefined){ const n=ings[+t.dataset.mu]; m[keyOf(n)]=Object.assign({},m[keyOf(n)]||{},{u:t.value}); } };
   const sug=$("#rsug"); let sugRows=[];
   function addIng(v){ v=(v!=null?v:ri.value).trim(); if(!v) return; if(!ings.some(x=>keyOf(x)===keyOf(v))) ings.push(v); ri.value=""; drawSug(); draw(); }
   function drawSug(){
@@ -4513,7 +4537,7 @@ function openRecipe(id,slot){
   $("#rcancel").onclick=close;
   if($("#rdel")) $("#rdel").onclick=()=>{ if(!confirm("Delete this recipe? Meals using it this week will be cleared.")) return;
     D.recipes=D.recipes.filter(x=>x.id!==id); Object.values(D.plans).forEach(p=>{ Object.keys(p).filter(k=>k!=="__meta").forEach(k=>{ const ids=slotIds(p,k).filter(x=>x!==id); if(ids.length) p[k]=ids; else delete p[k]; }); }); close(); save(); };
-  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings,q,parseInt($("#rsv").value,10)||2); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
+  $("#rsave").onclick=()=>{ addIng(); const nm=$("#rn").value.trim(); if(!nm){ $("#rn").focus(); return; } const saved=saveRecipe(id,nm,ings,q,parseInt($("#rsv").value,10)||2,m); if(slot&&!id) setSlot(slot,saved.id); if(slot) S.slotOpen=slot+"|"+saved.id; close(); render(); };
   setTimeout(()=>(id?ri:$("#rn")).focus(),50);
 }
 
@@ -4567,6 +4591,8 @@ ROOT.addEventListener("change",e=>{
   const el=e.target;
   if(el.dataset.price){ setPrice(el.dataset.price,el.dataset.store,el.value); }
   else if(el.dataset.usual){ const i=itemById(el.dataset.usual); if(i){ i.usual=Math.max(1,parseInt(el.value)||1); save(); } }
+  else if(el.dataset.size){ const i=itemById(el.dataset.size); if(i){ const v=parseFloat(el.value); i.size=isNaN(v)?null:v; i.u=Date.now(); save(); render(); } }
+  else if(el.dataset.unit){ const i=itemById(el.dataset.unit); if(i){ i.unit=el.value; i.u=Date.now(); save(); render(); } }
   else if(el.dataset.area){ const i=itemById(el.dataset.area); if(i){ i.area=el.value; save(); } }
   else if(el.dataset.name){ const i=itemById(el.dataset.name); if(i&&el.value.trim()){ const wasAuto=i.cat===autoCat(i.name); i.name=el.value.trim(); if(wasAuto) i.cat=autoCat(i.name); save(); } }
   else if(el.dataset.cat){ const i=itemById(el.dataset.cat); if(i){ i.cat=el.value; save(); } }
